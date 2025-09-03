@@ -5,44 +5,43 @@
     <Wizard id="createOrderWizard">
         <WizardStep id="stepPersonalData" title="Dane osobowe">
             <VBox id="personalDataVBox">
-                <Label id="firstNameLabel" text="Imię" labelFor="firstNameInput" />
-                <Input id="firstNameInput" placeholder="Wpisz imię" />
+                <Label id="firstNameLabel" text="Imię" labelFor="firstNameInput"  />
+                <Input id="firstNameInput" placeholder="Wpisz imię" required="true" liveChange="validatePersonalData"/>
                 <Label id="lastNameLabel" text="Nazwisko" labelFor="lastNameInput" />
-                <Input id="lastNameInput" placeholder="Wpisz nazwisko" />
+                <Input id="lastNameInput" placeholder="Wpisz nazwisko" required="true" liveChange="validatePersonalData"/>
                 <Label id="phoneNumberLabel" text="Numer telefonu" labelFor="phoneNumberInput" />
-                <Input id="phoneNumberInput" placeholder="Wpisz numer telefonu" />
-                <!-- TODO ADRES -->
+                <Input id="phoneNumberInput" placeholder="Wpisz numer telefonu" required="true" liveChange="validatePersonalData"/>
                 <Label id="addressFirstLineLabel" text="Adres (linia 1)" labelFor="addressFirstLineInput" />
-                <Input id="addressFirstLineInput" placeholder="Wpisz adres (linia 1)" />
-                <Label id="addressSecondLineLabel" text="Adres (linia 2)" labelFor="addressSecondLineInput" />
+                <Input id="addressFirstLineInput" placeholder="Wpisz adres (linia 1)" required="true" liveChange="validatePersonalData"/>
+                <Label id="addressSecondLineLabel" text="Adres (linia 2)" labelFor="addressSecondLineInput"  />
                 <Input id="addressSecondLineInput" placeholder="Wpisz adres (linia 2)" />
                 <Label id="addressZipCodeLabel" text="Kod pocztowy" labelFor="addressZipCodeInput" />
-                <Input id="addressZipCodeInput" placeholder="Wpisz kod pocztowy" />
+                <Input id="addressZipCodeInput" placeholder="Wpisz kod pocztowy" required="true" liveChange="validatePersonalData"/>
                 <Label id="addressCityLabel" text="Miasto" labelFor="addressCityInput" />
                 <Input id="addressCityInput" placeholder="Wpisz miasto" />
             </VBox>
         </WizardStep>
-        <WizardStep id="stepFaultDesc" title="Opis usterki">
+        <WizardStep id="stepFaultDesc" title="Opis usterki" activate="_setStepInvalid">
             <VBox id="faultDescVBox">
-                <Label id="deviceTypeLabel" text="Typ urządzenia" labelFor="deviceTypeInput" />
-                <Input id="deviceTypeInput" placeholder="Wpisz typ urządzenia" />
+                <Label id="deviceTypeLabel" text="Typ urządzenia" labelFor="deviceTypeInput"/>
+                <Input id="deviceTypeInput" placeholder="Wpisz typ urządzenia" required="true" liveChange="validateFaultDesc"/>
                 <Label id="deviceModelLabel" text="Model urządzenia" labelFor="deviceModelInput" />
-                <Input id="deviceModelInput" placeholder="Wpisz model urządzenia" />
+                <Input id="deviceModelInput" placeholder="Wpisz model urządzenia" required="true" liveChange="validateFaultDesc"/>
                 <Label id="deviceSerialNumberLabel" text="Numer seryjny urządzenia" labelFor="deviceSerialNumberInput" />
                 <Input id="deviceSerialNumberInput" placeholder="Wpisz numer seryjny urządzenia" />
                 <Label id="faultDescLabel" text="Opis usterki" labelFor="faultDescInput" />
-                <TextArea id="faultDescInput" placeholder="Opisz usterkę" rows="4" />
+                <TextArea id="faultDescInput" placeholder="Opisz usterkę" rows="8" required="true" liveChange="validateFaultDesc"/>
             </VBox>
         </WizardStep>
-        <WizardStep id="stepVisitDate" title="Data wizyty">
+        <WizardStep id="stepVisitDate" title="Data wizyty" activate="_setStepInvalid">
             <VBox id="visitDateVBox">
                 <Label id="visitDateLabel" text="Data wizyty" labelFor="visitDateInput" />
-                <Input id="visitDateInput" placeholder="Wybierz datę wizyty" />
+                <Input id="visitDateInput" placeholder="Wybierz datę wizyty" required="true" liveChange="validateVisitDate"/>
                 <Label id="visitTimeLabel" text="Godzina wizyty" labelFor="visitTimeInput" />
-                <Input id="visitTimeInput" placeholder="Wybierz godzinę wizyty" />
+                <Input id="visitTimeInput" placeholder="Wybierz godzinę wizyty" required="true" liveChange="validateVisitDate"/>
             </VBox>
         </WizardStep>
-        <WizardStep id="stepSummary" title="Podsumowanie" activate="onWizardStepActivate">
+        <WizardStep id="stepSummary" title="Podsumowanie" activate="_setStepInvalid">
             <VBox id="summaryVBox">
                 <Text id="summaryText" text="Podsumowanie danych zamówienia" />
                 <Button id="submitOrderButton" text="Złóż zamówienie" press="onSubmitOrder" />
