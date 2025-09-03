@@ -135,35 +135,44 @@ sap.ui.define([
 
         _displaySummary: function () {
             var oView = this.getView();
-
+            
+            // Pobierz ComboBox i Select w poprawny sposób
+            var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
+            var oVisitHourSelect = oView.byId("visitHourSelect");
+            
             // Collect all data from wizard
             var oOrderData = {
                 firstName: oView.byId("firstNameInput").getValue(),
                 lastName: oView.byId("lastNameInput").getValue(),
                 phoneNumber: oView.byId("phoneNumberInput").getValue(),
                 addressFirstLine: oView.byId("addressFirstLineInput").getValue(),
-                addressSecondLine: oView.byId("addressSecondLineInput").getValue(),
+                addressSecondLine: oView.byId("addressSecondLineInput").getValue() || "",
                 addressZipCode: oView.byId("addressZipCodeInput").getValue(),
                 addressCity: oView.byId("addressCityInput").getValue(),
-                deviceType: oView.byId("deviceTypeInput").getValue(),
+                deviceType: oDeviceTypeComboBox.getSelectedItem() ? oDeviceTypeComboBox.getSelectedItem().getText() : "",
                 deviceModel: oView.byId("deviceModelInput").getValue(),
-                deviceSerialNumber: oView.byId("deviceSerialNumberInput").getValue(),
+                deviceSerialNumber: oView.byId("deviceSerialNumberInput").getValue() || "",
                 faultDescription: oView.byId("faultDescInput").getValue(),
-                visitDate: oView.byId("visitDateInput").getValue(),
-                visitTime: oView.byId("visitTimeInput").getValue()
+                visitDate: oView.byId("visitDateInput").getDateValue() ? 
+                    oView.byId("visitDateInput").getDateValue().toLocaleDateString() : "",
+                visitTime: oVisitHourSelect.getSelectedItem() ? oVisitHourSelect.getSelectedItem().getText() : ""
             };
+            
+            // Dodaj log dla debugowania
+            console.log("Dane zamówienia:", oOrderData);
 
             // Create summary text
             var sSummary = "Dane osobowe:\n" +
                 "Imię: " + oOrderData.firstName + "\n" +
                 "Nazwisko: " + oOrderData.lastName + "\n" +
                 "Telefon: " + oOrderData.phoneNumber + "\n" +
-                "Adres: " + oOrderData.addressFirstLine + " " + oOrderData.addressSecondLine + ", " +
+                "Adres: " + oOrderData.addressFirstLine + 
+                (oOrderData.addressSecondLine ? " " + oOrderData.addressSecondLine : "") + ", " +
                 oOrderData.addressZipCode + " " + oOrderData.addressCity + "\n\n" +
                 "Urządzenie:\n" +
                 "Typ: " + oOrderData.deviceType + "\n" +
                 "Model: " + oOrderData.deviceModel + "\n" +
-                "Numer seryjny: " + oOrderData.deviceSerialNumber + "\n" +
+                "Numer seryjny: " + (oOrderData.deviceSerialNumber || "Nie podano") + "\n" +
                 "Opis usterki: " + oOrderData.faultDescription + "\n\n" +
                 "Wizyta:\n" +
                 "Data: " + oOrderData.visitDate + "\n" +
@@ -175,6 +184,10 @@ sap.ui.define([
 
         onSubmitOrder: function () {
             var oView = this.getView();
+            
+            // Pobierz ComboBox i Select w poprawny sposób
+            var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
+            var oVisitHourSelect = oView.byId("visitHourSelect");
 
             // Collect all data from wizard steps
             var oOrderData = {
@@ -182,15 +195,16 @@ sap.ui.define([
                 lastName: oView.byId("lastNameInput").getValue(),
                 phoneNumber: oView.byId("phoneNumberInput").getValue(),
                 addressFirstLine: oView.byId("addressFirstLineInput").getValue(),
-                addressSecondLine: oView.byId("addressSecondLineInput").getValue(),
+                addressSecondLine: oView.byId("addressSecondLineInput").getValue() || "",
                 addressZipCode: oView.byId("addressZipCodeInput").getValue(),
                 addressCity: oView.byId("addressCityInput").getValue(),
-                deviceType: oView.byId("deviceTypeInput").getValue(),
+                deviceType: oDeviceTypeComboBox.getSelectedItem() ? oDeviceTypeComboBox.getSelectedItem().getText() : "",
                 deviceModel: oView.byId("deviceModelInput").getValue(),
-                deviceSerialNumber: oView.byId("deviceSerialNumberInput").getValue(),
+                deviceSerialNumber: oView.byId("deviceSerialNumberInput").getValue() || "",
                 faultDescription: oView.byId("faultDescInput").getValue(),
-                visitDate: oView.byId("visitDateInput").getValue(),
-                visitTime: oView.byId("visitTimeInput").getValue(),
+                visitDate: oView.byId("visitDateInput").getDateValue() ? 
+                    oView.byId("visitDateInput").getDateValue().toLocaleDateString() : "",
+                visitTime: oVisitHourSelect.getSelectedItem() ? oVisitHourSelect.getSelectedItem().getText() : "",
                 status: "New"
             };
 
@@ -210,6 +224,15 @@ sap.ui.define([
             }.bind(this)).catch(function (oError) {
                 sap.m.MessageToast.show("Błąd podczas składania zamówienia: " + oError.message);
             });
+        },
+
+        onSummaryStepActivate: function (oEvent) {
+            var oStep = oEvent.getSource();
+
+            // Check if the activated step is the summary step
+            if (oStep.getId().includes("stepSummary")) {
+                this._displaySummary();
+            }
         }
     });
 });

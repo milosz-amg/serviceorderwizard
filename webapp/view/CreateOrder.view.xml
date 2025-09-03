@@ -1,51 +1,262 @@
 <mvc:View
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
-    controllerName="com.mr.serviceorderwizard.controller.CreateOrder">
+    controllerName="com.mr.serviceorderwizard.controller.CreateOrder"
+    xmlns:core="sap.ui.core"
+>
     <Wizard id="createOrderWizard">
-        <WizardStep id="stepPersonalData" title="Dane osobowe">
+        <WizardStep
+            id="stepPersonalData"
+            title="Dane osobowe"
+        >
             <VBox id="personalDataVBox">
-                <Label id="firstNameLabel" text="Imię" labelFor="firstNameInput"  />
-                <Input id="firstNameInput" placeholder="Wpisz imię" required="true" liveChange="validatePersonalData"/>
-                <Label id="lastNameLabel" text="Nazwisko" labelFor="lastNameInput" />
-                <Input id="lastNameInput" placeholder="Wpisz nazwisko" required="true" liveChange="validatePersonalData"/>
-                <Label id="phoneNumberLabel" text="Numer telefonu" labelFor="phoneNumberInput" />
-                <Input id="phoneNumberInput" placeholder="Wpisz numer telefonu" required="true" liveChange="validatePersonalData"/>
-                <Label id="addressFirstLineLabel" text="Adres (linia 1)" labelFor="addressFirstLineInput" />
-                <Input id="addressFirstLineInput" placeholder="Wpisz adres (linia 1)" required="true" liveChange="validatePersonalData"/>
-                <Label id="addressSecondLineLabel" text="Adres (linia 2)" labelFor="addressSecondLineInput"  />
-                <Input id="addressSecondLineInput" placeholder="Wpisz adres (linia 2)" />
-                <Label id="addressZipCodeLabel" text="Kod pocztowy" labelFor="addressZipCodeInput" />
-                <Input id="addressZipCodeInput" placeholder="Wpisz kod pocztowy" required="true" liveChange="validatePersonalData"/>
-                <Label id="addressCityLabel" text="Miasto" labelFor="addressCityInput" />
-                <Input id="addressCityInput" placeholder="Wpisz miasto" />
+                <Label
+                    id="firstNameLabel"
+                    text="Imię"
+                    labelFor="firstNameInput"
+                />
+                <Input
+                    id="firstNameInput"
+                    placeholder="Wpisz imię"
+                    required="true"
+                    liveChange="validatePersonalData"
+                />
+                <Label
+                    id="lastNameLabel"
+                    text="Nazwisko"
+                    labelFor="lastNameInput"
+                />
+                <Input
+                    id="lastNameInput"
+                    placeholder="Wpisz nazwisko"
+                    required="true"
+                    liveChange="validatePersonalData"
+                />
+                <Label
+                    id="phoneNumberLabel"
+                    text="Numer telefonu"
+                    labelFor="phoneNumberInput"
+                />
+                <Input
+                    id="phoneNumberInput"
+                    placeholder="Wpisz numer telefonu"
+                    required="true"
+                    liveChange="validatePersonalData"
+                />
+                <Label
+                    id="addressFirstLineLabel"
+                    text="Adres (linia 1)"
+                    labelFor="addressFirstLineInput"
+                />
+                <Input
+                    id="addressFirstLineInput"
+                    placeholder="Wpisz adres (linia 1)"
+                    required="true"
+                    liveChange="validatePersonalData"
+                />
+                <Label
+                    id="addressSecondLineLabel"
+                    text="Adres (linia 2)"
+                    labelFor="addressSecondLineInput"
+                />
+                <Input
+                    id="addressSecondLineInput"
+                    placeholder="Wpisz adres (linia 2)"
+                />
+                <Label
+                    id="addressZipCodeLabel"
+                    text="Kod pocztowy"
+                    labelFor="addressZipCodeInput"
+                />
+                <Input
+                    id="addressZipCodeInput"
+                    placeholder="Wpisz kod pocztowy"
+                    required="true"
+                    liveChange="validatePersonalData"
+                />
+                <Label
+                    id="addressCityLabel"
+                    text="Miasto"
+                    labelFor="addressCityInput"
+                />
+                <Input
+                    id="addressCityInput"
+                    placeholder="Wpisz miasto"
+                    required="true"
+                    liveChange="validatePersonalData"
+                />
             </VBox>
         </WizardStep>
-        <WizardStep id="stepFaultDesc" title="Opis usterki" activate="_setStepInvalid">
+        <WizardStep
+            id="stepFaultDesc"
+            title="Opis usterki"
+            activate="_setStepInvalid"
+        >
             <VBox id="faultDescVBox">
-                <Label id="deviceTypeLabel" text="Typ urządzenia" labelFor="deviceTypeInput"/>
-                <Input id="deviceTypeInput" placeholder="Wpisz typ urządzenia" required="true" liveChange="validateFaultDesc"/>
-                <Label id="deviceModelLabel" text="Model urządzenia" labelFor="deviceModelInput" />
-                <Input id="deviceModelInput" placeholder="Wpisz model urządzenia" required="true" liveChange="validateFaultDesc"/>
-                <Label id="deviceSerialNumberLabel" text="Numer seryjny urządzenia" labelFor="deviceSerialNumberInput" />
-                <Input id="deviceSerialNumberInput" placeholder="Wpisz numer seryjny urządzenia" />
-                <Label id="faultDescLabel" text="Opis usterki" labelFor="faultDescInput" />
-                <TextArea id="faultDescInput" placeholder="Opisz usterkę" rows="8" required="true" liveChange="validateFaultDesc"/>
+                <Label
+                    id="deviceTypeLabel"
+                    text="Typ urządzenia"
+                    labelFor="deviceTypeInput"
+                />
+                <ComboBox
+                    id="deviceTypeComboBox"
+                    required="true"
+                    change="validateVisitDate"
+                >
+                    <core:Item
+                        id="_IDGenDeviceTypeItem"
+                        key="Laptop"
+                        text="Laptop"
+                    />
+                    <core:Item
+                        id="_IDGenDeviceTypeItem1"
+                        key="Smartphone"
+                        text="Smartphone"
+                    />
+                    <core:Item
+                        id="_IDGenDeviceTypeItem2"
+                        key="Tablet"
+                        text="Tablet"
+                    />
+                    <core:Item
+                        id="_IDGenDeviceTypeItem4"
+                        key="Konsola"
+                        text="Konsola"
+                    />
+                    <core:Item
+                        id="_IDGenDeviceTypeItem5"
+                        key="Inne"
+                        text="Inne"
+                    />
+                </ComboBox>
+
+                <Label
+                    id="deviceModelLabel"
+                    text="Model urządzenia"
+                    labelFor="deviceModelInput"
+                />
+                <Input
+                    id="deviceModelInput"
+                    placeholder="Wpisz model urządzenia"
+                    required="true"
+                    liveChange="validateFaultDesc"
+                />
+                <Label
+                    id="deviceSerialNumberLabel"
+                    text="Numer seryjny urządzenia"
+                    labelFor="deviceSerialNumberInput"
+                />
+                <Input
+                    id="deviceSerialNumberInput"
+                    placeholder="Wpisz numer seryjny urządzenia"
+                />
+                <Label
+                    id="faultDescLabel"
+                    text="Opis usterki"
+                    labelFor="faultDescInput"
+                />
+                <TextArea
+                    id="faultDescInput"
+                    placeholder="Opisz usterkę"
+                    rows="8"
+                    required="true"
+                    liveChange="validateFaultDesc"
+                />
             </VBox>
         </WizardStep>
-        <WizardStep id="stepVisitDate" title="Data wizyty" activate="_setStepInvalid">
+        <WizardStep
+            id="stepVisitDate"
+            title="Data wizyty"
+            activate="_setStepInvalid"
+        >
             <VBox id="visitDateVBox">
-                <Label id="visitDateLabel" text="Data wizyty" labelFor="visitDateInput" />
-                <Input id="visitDateInput" placeholder="Wybierz datę wizyty" required="true" liveChange="validateVisitDate"/>
-                <Label id="visitTimeLabel" text="Godzina wizyty" labelFor="visitTimeInput" />
-                <Input id="visitTimeInput" placeholder="Wybierz godzinę wizyty" required="true" liveChange="validateVisitDate"/>
+                <Label
+                    id="visitDateLabel"
+                    text="Data wizyty"
+                    labelFor="visitDateInput"
+                />
+                <DatePicker
+                    id="visitDateInput"
+                    placeholder="Wybierz datę wizyty"
+                    required="true"
+                    change="validateVisitDate"
+                />
+
+                <Label
+                    id="visitTimeLabel"
+                    text="Godzina wizyty"
+                    labelFor="visitTimeInput"
+                />
+                <Select
+                    id="visitHourSelect"
+                    required="true"
+                    change="validateVisitDate"
+                >
+                    <core:Item
+                        id="_IDGenItem"
+                        key="08"
+                        text="08:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem1"
+                        key="09"
+                        text="09:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem2"
+                        key="10"
+                        text="10:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem4"
+                        key="11"
+                        text="11:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem5"
+                        key="12"
+                        text="12:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem6"
+                        key="13"
+                        text="13:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem7"
+                        key="14"
+                        text="14:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem8"
+                        key="15"
+                        text="15:00"
+                    />
+                    <core:Item
+                        id="_IDGenItem9"
+                        key="16"
+                        text="16:00"
+                    />
+                </Select>
             </VBox>
         </WizardStep>
-        <WizardStep id="stepSummary" title="Podsumowanie" activate="_setStepInvalid">
+        <WizardStep
+            id="stepSummary"
+            title="Podsumowanie"
+            activate="onSummaryStepActivate"
+        >
             <VBox id="summaryVBox">
-                <Text id="summaryText" text="Podsumowanie danych zamówienia" />
-                <Button id="submitOrderButton" text="Złóż zamówienie" press="onSubmitOrder" />
+                <Text
+                    id="summaryText"
+                    text="Podsumowanie danych zamówienia"
+                    class="sapUiSmallMargin"
+                />
+                <Button
+                    id="submitOrderButton"
+                    text="Złóż zamówienie"
+                    press="onSubmitOrder"
+                />
             </VBox>
-        </WizardStep>   
+        </WizardStep>
     </Wizard>
 </mvc:View>
