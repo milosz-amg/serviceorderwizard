@@ -1,0 +1,9 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="com.mr.serviceorderwizard.controller.CreateOrder">
+    <VBox class="sapUiSmallMargin">
+    <Title id="createOrderTitle" text="CREATE ORDER" level="H1" />
+        <!-- Add more UI elements for orders here -->
+    </VBox>
+</mvc:View>

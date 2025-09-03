@@ -74,18 +74,29 @@
       },
       "routes": [
         {
-          "name": "RouteMain",
+          "name": "RouteHome",
           "pattern": ":?query:",
           "target": [
-            "TargetMain"
+            "TargetHome"
           ]
         }
+          ,
+          {
+            "name": "RouteCreateOrder",
+            "pattern": "createorder",
+            "target": ["TargetCreateOrder"]
+          }
       ],
       "targets": {
-        "TargetMain": {
-          "id": "Main",
-          "name": "Main"
+        "TargetHome": {
+          "id": "Home",
+          "name": "Home"
         }
+          ,
+          "TargetCreateOrder": {
+            "id": "CreateOrder",
+            "name": "CreateOrder"
+          }
       }
     },
     "rootView": {

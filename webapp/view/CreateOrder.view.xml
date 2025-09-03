@@ -1,0 +1,6 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="com.mr.serviceorderwizard.controller.CreateOrder">
+    <Text text="CREATE ORDER"></Text>
+</mvc:View>
