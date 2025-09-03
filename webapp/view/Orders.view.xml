@@ -2,5 +2,5 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     controllerName="com.mr.serviceorderwizard.controller.Orders">
-    <Text text="ORDERS"></Text>
+    <Text id="controllerNameOrderText" text="ORDERS"></Text>
 </mvc:View>

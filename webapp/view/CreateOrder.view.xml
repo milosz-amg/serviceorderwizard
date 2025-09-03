@@ -12,10 +12,24 @@
                 <Label id="phoneNumberLabel" text="Numer telefonu" labelFor="phoneNumberInput" />
                 <Input id="phoneNumberInput" placeholder="Wpisz numer telefonu" />
                 <!-- TODO ADRES -->
+                <Label id="addressFirstLineLabel" text="Adres (linia 1)" labelFor="addressFirstLineInput" />
+                <Input id="addressFirstLineInput" placeholder="Wpisz adres (linia 1)" />
+                <Label id="addressSecondLineLabel" text="Adres (linia 2)" labelFor="addressSecondLineInput" />
+                <Input id="addressSecondLineInput" placeholder="Wpisz adres (linia 2)" />
+                <Label id="addressZipCodeLabel" text="Kod pocztowy" labelFor="addressZipCodeInput" />
+                <Input id="addressZipCodeInput" placeholder="Wpisz kod pocztowy" />
+                <Label id="addressCityLabel" text="Miasto" labelFor="addressCityInput" />
+                <Input id="addressCityInput" placeholder="Wpisz miasto" />
             </VBox>
         </WizardStep>
         <WizardStep id="stepFaultDesc" title="Opis usterki">
             <VBox id="faultDescVBox">
+                <Label id="deviceTypeLabel" text="Typ urządzenia" labelFor="deviceTypeInput" />
+                <Input id="deviceTypeInput" placeholder="Wpisz typ urządzenia" />
+                <Label id="deviceModelLabel" text="Model urządzenia" labelFor="deviceModelInput" />
+                <Input id="deviceModelInput" placeholder="Wpisz model urządzenia" />
+                <Label id="deviceSerialNumberLabel" text="Numer seryjny urządzenia" labelFor="deviceSerialNumberInput" />
+                <Input id="deviceSerialNumberInput" placeholder="Wpisz numer seryjny urządzenia" />
                 <Label id="faultDescLabel" text="Opis usterki" labelFor="faultDescInput" />
                 <TextArea id="faultDescInput" placeholder="Opisz usterkę" rows="4" />
             </VBox>
@@ -28,9 +42,10 @@
                 <Input id="visitTimeInput" placeholder="Wybierz godzinę wizyty" />
             </VBox>
         </WizardStep>
-        <WizardStep id="stepSummary" title="Podsumowanie">
+        <WizardStep id="stepSummary" title="Podsumowanie" activate="onWizardStepActivate">
             <VBox id="summaryVBox">
                 <Text id="summaryText" text="Podsumowanie danych zamówienia" />
+                <Button id="submitOrderButton" text="Złóż zamówienie" press="onSubmitOrder" />
             </VBox>
         </WizardStep>   
     </Wizard>
