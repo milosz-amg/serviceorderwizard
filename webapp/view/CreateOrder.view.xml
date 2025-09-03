@@ -2,5 +2,36 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     controllerName="com.mr.serviceorderwizard.controller.CreateOrder">
-    <Text text="CREATE ORDER"></Text>
+    <Wizard id="createOrderWizard">
+        <WizardStep id="stepPersonalData" title="Dane osobowe">
+            <VBox id="personalDataVBox">
+                <Label id="firstNameLabel" text="Imię" labelFor="firstNameInput" />
+                <Input id="firstNameInput" placeholder="Wpisz imię" />
+                <Label id="lastNameLabel" text="Nazwisko" labelFor="lastNameInput" />
+                <Input id="lastNameInput" placeholder="Wpisz nazwisko" />
+                <Label id="phoneNumberLabel" text="Numer telefonu" labelFor="phoneNumberInput" />
+                <Input id="phoneNumberInput" placeholder="Wpisz numer telefonu" />
+                <!-- TODO ADRES -->
+            </VBox>
+        </WizardStep>
+        <WizardStep id="stepFaultDesc" title="Opis usterki">
+            <VBox id="faultDescVBox">
+                <Label id="faultDescLabel" text="Opis usterki" labelFor="faultDescInput" />
+                <TextArea id="faultDescInput" placeholder="Opisz usterkę" rows="4" />
+            </VBox>
+        </WizardStep>
+        <WizardStep id="stepVisitDate" title="Data wizyty">
+            <VBox id="visitDateVBox">
+                <Label id="visitDateLabel" text="Data wizyty" labelFor="visitDateInput" />
+                <Input id="visitDateInput" placeholder="Wybierz datę wizyty" />
+                <Label id="visitTimeLabel" text="Godzina wizyty" labelFor="visitTimeInput" />
+                <Input id="visitTimeInput" placeholder="Wybierz godzinę wizyty" />
+            </VBox>
+        </WizardStep>
+        <WizardStep id="stepSummary" title="Podsumowanie">
+            <VBox id="summaryVBox">
+                <Text id="summaryText" text="Podsumowanie danych zamówienia" />
+            </VBox>
+        </WizardStep>   
+    </Wizard>
 </mvc:View>

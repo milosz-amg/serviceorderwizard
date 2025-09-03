@@ -1,10 +1,11 @@
 <mvc:View controllerName="com.mr.serviceorderwizard.controller.Home"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
+    <Page id="homePage" title="{i18n>title}">
         <content>
-            <Text id="mainText" text="Nasz serwis jest najlepszy na świecie! Szybko, tanio, profesjonalnie, bez zbędnych formalności. Zaufaj nam, a Twój sprzęt będzie działał lepiej niż kiedykolwiek!" />
-            <Button id="createOrderButton" text="Create Order" press="onNavToCreateOrder" />
+            <Text id="homeMainText" text="Nasz serwis jest najlepszy na świecie! Szybko, tanio, profesjonalnie, bez zbędnych formalności. Zaufaj nam, a Twój sprzęt będzie działał lepiej niż kiedykolwiek!" />
+            <Button id="homeCreateOrderButton" text="Create Order" press="onNavToCreateOrder" />
+            <Button id="homeOrdersButton" text="Przejdź do Orders" press="onNavToOrders" />
         </content>
     </Page>
 </mvc:View>

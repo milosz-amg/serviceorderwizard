@@ -85,7 +85,12 @@
             "name": "RouteCreateOrder",
             "pattern": "createorder",
             "target": ["TargetCreateOrder"]
-          }
+          },
+          {
+  "name": "RouteOrders",
+  "pattern": "orders",
+  "target": ["TargetOrders"]
+}
       ],
       "targets": {
         "TargetHome": {
@@ -96,6 +101,10 @@
           "TargetCreateOrder": {
             "id": "CreateOrder",
             "name": "CreateOrder"
+          },
+          "TargetOrders": {
+            "id": "Orders",
+            "name": "Orders"
           }
       }
     },

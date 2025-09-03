@@ -10,6 +10,11 @@ sap.ui.define([
         onNavToCreateOrder: function() {
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.navTo("RouteCreateOrder");
+        },
+
+        onNavToOrders: function() {
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            oRouter.navTo("RouteOrders");
         }
     });
 });
