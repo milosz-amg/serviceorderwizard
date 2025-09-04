@@ -1,23 +1,75 @@
 <mvc:View
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
+    xmlns:core="sap.ui.core"
     controllerName="com.mr.serviceorderwizard.controller.Orders">
     <Page id="ordersPage" title="Zlecenia serwisowe">
         <content>
-            <VBox id="responseBox" width="100%" class="sapUiMediumMargin">
-                <Title id="responseTitle" text="Odpowiedź z serwera OData" level="H2" class="sapUiSmallMarginBottom"/>
-                <HBox id="buttonBox" justifyContent="SpaceBetween" class="sapUiSmallMarginBottom">
-                    <Button id="refreshButton" text="Odśwież dane" press="onRefresh" icon="sap-icon://refresh" type="Emphasized"/>
-                    <Button id="toggleFormatButton" text="Przełącz format" press="onToggleFormat" icon="sap-icon://syntax"/>
+            <VBox id="mainBox" width="100%" class="sapUiMediumMargin">
+                <!-- Header with buttons -->
+                <HBox id="headerBox" justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
+                    <Title id="ordersTitle" text="Lista zleceń serwisowych" level="H2"/>
+                    <HBox id="buttonBox">
+                        <Button id="refreshButton" text="Odśwież" press="onRefresh" icon="sap-icon://refresh" type="Emphasized" class="sapUiTinyMarginEnd"/>
+                    </HBox>
                 </HBox>
-                <TextArea id="responseTextArea" 
-                          width="100%" 
-                          rows="25" 
-                          editable="false"
-                          value="{/responseText}" 
-                          placeholder="Kliknij 'Odśwież dane' aby pobrać dane z serwera..."
-                          class="sapUiResponsiveContentPadding"/>
-                <Text id="statusText" text="{/statusMessage}" class="sapUiSmallMarginTop"/>
+
+                <!-- Status message -->
+                <MessageStrip id="statusMessage" 
+                             text="{/statusMessage}" 
+                             type="{/messageType}" 
+                             visible="{/showMessage}"
+                             class="sapUiSmallMarginBottom"/>
+
+                <!-- Table view -->
+                <Table id="ordersTable" 
+                       items="{/orders}"
+                       visible="true"
+                       inset="false"
+                       growing="true"
+                       growingThreshold="20"
+                       noDataText="Brak danych do wyświetlenia">
+                    
+                    <headerToolbar>
+                        <OverflowToolbar id="tableToolbar">
+                            <content>
+                                <Title id="tableTitle" text="Zlecenia ({/ordersCount})"/>
+                                <ToolbarSpacer id="toolbarSpacer"/>
+                                <SearchField id="searchField" width="300px" search="onSearch" placeholder="Szukaj..."/>
+                            </content>
+                        </OverflowToolbar>
+                    </headerToolbar>
+
+                    <columns>
+                        <Column id="col1">
+                            <Text id="header1" text="ID Zlecenia"/>
+                        </Column>
+                        <Column id="col4">
+                            <Text id="header4" text="Miasto"/>
+                        </Column>
+                        <Column id="col7">
+                            <Text id="header7" text="Data"/>
+                        </Column>
+                        <Column id="col8">
+                            <Text id="header8" text="Status"/>
+                        </Column>
+                        <Column id="colDetails">
+                            <Text id="headerDetails" text="Akcje"/>
+                        </Column>
+                    </columns>
+
+                    <items>
+                        <ColumnListItem id="orderItem" press="onOrderPress">
+                            <cells>
+                                <Text id="cell1" text="{OrderId}"/>
+                                <Text id="cell4" text="{Addresscity}"/>
+                                <Text id="cell7" text="{Visitdate}"/>
+                                <Text id="cell8" text="{Status}"/>
+                                <Button id="detailsButton" text="Details" press="onShowDetails" type="Transparent"/>
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
             </VBox>
         </content>
     </Page>
