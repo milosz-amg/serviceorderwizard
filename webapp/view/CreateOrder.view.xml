@@ -51,7 +51,6 @@
                 <Input
                     id="addressFirstLineInput"
                     placeholder="Wpisz adres (linia 1)"
-                    required="true"
                     liveChange="validatePersonalData"
                 />
                 <Label
@@ -66,12 +65,12 @@
                 <Label
                     id="addressZipCodeLabel"
                     text="Kod pocztowy"
+                    required="true"
                     labelFor="addressZipCodeInput"
                 />
                 <Input
                     id="addressZipCodeInput"
                     placeholder="Wpisz kod pocztowy"
-                    required="true"
                     liveChange="validatePersonalData"
                 />
                 <Label
@@ -99,6 +98,7 @@
                     labelFor="deviceTypeInput"
                 />
                 <ComboBox
+                width="100%"    
                     id="deviceTypeComboBox"
                     required="true"
                     change="validateVisitDate"
@@ -156,10 +156,10 @@
                     labelFor="faultDescInput"
                 />
                 <TextArea
+                    width="100%"
                     id="faultDescInput"
                     placeholder="Opisz usterkę"
                     rows="8"
-                    required="true"
                     liveChange="validateFaultDesc"
                 />
             </VBox>
