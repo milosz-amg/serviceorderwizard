@@ -2,5 +2,23 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     controllerName="com.mr.serviceorderwizard.controller.Orders">
-    <Text id="controllerNameOrderText" text="ORDERS"></Text>
+    <Page id="ordersPage" title="Zlecenia serwisowe">
+        <content>
+            <VBox id="responseBox" width="100%" class="sapUiMediumMargin">
+                <Title id="responseTitle" text="Odpowiedź z serwera OData" level="H2" class="sapUiSmallMarginBottom"/>
+                <HBox id="buttonBox" justifyContent="SpaceBetween" class="sapUiSmallMarginBottom">
+                    <Button id="refreshButton" text="Odśwież dane" press="onRefresh" icon="sap-icon://refresh" type="Emphasized"/>
+                    <Button id="toggleFormatButton" text="Przełącz format" press="onToggleFormat" icon="sap-icon://syntax"/>
+                </HBox>
+                <TextArea id="responseTextArea" 
+                          width="100%" 
+                          rows="25" 
+                          editable="false"
+                          value="{/responseText}" 
+                          placeholder="Kliknij 'Odśwież dane' aby pobrać dane z serwera..."
+                          class="sapUiResponsiveContentPadding"/>
+                <Text id="statusText" text="{/statusMessage}" class="sapUiSmallMarginTop"/>
+            </VBox>
+        </content>
+    </Page>
 </mvc:View>

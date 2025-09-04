@@ -3,7 +3,6 @@
     xmlns="sap.m">
     <Page id="homePage" title="{i18n>title}">
         <content>
-            <Text id="homeMainText" text="Nasz serwis jest najlepszy na świecie! Szybko, tanio, profesjonalnie, bez zbędnych formalności. Zaufaj nam, a Twój sprzęt będzie działał lepiej niż kiedykolwiek!" />
             <Button id="homeCreateOrderButton" text="Create Order" press="onNavToCreateOrder" />
             <Button id="homeOrdersButton" text="Przejdź do Orders" press="onNavToOrders" />
         </content>

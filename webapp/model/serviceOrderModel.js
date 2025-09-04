@@ -10,7 +10,7 @@ sap.ui.define([
          */
         createServiceOrderModel: function () {
             var oModel = new ODataModel({
-                serviceUrl: "/sap/opu/odata4/service/orders/", // Replace with actual service URL
+                serviceUrl: "/sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/", // Updated service URL
                 synchronizationMode: "None"
             });
             return oModel;
@@ -41,7 +41,38 @@ sap.ui.define([
          * @returns {sap.ui.model.odata.v4.Context} List binding context
          */
         getServiceOrders: function (oModel) {
-            return oModel.bindList("/ServiceOrders");
+            return oModel.bindList("/orderSet");
+        },
+
+        /**
+         * Fetches raw order data using XMLHttpRequest
+         * @returns {Promise} Promise that resolves with raw response text
+         */
+        fetchRawOrderData: function () {
+            return new Promise(function (resolve, reject) {
+                var oRequest = new XMLHttpRequest();
+                
+                oRequest.onreadystatechange = function() {
+                    if (this.readyState === 4) {
+                        if (this.status === 200) {
+                            resolve(this.responseText);
+                        } else {
+                            reject({
+                                status: this.status,
+                                statusText: this.statusText,
+                                responseText: this.responseText
+                            });
+                        }
+                    }
+                };
+                
+                var sUrl = "/sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/orderSet?$format=json";
+                
+                oRequest.open("GET", sUrl, true);
+                oRequest.setRequestHeader("Accept", "application/json");
+                oRequest.setRequestHeader("Content-Type", "application/json");
+                oRequest.send();
+            });
         },
 
         /**
