@@ -4,11 +4,17 @@
     controllerName="com.mr.serviceorderwizard.controller.CreateOrder"
     xmlns:core="sap.ui.core"
     xmlns:form="sap.ui.layout.form"
+    height="100%"
 >
-    <Wizard
-        id="createOrderWizard"
-        finishButtonText="Zakończ"
-    >
+    <NavContainer id="wizardNavContainer">
+        <pages>
+            <Page id="wizardContentPage" showHeader="false">
+                <content>
+                    <Wizard
+                        id="createOrderWizard"
+                        finishButtonText="Zakończ"
+                        complete="wizardCompletedHandler"
+                    >
         <WizardStep
             id="stepPersonalData"
             title="Dane osobowe"
@@ -314,10 +320,79 @@ W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt
                 />
                 <Button
                     id="submitOrderButton"
-                    text="Złóż zamówienie"
+                    text="Generuj zlecenie"
                     press="onSubmitOrder"
                 />
             </VBox>
         </WizardStep>
     </Wizard>
+                </content>
+                <footer>
+                    <OverflowToolbar>
+                        <ToolbarSpacer/>
+                        <Button text="Anuluj" press="handleWizardCancel"/>
+                    </OverflowToolbar>
+                </footer>
+            </Page>
+            
+            <Page id="wizardReviewPage" showHeader="false">
+                <content>
+                    <form:SimpleForm
+                        title="1. Dane osobowe"
+                        editable="false"
+                        layout="ResponsiveGridLayout">
+                        <form:content>
+                            <Label text="Imię"/>
+                            <Text id="FirstNameChosen" text="{orderData>/personalData/firstName}"/>
+                            <Label text="Nazwisko"/>
+                            <Text id="LastNameChosen" text="{orderData>/personalData/lastName}"/>
+                            <Label text="Telefon"/>
+                            <Text id="PhoneNumberChosen" text="{orderData>/personalData/phoneNumber}"/>
+                            <Label text="Adres"/>
+                            <Text id="AddressChosen" text="{orderData>/personalData/addressFirstLine} {orderData>/personalData/addressSecondLine}, {orderData>/personalData/addressZipCode} {orderData>/personalData/addressCity}"/>
+                            <Link press="editStepOne" text="Edytuj" />
+                        </form:content>
+                    </form:SimpleForm>
+
+                    <form:SimpleForm
+                        title="2. Informacje o urządzeniu"
+                        editable="false"
+                        layout="ResponsiveGridLayout">
+                        <form:content>
+                            <Label text="Typ urządzenia"/>
+                            <Text id="DeviceTypeChosen" text="{orderData>/deviceData/deviceType}"/>
+                            <Label text="Model"/>
+                            <Text id="DeviceModelChosen" text="{orderData>/deviceData/deviceModel}"/>
+                            <Label text="Numer seryjny"/>
+                            <Text id="DeviceSerialChosen" text="{orderData>/deviceData/deviceSerialNumber}"/>
+                            <Label text="Opis usterki"/>
+                            <Text id="FaultDescriptionChosen" text="{orderData>/deviceData/faultDescription}"/>
+                            <Link press="editStepTwo" text="Edytuj" />
+                        </form:content>
+                    </form:SimpleForm>
+
+                    <form:SimpleForm
+                        title="3. Termin wizyty"
+                        editable="false"
+                        layout="ResponsiveGridLayout">
+                        <form:content>
+                            <Label text="Data wizyty"/>
+                            <Text id="VisitDateChosen" text="{path: 'orderData>/visitData/visitDate', formatter: '.formatDate'}"/>
+                            <Label text="Godzina wizyty"/>
+                            <Text id="VisitTimeChosen" text="{orderData>/visitData/visitTime}"/>
+                            <Link press="editStepThree" text="Edytuj" />
+                        </form:content>
+                    </form:SimpleForm>
+                </content>
+                <footer>
+                    <Bar>
+                        <contentRight>
+                            <Button text="Wyślij" press="handleWizardSubmit"/>
+                            <Button text="Anuluj" press="handleWizardCancel"/>
+                        </contentRight>
+                    </Bar>
+                </footer>
+            </Page>
+        </pages>
+    </NavContainer>
 </mvc:View>

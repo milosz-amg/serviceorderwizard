@@ -1,11 +1,23 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "com/mr/serviceorderwizard/model/models",
-    "com/mr/serviceorderwizard/model/serviceOrderModel"
-], function (Controller, models, serviceOrderModel) {
+    "com/mr/serviceorderwizard/model/serviceOrderModel",
+    "sap/m/MessageBox"
+], function (Controller, models, serviceOrderModel, MessageBox) {
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.CreateOrder", {
+        formatDate: function(oDate) {
+            if (!oDate) {
+                return "";
+            }
+            
+            if (typeof oDate === "string") {
+                return oDate;
+            }
+            
+            return oDate.toLocaleDateString();
+        },
         onInit: function () {
             this._initODataModel();
             
@@ -28,7 +40,8 @@ sap.ui.define([
                 },
                 visitData: {
                     visitDate: null,
-                    visitTime: ""
+                    visitTime: "",
+                    visitTimeKey: ""
                 },
                 status: "New"
             });
@@ -37,6 +50,10 @@ sap.ui.define([
 
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
+            
+            // Zapisz referencje do elementów nawigacyjnych
+            this._oNavContainer = this.byId("wizardNavContainer");
+            this._oWizardContentPage = this.byId("wizardContentPage");
 
             // Po wyrenderowaniu widoku zresetuj wizard i zablokuj pierwszy krok
             this.getView().addEventDelegate({
@@ -55,7 +72,7 @@ sap.ui.define([
 
 
         _initODataModel: function () {
-            // Create OData V4 model for service orders using service order model layer
+            // Create OData model
             var oModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oModel, "orderModel");
         },
@@ -290,6 +307,7 @@ sap.ui.define([
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
                 // Aktualizacja modelu
                 oModel.setProperty("/visitData/visitTime", oVisitHourSelect.getSelectedItem().getText());
+                oModel.setProperty("/visitData/visitTimeKey", oVisitHourSelect.getSelectedKey());
             }
             
             // Ustaw stan kroku w zależności od wyników walidacji
@@ -350,30 +368,66 @@ sap.ui.define([
         },
 
         onSubmitOrder: function () {
-            var oModel = this.getView().getModel("orderData");
-            var oData = oModel.getData();
-            
-            // Pobranie danych z modelu
-            var oOrderData = {
-                firstName: oData.personalData.firstName,
-                lastName: oData.personalData.lastName,
-                phoneNumber: oData.personalData.phoneNumber,
-                addressFirstLine: oData.personalData.addressFirstLine,
-                addressSecondLine: oData.personalData.addressSecondLine || "",
-                addressZipCode: oData.personalData.addressZipCode,
-                addressCity: oData.personalData.addressCity,
-                deviceType: oData.deviceData.deviceType,
-                deviceModel: oData.deviceData.deviceModel,
-                deviceSerialNumber: oData.deviceData.deviceSerialNumber || "",
-                faultDescription: oData.deviceData.faultDescription,
-                visitDate: oData.visitData.visitDate ? 
-                    oData.visitData.visitDate.toLocaleDateString() : "",
-                visitTime: oData.visitData.visitTime,
-                status: oData.status
-            };
+            // Przejdź do ekranu podsumowania
+            this.wizardCompletedHandler();
+        },
+        
+        wizardCompletedHandler: function () {
+            // Przejdź do ekranu podsumowania
+            this._oNavContainer.to(this.byId("wizardReviewPage"));
+        },
+        
+        handleWizardSubmit: function () {
+            var that = this;
+            MessageBox.confirm("Czy na pewno chcesz złożyć zamówienie?", {
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                onClose: function (oAction) {
+                    if (oAction === MessageBox.Action.YES) {
+                        var oModel = that.getView().getModel("orderData");
+                        var oData = oModel.getData();
+                        
+                        // Pobranie danych z modelu
+                        var oOrderData = {
+                            firstName: oData.personalData.firstName,
+                            lastName: oData.personalData.lastName,
+                            phoneNumber: oData.personalData.phoneNumber,
+                            addressFirstLine: oData.personalData.addressFirstLine,
+                            addressSecondLine: oData.personalData.addressSecondLine || "",
+                            addressZipCode: oData.personalData.addressZipCode,
+                            addressCity: oData.personalData.addressCity,
+                            deviceType: oData.deviceData.deviceType,
+                            deviceModel: oData.deviceData.deviceModel,
+                            deviceSerialNumber: oData.deviceData.deviceSerialNumber || "",
+                            faultDescription: oData.deviceData.faultDescription,
+                            visitDate: oData.visitData.visitDate ? 
+                                oData.visitData.visitDate.toLocaleDateString() : "",
+                            visitTime: oData.visitData.visitTime,
+                            status: oData.status
+                        };
 
-            // Save data using OData V4 model
-            this._saveOrderData(oOrderData);
+                        // Save data using OData V4 model
+                        that._saveOrderData(oOrderData);
+                    }
+                }
+            });
+        },
+        
+        handleWizardCancel: function () {
+            var that = this;
+            MessageBox.warning("Czy na pewno chcesz anulować zamówienie?", {
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                onClose: function (oAction) {
+                    if (oAction === MessageBox.Action.YES) {
+                        that._resetWizard();
+                        var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
+                        oRouter.navTo("RouteHome");
+                    }
+                }
+            });
+        },
+        
+        backToWizardContent: function () {
+            this._oNavContainer.backToPage(this._oWizardContentPage.getId());
         },
 
         _saveOrderData: function (oOrderData) {
@@ -522,9 +576,37 @@ sap.ui.define([
             }
         },
 
+        // Funkcje edycji kroków
+        editStepOne: function () {
+            this._handleNavigationToStep(0);
+        },
+
+        editStepTwo: function () {
+            this._handleNavigationToStep(1);
+        },
+
+        editStepThree: function () {
+            this._handleNavigationToStep(2);
+        },
+
+        _handleNavigationToStep: function (iStepNumber) {
+            var fnAfterNavigate = function () {
+                this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
+                this.byId("createOrderWizard").goToStep(this.byId("createOrderWizard").getSteps()[iStepNumber]);
+            }.bind(this);
+
+            this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
+            this.backToWizardContent();
+        },
+        
         _resetWizard: function () {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
+            
+            // Jeśli jesteśmy na stronie podsumowania, wróćmy najpierw do wizarda
+            if (this._oNavContainer && this._oNavContainer.getCurrentPage().getId() === this.byId("wizardReviewPage").getId()) {
+                this._oNavContainer.to(this._oWizardContentPage);
+            }
             
             // Resetowanie modelu danych do pustych wartości
             var oOrderModel = new sap.ui.model.json.JSONModel({
@@ -545,7 +627,8 @@ sap.ui.define([
                 },
                 visitData: {
                     visitDate: null,
-                    visitTime: ""
+                    visitTime: "",
+                    visitTimeKey: ""
                 },
                 status: "New"
             });
