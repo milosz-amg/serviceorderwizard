@@ -1,10 +1,51 @@
 <mvc:View controllerName="com.mr.serviceorderwizard.controller.Home"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns="sap.m">
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core"
+    xmlns:grid="sap.ui.layout.cssgrid">
     <Page id="homePage" title="{i18n>title}">
         <content>
-            <Button id="homeCreateOrderButton" text="Create Order" press="onNavToCreateOrder" />
-            <Button id="homeOrdersButton" text="Przejdź do Orders" press="onNavToOrders" />
+            <!-- Szybkie akcje -->
+            <Title text="Szybkie akcje" level="H2" class="sapUiResponsiveMargin" titleStyle="H2" />
+            
+            <!-- Szersze kafelki z wyraźniejszymi ikonami -->
+            <l:HorizontalLayout class="sapUiResponsiveMargin" allowWrapping="true">
+                <!-- Kafelek "Zamów serwis" -->
+                <f:Card width="48%" class="sapUiMediumMarginBottom sapUiMediumMarginEnd">
+                    <f:content>
+                        <FlexBox height="100%" alignItems="Center" justifyContent="Start" class="sapUiSmallMargin">
+                            <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
+                                <VBox alignItems="Start" justifyContent="Center" class="sapUiSmallMarginEnd" width="70%">
+                                    <Title text="Zamów serwis" level="H2" class="sapUiTinyMarginBottom" />
+                                    <Text text="Zgłoś usterkę i umów wizytę serwisową" class="sapUiSmallMarginBottom" />
+                                    <Text text="Zgłoś swoją usterkę, wybierz dogodny termin i otrzymaj szybką pomoc od naszych ekspertów." class="sapUiMediumMarginBottom" />
+                                    <Button text="Zamów serwis" press="onNavToCreateOrder" type="Emphasized" icon="sap-icon://add" />
+                                </VBox>
+                                <core:Icon src="sap-icon://appointment-2" size="5rem" color="#0854a0" class="sapUiMediumMargin" />
+                            </HBox>
+                        </FlexBox>
+                    </f:content>
+                </f:Card>
+                
+                <!-- Kafelek "Moje zamówienia" -->
+                <f:Card width="48%" class="sapUiMediumMarginBottom">
+                    <f:content>
+                        <FlexBox height="100%" alignItems="Center" justifyContent="Start" class="sapUiSmallMargin">
+                            <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
+                                <VBox alignItems="Start" justifyContent="Center" class="sapUiSmallMarginEnd" width="70%">
+                                    <Title text="Moje zamówienia" level="H2" class="sapUiTinyMarginBottom" />
+                                    <Text text="Sprawdź status zgłoszeń serwisowych" class="sapUiSmallMarginBottom" />
+                                    <Text text="Przeglądaj historię swoich zgłoszeń serwisowych i sprawdź status realizacji naprawy." class="sapUiMediumMarginBottom" />
+                                    <Button text="Zobacz zamówienia" press="onNavToOrders" type="Emphasized" icon="sap-icon://history" />
+                                </VBox>
+                                <core:Icon src="sap-icon://list" size="5rem" color="#0854a0" class="sapUiMediumMargin" />
+                            </HBox>
+                        </FlexBox>
+                    </f:content>
+                </f:Card>
+            </l:HorizontalLayout>
         </content>
     </Page>
 </mvc:View>
