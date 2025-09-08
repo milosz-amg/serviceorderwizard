@@ -4,12 +4,24 @@
     controllerName="com.mr.serviceorderwizard.controller.CreateOrder"
     xmlns:core="sap.ui.core"
 >
-    <Wizard id="createOrderWizard">
+    <Wizard
+     id="createOrderWizard"
+    finishButtonText="Zakończ"
+
+    >
         <WizardStep
             id="stepPersonalData"
             title="Dane osobowe"
+            validated="false"
+            activate="onStepActivate"
         >
-            <VBox id="personalDataVBox">
+        <MessageStrip
+        id="wizardInfoMessage" 
+        class="sapUiSmallMarginBottom"
+        text="The Wizard control is supposed to break down large tasks, into smaller steps, easier for the user to work with."
+        showIcon="true"/>
+        
+        <VBox id="personalDataVBox">
                 <Label
                     id="firstNameLabel"
                     text="Imię"
@@ -89,18 +101,21 @@
         <WizardStep
             id="stepFaultDesc"
             title="Opis usterki"
-            activate="_setStepInvalid"
+            validated="false"
+            activate="onStepActivate"
         >
             <VBox id="faultDescVBox">
                 <Label
                     id="deviceTypeLabel"
                     text="Typ urządzenia"
+                    required="true"
                     labelFor="deviceTypeInput"
                 />
                 <ComboBox
                 width="100%"    
                     id="deviceTypeComboBox"
                     required="true"
+                    placeholder="Podaj typ urządzenia"
                     change="validateVisitDate"
                 >
                     <core:Item
@@ -167,7 +182,8 @@
         <WizardStep
             id="stepVisitDate"
             title="Data wizyty"
-            activate="_setStepInvalid"
+            validated="false"
+            activate="onStepActivate"
         >
             <VBox id="visitDateVBox">
                 <Label
@@ -243,7 +259,8 @@
         <WizardStep
             id="stepSummary"
             title="Podsumowanie"
-            activate="onSummaryStepActivate"
+            validated="true"
+            activate="onStepActivate"
         >
             <VBox id="summaryVBox">
                 <Text

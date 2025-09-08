@@ -12,14 +12,18 @@ sap.ui.define([
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
 
-            // Po wyrenderowaniu widoku zablokuj pierwszy krok
+            // Po wyrenderowaniu widoku zresetuj wizard i zablokuj pierwszy krok
             this.getView().addEventDelegate({
                 onAfterShow: function () {
+                    // Reset wszystkich danych i stanu wizarda
+                    this._resetWizard();
+                    
+                    // Zablokuj pierwszy krok
                     var oStep = oView.byId("stepPersonalData");
                     if (oWizard && oStep) {
                         oWizard.invalidateStep(oStep);
                     }
-                }
+                }.bind(this)  // Ważne: bind(this) aby mieć dostęp do metod kontrolera
             });
         },
 
@@ -286,6 +290,117 @@ sap.ui.define([
             // Check if the activated step is the summary step
             if (oStep.getId().includes("stepSummary")) {
                 this._displaySummary();
+            }
+        },
+
+        onStepActivate: function (oEvent) {
+            var oWizard = this.byId("createOrderWizard");
+            var oStep = oEvent.getSource();
+
+            // Sprawdź, który krok jest aktywny i wykonaj odpowiednią walidację
+            switch (oStep.getId()) {
+                case this.createId("stepPersonalData"):
+                    this._validatePersonalData();
+                    break;
+                case this.createId("stepFaultDesc"):
+                    this._validateFaultDesc();
+                    break;
+                case this.createId("stepVisitDate"):
+                    this._validateVisitDate();
+                    break;
+                default:
+                    break;
+            }
+        },
+
+        _validatePersonalData: function () {
+            var oWizard = this.byId("createOrderWizard");
+            var bValid = true;
+
+            // Sprawdź wymagane pola
+            if (!this.byId("firstNameInput").getValue()) bValid = false;
+            if (!this.byId("lastNameInput").getValue()) bValid = false;
+            if (!this.byId("phoneNumberInput").getValue()) bValid = false;
+
+            // Oznacz krok jako poprawny lub niepoprawny
+            if (bValid) {
+                oWizard.validateStep(this.byId("stepPersonalData"));
+            } else {
+                oWizard.invalidateStep(this.byId("stepPersonalData"));
+            }
+        },
+
+        _validateFaultDesc: function () {
+            var oWizard = this.byId("createOrderWizard");
+            var bValid = true;
+
+            // Sprawdź wymagane pola
+            if (!this.byId("deviceTypeComboBox").getSelectedKey()) bValid = false;
+            if (!this.byId("deviceModelInput").getValue()) bValid = false;
+
+            // Oznacz krok jako poprawny lub niepoprawny
+            if (bValid) {
+                oWizard.validateStep(this.byId("stepFaultDesc"));
+            } else {
+                oWizard.invalidateStep(this.byId("stepFaultDesc"));
+            }
+        },
+
+        _validateVisitDate: function () {
+            var oWizard = this.byId("createOrderWizard");
+            var bValid = true;
+
+            // Sprawdź wymagane pola
+            if (!this.byId("visitDateInput").getDateValue()) bValid = false;
+            if (!this.byId("visitHourSelect").getSelectedKey()) bValid = false;
+
+            // Oznacz krok jako poprawny lub niepoprawny
+            if (bValid) {
+                oWizard.validateStep(this.byId("stepVisitDate"));
+            } else {
+                oWizard.invalidateStep(this.byId("stepVisitDate"));
+            }
+        },
+
+        _resetWizard: function () {
+            var oView = this.getView();
+            var oWizard = oView.byId("createOrderWizard");
+
+            // Reset all input fields
+            oView.findAggregatedObjects(true, function (oControl) {
+                if (oControl.isA("sap.m.Input")) {
+                    oControl.setValue("");
+                    // Usuń stan walidacji (czerwone obramowanie itp.)
+                    oControl.setValueState(sap.ui.core.ValueState.None);
+                } else if (oControl.isA("sap.m.ComboBox")) {
+                    oControl.setSelectedKey("");
+                    oControl.setValueState(sap.ui.core.ValueState.None);
+                } else if (oControl.isA("sap.m.DatePicker")) {
+                    oControl.setDateValue(null);
+                    oControl.setValueState(sap.ui.core.ValueState.None);
+                } else if (oControl.isA("sap.m.Select")) {
+                    oControl.setSelectedKey("");
+                    oControl.setValueState(sap.ui.core.ValueState.None);
+                }
+            });
+
+            // Reset wizard steps
+            if (oWizard && oWizard.getSteps && oWizard.getSteps().length > 0) {
+                oWizard.discardProgress(oWizard.getSteps()[0]);
+                
+                // Oznacz wszystkie kroki jako nieprawidłowe
+                oWizard.getSteps().forEach(function(oStep) {
+                    oWizard.invalidateStep(oStep);
+                });
+                
+                // Upewnij się, że jesteśmy na pierwszym kroku
+                oWizard.goToStep(oWizard.getSteps()[0]);
+            }
+            
+            // Wyczyść tekst podsumowania, jeśli istnieje
+            var oSummaryText = oView.byId("summaryText");
+            if (oSummaryText) {
+                oSummaryText.setText("");
             }
         }
     });
