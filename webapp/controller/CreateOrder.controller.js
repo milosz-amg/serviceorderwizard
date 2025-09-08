@@ -214,16 +214,70 @@ sap.ui.define([
 
         _saveOrderData: function (oOrderData) {
             var oModel = this.getView().getModel("orderModel");
+            
+            // Format date for backend (YYYYMMDD)
+            var visitDate = oOrderData.visitDate;
+            var formattedDate = "";
+            if (visitDate) {
+                if (typeof visitDate === "string") {
+                    // Konwersja z formatu "DD.MM.YYYY" na "YYYYMMDD"
+                    var parts = visitDate.split(".");
+                    if (parts.length === 3) {
+                        formattedDate = parts[2] + parts[1] + parts[0];
+                    }
+                } else {
+                    // Jeśli to obiekt Date
+                    var date = new Date(visitDate);
+                    formattedDate = date.getFullYear().toString() +
+                                   ("0" + (date.getMonth() + 1)).slice(-2) +
+                                   ("0" + date.getDate()).slice(-2);
+                }
+            }
+            
+            // Format time (HHMM)
+            var visitTime = oOrderData.visitTime;
+            var formattedTime = "";
+            if (visitTime) {
+                formattedTime = visitTime.replace(":", "");
+            }
+            
+            // Mapuj dane do formatu wymaganego przez backend
+            var oPayload = {
+                Firstname: oOrderData.firstName,
+                Lastname: oOrderData.lastName,
+                Phonenumber: oOrderData.phoneNumber,
+                Addressfirstline: oOrderData.addressFirstLine,
+                Addresssecondline: oOrderData.addressSecondLine,
+                Addresszipcode: oOrderData.addressZipCode,
+                Addresscity: oOrderData.addressCity,
+                Devicetype: oOrderData.deviceType,
+                Deviceserialnumber: oOrderData.deviceSerialNumber,
+                Faultdescription: oOrderData.faultDescription,
+                Visitdate: formattedDate,
+                Visittime: formattedTime,
+                Status: oOrderData.status
+            };
+            
+            console.log("Sending payload:", oPayload);
 
             // Use service order model layer to create service order
-            serviceOrderModel.createServiceOrder(oOrderData, oModel).then(function (oContext) {
-                sap.m.MessageToast.show("Zamówienie zostało pomyślnie złożone!");
-                // Optionally navigate back to home or reset wizard
-                var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                oRouter.navTo("RouteHome");
-            }.bind(this)).catch(function (oError) {
-                sap.m.MessageToast.show("Błąd podczas składania zamówienia: " + oError.message);
-            });
+            serviceOrderModel.createServiceOrder(oPayload, oModel)
+                .then(function (oData) {
+                    sap.m.MessageToast.show("Zamówienie zostało pomyślnie złożone!");
+                    // Optionally navigate back to home or reset wizard
+                    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                    oRouter.navTo("RouteHome");
+                }.bind(this))
+                .catch(function (oError) {
+                    var sErrorMsg = "Błąd podczas składania zamówienia";
+                    if (oError.message) {
+                        sErrorMsg += ": " + oError.message;
+                    } else if (oError.responseText) {
+                        sErrorMsg += ": " + oError.responseText;
+                    }
+                    sap.m.MessageBox.error(sErrorMsg);
+                    console.error("Order creation error:", oError);
+                });
         },
 
         onSummaryStepActivate: function (oEvent) {

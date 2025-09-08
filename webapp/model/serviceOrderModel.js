@@ -1,36 +1,39 @@
 sap.ui.define([
-    "sap/ui/model/odata/v4/ODataModel"
+    "sap/ui/model/odata/v2/ODataModel"
 ], function (ODataModel) {
     "use strict";
 
     return {
         /**
-         * Creates OData V4 model for service orders
-         * @returns {sap.ui.model.odata.v4.ODataModel} The OData V4 model for service orders
+         * Creates OData V2 model for service orders
+         * @returns {sap.ui.model.odata.v2.ODataModel} The OData V2 model for service orders
          */
         createServiceOrderModel: function () {
-            var oModel = new ODataModel({
-                serviceUrl: "/sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/", // Updated service URL
-                synchronizationMode: "None"
+            var oModel = new ODataModel("/sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/", {
+                json: true,
+                useBatch: false
             });
             return oModel;
         },
 
         /**
-         * Creates a new service order
+         * Creates a new service order using OData V2
          * @param {Object} oOrderData - The order data to create
-         * @param {sap.ui.model.odata.v4.ODataModel} oModel - The OData model
+         * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
          * @returns {Promise} Promise that resolves when order is created
          */
         createServiceOrder: function (oOrderData, oModel) {
             return new Promise(function (resolve, reject) {
-                var oListBinding = oModel.bindList("/ServiceOrders"); // Replace with actual entity set name
-                var oContext = oListBinding.create(oOrderData);
-
-                oContext.created().then(function () {
-                    resolve(oContext);
-                }).catch(function (oError) {
-                    reject(oError);
+                oModel.create("/orderSet", oOrderData, {
+                    success: function(oData, oResponse) {
+                        resolve(oData);
+                    },
+                    error: function(oError) {
+                        reject(oError);
+                    },
+                    headers: {
+                        "Content-Type": "application/json; charset=utf-8"
+                    }
                 });
             });
         },
