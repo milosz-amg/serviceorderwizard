@@ -4,7 +4,7 @@
     controllerName="com.mr.serviceorderwizard.controller.CreateOrder"
     xmlns:core="sap.ui.core"
     xmlns:form="sap.ui.layout.form"
-    >
+>
     <Wizard
         id="createOrderWizard"
         finishButtonText="Zakończ"
@@ -18,98 +18,121 @@
             <MessageStrip
                 id="wizardInfoMessage"
                 class="sapUiSmallMarginBottom"
-                text="The Wizard control is supposed to break down large tasks, into smaller steps, easier for the user to work with."
+                text="Informacja o przetwarzaniu danych osobowych (RODO)"
                 showIcon="true"
             />
 
             <Text
-                text="Cras tellus leo, volutpat vitae ullamcorper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien et viverra imperdiet, orci erat porttitor nulla, eget commodo metus nibh nec ipsum. Aliquam lacinia euismod metus, sollicitudin pellentesque purus volutpat eget. Pellentesque egestas erat quis eros convallis mattis. Mauris hendrerit sapien a malesu corper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien	corper eu, posuere malesuada nisl. Integer pellentesque leo sit amet dui vehicula, quis ullamcorper est pulvinar. Nam in libero sem. Suspendisse arcu metus, molestie a turpis a, molestie aliquet dui. Donec pulvinar, sapien	"
+                text="Zgodnie z art. 13 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO), informujemy, że:
+Administratorem Twoich danych osobowych jest [Nazwa firmy/organizacji], z siedzibą w [adres firmy].
+Twoje dane osobowe będą przetwarzane wyłącznie w celu realizacji zamówienia oraz świadczenia usług serwisowych, zgodnie z obowiązującymi przepisami prawa.
+Podanie danych osobowych jest dobrowolne, ale niezbędne do realizacji zamówienia. Brak podania danych uniemożliwi realizację usługi.
+Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu wobec przetwarzania oraz cofnięcia zgody w dowolnym momencie.
+Twoje dane nie będą przekazywane podmiotom trzecim bez Twojej wyraźnej zgody, chyba że wymagają tego przepisy prawa.
+W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt pod adresem e-mail: [adres e-mail]."
             />
 
-            <form:SimpleForm>
-    <Label
-        id="firstNameLabel"
-        text="Imię"
-        labelFor="firstNameInput"
-    />
-    <Input
-        id="firstNameInput"
-        placeholder="Wpisz imię"
-        required="true"
-        liveChange="validatePersonalData"
-    />
+            <form:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                title="Dane osobowe"
+            >
+                <Label
+                    id="firstNameLabel"
+                    text="Imię"
+                    labelFor="firstNameInput"
+                />
+                <Input
+                    id="firstNameInput"
+                    placeholder="Wpisz imię"
+                    required="true"
+                    liveChange="validatePersonalData"
+                    valueState="None"
+                    value="{orderData>/personalData/firstName}"
+                />
 
-    <Label
-        id="lastNameLabel"
-        text="Nazwisko"
-        labelFor="lastNameInput"
-    />
-    <Input
-        id="lastNameInput"
-        placeholder="Wpisz nazwisko"
-        required="true"
-        liveChange="validatePersonalData"
-    />
+                <Label
+                    id="lastNameLabel"
+                    text="Nazwisko"
+                    labelFor="lastNameInput"
+                />
+                <Input
+                    id="lastNameInput"
+                    placeholder="Wpisz nazwisko"
+                    required="true"
+                    liveChange="validatePersonalData"
+                    valueState="None"
+                    value="{orderData>/personalData/lastName}"
+                />
 
-    <Label
-        id="phoneNumberLabel"
-        text="Numer telefonu"
-        labelFor="phoneNumberInput"
-    />
-    <Input
-        id="phoneNumberInput"
-        placeholder="Wpisz numer telefonu"
-        required="true"
-        liveChange="validatePersonalData"
-    />
+                <Label
+                    id="phoneNumberLabel"
+                    text="Numer telefonu"
+                    labelFor="phoneNumberInput"
+                />
+                <Input
+                    id="phoneNumberInput"
+                    placeholder="Wpisz numer telefonu"
+                    required="true"
+                    liveChange="validatePersonalData"
+                    valueState="None"
+                    value="{orderData>/personalData/phoneNumber}"
+                />
 
-    <Label
-        id="addressFirstLineLabel"
-        text="Adres (linia 1)"
-        labelFor="addressFirstLineInput"
-    />
-    <Input
-        id="addressFirstLineInput"
-        placeholder="Wpisz adres (linia 1)"
-        liveChange="validatePersonalData"
-    />
+                <Label
+                    id="addressFirstLineLabel"
+                    text="Adres (linia 1)"
+                    labelFor="addressFirstLineInput"
+                />
+                <Input
+                    id="addressFirstLineInput"
+                    placeholder="Wpisz adres (linia 1)"
+                    liveChange="validatePersonalData"
+                    valueState="None"
+                    value="{orderData>/personalData/addressFirstLine}"
+                />
 
-    <Label
-        id="addressSecondLineLabel"
-        text="Adres (linia 2)"
-        labelFor="addressSecondLineInput"
-    />
-    <Input
-        id="addressSecondLineInput"
-        placeholder="Wpisz adres (linia 2)"
-    />
+                <Label
+                    id="addressSecondLineLabel"
+                    text="Adres (linia 2)"
+                    labelFor="addressSecondLineInput"
+                />
+                <Input
+                    id="addressSecondLineInput"
+                    placeholder="Wpisz adres (linia 2)"
+                    valueState="None"
+                    value="{orderData>/personalData/addressSecondLine}"
+                />
 
-    <Label
-        id="addressZipCodeLabel"
-        text="Kod pocztowy"
-        required="true"
-        labelFor="addressZipCodeInput"
-    />
-    <Input
-        id="addressZipCodeInput"
-        placeholder="Wpisz kod pocztowy"
-        liveChange="validatePersonalData"
-    />
+                <Label
+                    id="addressZipCodeLabel"
+                    text="Kod pocztowy"
+                    required="true"
+                    labelFor="addressZipCodeInput"
+                />
+                <Input
+                    id="addressZipCodeInput"
+                    placeholder="Wpisz kod pocztowy (5 cyfr)"
+                    liveChange="validatePersonalData"
+                    valueState="None"
+                    value="{orderData>/personalData/addressZipCode}"
+                />
 
-    <Label
-        id="addressCityLabel"
-        text="Miasto"
-        required="true"
-        labelFor="addressCityInput"
-    />
-    <Input
-        id="addressCityInput"
-        placeholder="Wpisz miasto"
-        required="true"
-        liveChange="validatePersonalData"
-    />
-</form:SimpleForm>
-
+                <Label
+                    id="addressCityLabel"
+                    text="Miasto"
+                    required="true"
+                    labelFor="addressCityInput"
+                />
+                <Input
+                    id="addressCityInput"
+                    placeholder="Wpisz miasto"
+                    required="true"
+                    liveChange="validatePersonalData"
+                    valueState="None"
+                    value="{orderData>/personalData/addressCity}"
+                />
+            </form:SimpleForm>
         </WizardStep>
         <WizardStep
             id="stepFaultDesc"
@@ -117,63 +140,89 @@
             validated="false"
             activate="onStepActivate"
         >
-            <form:SimpleForm>
-    <Label
-        id="deviceTypeLabel"
-        text="Typ urządzenia"
-        required="true"
-        labelFor="deviceTypeComboBox"
-    />
-    <ComboBox
-        width="100%"
-        id="deviceTypeComboBox"
-        required="true"
-        placeholder="Podaj typ urządzenia"
-        change="validateVisitDate"
-    >
-        <core:Item key="Laptop" text="Laptop" />
-        <core:Item key="Smartphone" text="Smartphone" />
-        <core:Item key="Tablet" text="Tablet" />
-        <core:Item key="Konsola" text="Konsola" />
-        <core:Item key="Inne" text="Inne" />
-    </ComboBox>
+            <form:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                title="Informacje o urządzeniu"
+            >
+                <Label
+                    id="deviceTypeLabel"
+                    text="Typ urządzenia"
+                    required="true"
+                    labelFor="deviceTypeComboBox"
+                />
+                <ComboBox
+                    width="100%"
+                    id="deviceTypeComboBox"
+                    required="true"
+                    placeholder="Podaj typ urządzenia"
+                    change="validateFaultDesc"
+                    valueState="None"
+                    selectedKey="{orderData>/deviceData/deviceType}"
+                >
+                    <core:Item
+                        key="Laptop"
+                        text="Laptop"
+                    />
+                    <core:Item
+                        key="Smartphone"
+                        text="Smartphone"
+                    />
+                    <core:Item
+                        key="Tablet"
+                        text="Tablet"
+                    />
+                    <core:Item
+                        key="Konsola"
+                        text="Konsola"
+                    />
+                    <core:Item
+                        key="Inne"
+                        text="Inne"
+                    />
+                </ComboBox>
 
-    <Label
-        id="deviceModelLabel"
-        text="Model urządzenia"
-        labelFor="deviceModelInput"
-    />
-    <Input
-        id="deviceModelInput"
-        placeholder="Wpisz model urządzenia"
-        required="true"
-        liveChange="validateFaultDesc"
-    />
+                <Label
+                    id="deviceModelLabel"
+                    text="Model urządzenia"
+                    labelFor="deviceModelInput"
+                />
+                <Input
+                    id="deviceModelInput"
+                    placeholder="Wpisz model urządzenia"
+                    required="true"
+                    liveChange="validateFaultDesc"
+                    valueState="None"
+                    value="{orderData>/deviceData/deviceModel}"
+                />
 
-    <Label
-        id="deviceSerialNumberLabel"
-        text="Numer seryjny urządzenia"
-        labelFor="deviceSerialNumberInput"
-    />
-    <Input
-        id="deviceSerialNumberInput"
-        placeholder="Wpisz numer seryjny urządzenia"
-    />
+                <Label
+                    id="deviceSerialNumberLabel"
+                    text="Numer seryjny urządzenia"
+                    labelFor="deviceSerialNumberInput"
+                />
+                <Input
+                    id="deviceSerialNumberInput"
+                    placeholder="Wpisz numer seryjny urządzenia"
+                    valueState="None"
+                    value="{orderData>/deviceData/deviceSerialNumber}"
+                />
 
-    <Label
-        id="faultDescLabel"
-        text="Opis usterki"
-        labelFor="faultDescInput"
-    />
-    <TextArea
-        width="100%"
-        id="faultDescInput"
-        placeholder="Opisz usterkę"
-        rows="8"
-        liveChange="validateFaultDesc"
-    />
-</form:SimpleForm>
-
+                <Label
+                    id="faultDescLabel"
+                    text="Opis usterki"
+                    labelFor="faultDescInput"
+                />
+                <TextArea
+                    width="100%"
+                    id="faultDescInput"
+                    placeholder="Opisz usterkę"
+                    rows="8"
+                    liveChange="validateFaultDesc"
+                    valueState="None"
+                    value="{orderData>/deviceData/faultDescription}"
+                />
+            </form:SimpleForm>
         </WizardStep>
         <WizardStep
             id="stepVisitDate"
@@ -181,41 +230,75 @@
             validated="false"
             activate="onStepActivate"
         >
-            <form:SimpleForm>
-    <Label
-        id="visitDateLabel"
-        text="Data wizyty"
-        labelFor="visitDateInput"
-    />
-    <DatePicker
-        id="visitDateInput"
-        placeholder="Wybierz datę wizyty"
-        required="true"
-        change="validateVisitDate"
-    />
+            <form:SimpleForm
+                editable="true"
+                layout="ResponsiveGridLayout"
+                title="Termin wizyty"
+            >
+                <Label
+                    id="visitDateLabel"
+                    text="Data wizyty"
+                    labelFor="visitDateInput"
+                />
+                <DatePicker
+                    id="visitDateInput"
+                    placeholder="Wybierz datę wizyty"
+                    required="true"
+                    change="validateVisitDate"
+                    valueState="None"
+                    value="{orderData>/visitData/visitDate}"
+                />
 
-    <Label
-        id="visitTimeLabel"
-        text="Godzina wizyty"
-        labelFor="visitHourSelect"
-    />
-    <Select
-        id="visitHourSelect"
-        required="true"
-        change="validateVisitDate"
-    >
-        <core:Item key="08" text="08:00" />
-        <core:Item key="09" text="09:00" />
-        <core:Item key="10" text="10:00" />
-        <core:Item key="11" text="11:00" />
-        <core:Item key="12" text="12:00" />
-        <core:Item key="13" text="13:00" />
-        <core:Item key="14" text="14:00" />
-        <core:Item key="15" text="15:00" />
-        <core:Item key="16" text="16:00" />
-    </Select>
-</form:SimpleForm>
-
+                <Label
+                    id="visitTimeLabel"
+                    text="Godzina wizyty"
+                    labelFor="visitHourSelect"
+                />
+                <Select
+                    id="visitHourSelect"
+                    required="true"
+                    change="validateVisitDate"
+                    valueState="None"
+                    selectedKey="{orderData>/visitData/visitTimeKey}"
+                >
+                    <core:Item
+                        key="08"
+                        text="08:00"
+                    />
+                    <core:Item
+                        key="09"
+                        text="09:00"
+                    />
+                    <core:Item
+                        key="10"
+                        text="10:00"
+                    />
+                    <core:Item
+                        key="11"
+                        text="11:00"
+                    />
+                    <core:Item
+                        key="12"
+                        text="12:00"
+                    />
+                    <core:Item
+                        key="13"
+                        text="13:00"
+                    />
+                    <core:Item
+                        key="14"
+                        text="14:00"
+                    />
+                    <core:Item
+                        key="15"
+                        text="15:00"
+                    />
+                    <core:Item
+                        key="16"
+                        text="16:00"
+                    />
+                </Select>
+            </form:SimpleForm>
         </WizardStep>
         <WizardStep
             id="stepSummary"

@@ -35,7 +35,7 @@
                             <content>
                                 <Title id="tableTitle" text="Zlecenia ({/ordersCount})"/>
                                 <ToolbarSpacer id="toolbarSpacer"/>
-                                <SearchField id="searchField" width="300px" search="onSearch" placeholder="Szukaj..."/>
+                                <!-- <SearchField id="searchField" width="300px" search="onSearch" placeholder="Szukaj..."/> -->
                             </content>
                         </OverflowToolbar>
                     </headerToolbar>
