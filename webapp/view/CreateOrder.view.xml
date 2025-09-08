@@ -312,18 +312,16 @@ W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt
             validated="true"
             activate="onStepActivate"
         >
-            <VBox id="summaryVBox">
-                <Text
-                    id="summaryText"
-                    text="Podsumowanie danych zamówienia"
-                    class="sapUiSmallMargin"
-                />
-                <Button
+        <MessageStrip
+                class="sapUiSmallMarginBottom"
+                text="Po kliknięciu 'Generuj zlecenie', zostaniesz przeniesiony do podsumowania zamówienia, gdzie będziesz mógł zweryfikować wszystkie wprowadzone dane przed finalnym zatwierdzeniem."
+                showIcon="true"
+            />
+            <Button
                     id="submitOrderButton"
                     text="Generuj zlecenie"
                     press="onSubmitOrder"
                 />
-            </VBox>
         </WizardStep>
     </Wizard>
                 </content>
