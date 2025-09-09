@@ -416,8 +416,6 @@ sap.ui.define([
                 Status: oOrderData.status
             };
 
-            console.log("Sending payload:", oPayload);
-
             // Use service order model layer to create service order
             serviceOrderModel.createServiceOrder(oPayload, oModel)
                 .then(function (oData) {

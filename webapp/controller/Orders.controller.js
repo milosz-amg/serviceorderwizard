@@ -30,47 +30,47 @@ sap.ui.define([
                 isFormatted: true
             });
             this.getView().setModel(oViewModel);
-            
+
             // Automatically fetch data on initialization
             this.fetchOrderData();
         },
-        
+
         /**
          * Pobiera dane zleceń z serwera i aktualizuje model widoku
          * @public
          */
-        fetchOrderData: function() {
+        fetchOrderData: function () {
             var oViewModel = this.getView().getModel();
-            
+
             // Set loading state
             oViewModel.setProperty("/statusMessage", "Pobieranie danych z serwera...");
             oViewModel.setProperty("/messageType", "Information");
             oViewModel.setProperty("/showMessage", true);
             oViewModel.setProperty("/orders", []);
             oViewModel.setProperty("/ordersCount", 0);
-            
+
             // Use serviceOrderModel to fetch raw data
             serviceOrderModel.fetchRawOrderData()
-                .then(function(sResponseText) {
+                .then(function (sResponseText) {
                     this._handleSuccessResponse(sResponseText, oViewModel);
                 }.bind(this))
-                .catch(function(oError) {
+                .catch(function (oError) {
                     this._handleErrorResponse(oError, oViewModel);
                 }.bind(this));
         },
-        
+
         /**
          * Obsługuje odpowiedź z serwera w przypadku sukcesu
          * @param {string} sResponseText - Odpowiedź z serwera w formacie tekstowym
          * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
          * @private
          */
-        _handleSuccessResponse: function(sResponseText, oViewModel) {
+        _handleSuccessResponse: function (sResponseText, oViewModel) {
             try {
                 // Parse JSON response
                 var oResponse = JSON.parse(sResponseText);
                 var aOrders = [];
-                
+
                 // Extract orders from OData response structure
                 if (oResponse.d && oResponse.d.results) {
                     aOrders = oResponse.d.results;
@@ -79,111 +79,121 @@ sap.ui.define([
                 } else if (oResponse.value) {
                     aOrders = oResponse.value;
                 }
-                
+
                 // Debug: Log first order to see actual field names
                 if (aOrders.length > 0) {
                     console.log("First order structure:", aOrders[0]);
                     console.log("Available fields:", Object.keys(aOrders[0]));
                 }
-                
+
                 // Update model with parsed data
                 oViewModel.setProperty("/orders", aOrders);
                 oViewModel.setProperty("/ordersCount", aOrders.length);
                 oViewModel.setProperty("/responseText", JSON.stringify(oResponse, null, 2));
-                oViewModel.setProperty("/statusMessage", 
+                oViewModel.setProperty("/statusMessage",
                     "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
                 oViewModel.setProperty("/messageType", "Success");
-                
+
                 MessageToast.show("Pobrano " + aOrders.length + " zleceń z serwera");
-                
+
             } catch (e) {
                 // If not valid JSON, show error
                 oViewModel.setProperty("/statusMessage", "Błąd parsowania danych JSON: " + e.message);
                 oViewModel.setProperty("/messageType", "Error");
                 oViewModel.setProperty("/responseText", sResponseText);
-                
+
                 MessageToast.show("Błąd podczas parsowania danych");
             }
         },
-        
+
         /**
          * Obsługuje odpowiedź z serwera w przypadku błędu
          * @param {object} oError - Obiekt błędu zawierający informacje o problemie
          * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
          * @private
          */
-        _handleErrorResponse: function(oError, oViewModel) {
-            var sErrorMessage = "Błąd podczas pobierania danych: " + 
+        _handleErrorResponse: function (oError, oViewModel) {
+            var sErrorMessage = "Błąd podczas pobierania danych: " +
                 oError.status + " - " + (oError.statusText || "Nieznany błąd");
-            
+
             var sDetailedError = "=== BŁĄD PODCZAS POBIERANIA DANYCH ===\n\n" +
                 "Status HTTP: " + oError.status + "\n" +
                 "Status Text: " + (oError.statusText || "Brak opisu") + "\n" +
                 "URL: /sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/orderSet?$format=json\n\n" +
-                "Szczegóły odpowiedzi:\n" + 
+                "Szczegóły odpowiedzi:\n" +
                 (oError.responseText || "Brak szczegółów");
-            
+
             oViewModel.setProperty("/statusMessage", sErrorMessage);
             oViewModel.setProperty("/messageType", "Error");
             oViewModel.setProperty("/responseText", sDetailedError);
             oViewModel.setProperty("/orders", []);
             oViewModel.setProperty("/ordersCount", 0);
-            
+
             MessageBox.error("Nie udało się pobrać danych z serwera.\n\nStatus: " + oError.status, {
                 title: "Błąd połączenia"
             });
         },
-        
+
         /**
          * Odświeża dane zleceń poprzez ponowne pobranie ich z serwera
          * @public
          */
-        onRefresh: function() {
+        onRefresh: function () {
             MessageToast.show("Odświeżanie danych...");
             this.fetchOrderData();
         },
-    
+
         /**
          * Wyświetla szczegóły wybranego zlecenia w oknie dialogowym
          * @param {sap.ui.base.Event} oEvent - Zdarzenie zawierające informacje o klikniętym elemencie
          * @public
          */
-        onShowDetails: function(oEvent) {
+        onShowDetails: function (oEvent) {
             var oContext = oEvent.getSource().getBindingContext();
             var oOrder = oContext.getObject();
 
             // string dla szczegółów
             var sDetailsText = "";
-            
+
             // Format 
             for (var sKey in oOrder) {
                 if (oOrder.hasOwnProperty(sKey) && sKey !== "__metadata") {
                     var sValue = oOrder[sKey];
                     var sDisplayKey = this._formatFieldName(sKey);
-                    
+
                     if (sValue !== null && sValue !== undefined && sValue !== "") {
                         // Format date 
                         if (sKey.toLowerCase().includes("date") && typeof sValue === "string" && sValue.length === 8) {
                             sValue = this._formatDateString(sValue);
                         }
-                        
+
                         // Format time 
                         if (sKey.toLowerCase().includes("time") && typeof sValue === "string" && sValue.length === 4) {
                             sValue = this._formatTimeString(sValue);
                         }
-                        
+
                         sDetailsText += sDisplayKey + ": " + sValue + "\n";
                     }
                 }
             }
-            
+
             // Display message box
             MessageBox.information(sDetailsText, {
                 title: "Szczegóły zlecenia: " + (oOrder.OrderId || "Brak"),
                 contentWidth: "500px"
             });
         },
-        
+
+        /**
+         * Publiczny formater daty do użycia w widoku
+         * @param {string} sDate - Data w formacie YYYYMMDD
+         * @returns {string} Sformatowana data w formacie DD.MM.YYYY
+         * @public
+         */
+        formatDate: function (sDate) {
+            return this._formatDateString(sDate);
+        },
+
         /**
          * Formatuje datę z postaci RRRRMMDD do DD.MM.RRRR
          * @param {string} sDate - Data w formacie RRRRMMDD
@@ -191,26 +201,26 @@ sap.ui.define([
          * @private
          */
 
-        _formatDateString: function(sDate) {
+        _formatDateString: function (sDate) {
             if (sDate && sDate.length === 8) {
                 return sDate.substring(6, 8) + "." + sDate.substring(4, 6) + "." + sDate.substring(0, 4);
             }
             return sDate;
         },
-        
+
         /**
          * Formatuje ciąg znaków reprezentujący czas z formatu HHMM na HH:MM
          * @param {string} sTime - Czas w formacie HHMM
          * @returns {string} Sformatowany czas w formacie HH:MM
          * @private
          */
-        _formatTimeString: function(sTime) {
+        _formatTimeString: function (sTime) {
             if (sTime && sTime.length === 4) {
                 return sTime.substring(0, 2) + ":" + sTime.substring(2, 4);
             }
             return sTime;
         },
-        
+
 
         /**
          * Formatuje techniczne nazwy pól na przyjazne dla użytkownika
@@ -218,7 +228,7 @@ sap.ui.define([
          * @returns {string} Sformatowana, przyjazna dla użytkownika nazwa pola
          * @private
          */
-        _formatFieldName: function(sFieldName) {
+        _formatFieldName: function (sFieldName) {
             var oFieldNameMap = {
                 "OrderId": "ID",
                 "Firstname": "Imię",
@@ -235,10 +245,10 @@ sap.ui.define([
                 "Visittime": "Godzina wizyty",
                 "Status": "Status zlecenia",
             };
-            
+
             return oFieldNameMap[sFieldName];
         },
-        
-        
+
+
     });
 });

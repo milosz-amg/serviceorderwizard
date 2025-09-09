@@ -87,7 +87,7 @@
                         <Column id="col7">
                             <Text
                                 id="header7"
-                                text="Data"
+                                text="Data wizyty"
                             />
                         </Column>
                         <Column id="col8">
@@ -120,7 +120,10 @@
                                 />
                                 <Text
                                     id="cell7"
-                                    text="{Visitdate}"
+                                    text="{
+                                        path: 'Visitdate',
+                                        formatter: '.formatDate'
+                         }"  
                                 />
                                 <Text
                                     id="cell8"
