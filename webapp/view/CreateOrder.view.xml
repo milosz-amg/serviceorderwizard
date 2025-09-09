@@ -33,12 +33,12 @@
 
                             <Text
                                 text="Zgodnie z art. 13 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO), informujemy, że:
-Administratorem Twoich danych osobowych jest [Nazwa firmy/organizacji], z siedzibą w [adres firmy].
-Twoje dane osobowe będą przetwarzane wyłącznie w celu realizacji zamówienia oraz świadczenia usług serwisowych, zgodnie z obowiązującymi przepisami prawa.
-Podanie danych osobowych jest dobrowolne, ale niezbędne do realizacji zamówienia. Brak podania danych uniemożliwi realizację usługi.
-Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu wobec przetwarzania oraz cofnięcia zgody w dowolnym momencie.
-Twoje dane nie będą przekazywane podmiotom trzecim bez Twojej wyraźnej zgody, chyba że wymagają tego przepisy prawa.
-W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt pod adresem e-mail: [adres e-mail]."
+                                Administratorem Twoich danych osobowych jest [Nazwa firmy/organizacji], z siedzibą w [adres firmy].
+                                Twoje dane osobowe będą przetwarzane wyłącznie w celu realizacji zamówienia oraz świadczenia usług serwisowych, zgodnie z obowiązującymi przepisami prawa.
+                                Podanie danych osobowych jest dobrowolne, ale niezbędne do realizacji zamówienia. Brak podania danych uniemożliwi realizację usługi.
+                                Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu wobec przetwarzania oraz cofnięcia zgody w dowolnym momencie.
+                                Twoje dane nie będą przekazywane podmiotom trzecim bez Twojej wyraźnej zgody, chyba że wymagają tego przepisy prawa.
+                                W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt pod adresem e-mail: [adres e-mail]."
                             />
 
                             <form:SimpleForm
@@ -149,7 +149,7 @@ W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt
                             validated="false"
                             activate="onStepActivate"
                         >
-                        <MessageStrip
+                            <MessageStrip
                                 class="sapUiSmallMarginBottom"
                                 text="Dokładny opis usterki pomoże naszym technikom szybciej zdiagnozować problem i przygotować się do wizyty."
                                 showIcon="true"
@@ -284,7 +284,8 @@ W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt
                                     required="true"
                                     change="validateVisitDate"
                                     valueState="None"
-                                    value="{orderData>/visitData/visitDate}"
+                                    value="{orderData>/visitData/visitDate, UTC: true }"
+                                    
                                 />
 
                                 <Label

@@ -7,17 +7,7 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.CreateOrder", {
-        formatDate: function (oDate) {
-            if (!oDate) {
-                return "";
-            }
-
-            if (typeof oDate === "string") {
-                return oDate;
-            }
-
-            return oDate.toLocaleDateString();
-        },
+        
         onInit: function () {
             this._initODataModel();
 
@@ -286,6 +276,19 @@ sap.ui.define([
 
             return bDateValid && bHourValid;
         },
+
+        formatDate: function (oDate) {
+            if (!oDate) {
+                return "";
+            }
+
+            if (typeof oDate === "string") {
+                return oDate;
+            }
+
+            return oDate.toLocaleDateString();
+        },
+        
         onSubmitOrder: function () {
             // Przejdź do ekranu podsumowania
             this.wizardCompletedHandler();
