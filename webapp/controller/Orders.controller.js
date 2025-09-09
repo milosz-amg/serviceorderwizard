@@ -10,6 +10,10 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.Orders", {
+        /**
+         * Inicjalizuje kontroler i ustawia model danych
+         * @public
+         */
         onInit: function () {
             // Create a JSON model to hold the orders data
             var oViewModel = new JSONModel({
@@ -31,6 +35,10 @@ sap.ui.define([
             this.fetchOrderData();
         },
         
+        /**
+         * Pobiera dane zleceń z serwera i aktualizuje model widoku
+         * @public
+         */
         fetchOrderData: function() {
             var oViewModel = this.getView().getModel();
             
@@ -51,6 +59,12 @@ sap.ui.define([
                 }.bind(this));
         },
         
+        /**
+         * Obsługuje odpowiedź z serwera w przypadku sukcesu
+         * @param {string} sResponseText - Odpowiedź z serwera w formacie tekstowym
+         * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
+         * @private
+         */
         _handleSuccessResponse: function(sResponseText, oViewModel) {
             try {
                 // Parse JSON response
@@ -92,6 +106,12 @@ sap.ui.define([
             }
         },
         
+        /**
+         * Obsługuje odpowiedź z serwera w przypadku błędu
+         * @param {object} oError - Obiekt błędu zawierający informacje o problemie
+         * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
+         * @private
+         */
         _handleErrorResponse: function(oError, oViewModel) {
             var sErrorMessage = "Błąd podczas pobierania danych: " + 
                 oError.status + " - " + (oError.statusText || "Nieznany błąd");
@@ -114,33 +134,111 @@ sap.ui.define([
             });
         },
         
+        /**
+         * Odświeża dane zleceń poprzez ponowne pobranie ich z serwera
+         * @public
+         */
         onRefresh: function() {
             MessageToast.show("Odświeżanie danych...");
             this.fetchOrderData();
         },
     
+        /**
+         * Wyświetla szczegóły wybranego zlecenia w oknie dialogowym
+         * @param {sap.ui.base.Event} oEvent - Zdarzenie zawierające informacje o klikniętym elemencie
+         * @public
+         */
         onShowDetails: function(oEvent) {
             var oContext = oEvent.getSource().getBindingContext();
             var oOrder = oContext.getObject();
-            
-            // Create a formatted text string with all order details
+
+            // string dla szczegółów
             var sDetailsText = "";
             
-            // Format all fields in a nice way
+            // Format 
             for (var sKey in oOrder) {
-                if (oOrder.hasOwnProperty(sKey)) {
+                if (oOrder.hasOwnProperty(sKey) && sKey !== "__metadata") {
                     var sValue = oOrder[sKey];
+                    var sDisplayKey = this._formatFieldName(sKey);
+                    
                     if (sValue !== null && sValue !== undefined && sValue !== "") {
-                        sDetailsText += sKey + ": " + sValue + "\n";
+                        // Format date 
+                        if (sKey.toLowerCase().includes("date") && typeof sValue === "string" && sValue.length === 8) {
+                            sValue = this._formatDateString(sValue);
+                        }
+                        
+                        // Format time 
+                        if (sKey.toLowerCase().includes("time") && typeof sValue === "string" && sValue.length === 4) {
+                            sValue = this._formatTimeString(sValue);
+                        }
+                        
+                        sDetailsText += sDisplayKey + ": " + sValue + "\n";
                     }
                 }
             }
             
-            // Show in a dialog with formatted content
+            // Display message box
             MessageBox.information(sDetailsText, {
-                title: "Szczegóły zlecenia - ID: " + (oOrder.OrderId || oOrder.orderId || oOrder.ID || oOrder.Id || "Brak"),
+                title: "Szczegóły zlecenia: " + (oOrder.OrderId || "Brak"),
                 contentWidth: "500px"
             });
-        }
+        },
+        
+        /**
+         * Formatuje datę z postaci RRRRMMDD do DD.MM.RRRR
+         * @param {string} sDate - Data w formacie RRRRMMDD
+         * @returns {string} Sformatowana data w formacie DD.MM.RRRR
+         * @private
+         */
+
+        _formatDateString: function(sDate) {
+            if (sDate && sDate.length === 8) {
+                return sDate.substring(6, 8) + "." + sDate.substring(4, 6) + "." + sDate.substring(0, 4);
+            }
+            return sDate;
+        },
+        
+        /**
+         * Formatuje ciąg znaków reprezentujący czas z formatu HHMM na HH:MM
+         * @param {string} sTime - Czas w formacie HHMM
+         * @returns {string} Sformatowany czas w formacie HH:MM
+         * @private
+         */
+        _formatTimeString: function(sTime) {
+            if (sTime && sTime.length === 4) {
+                return sTime.substring(0, 2) + ":" + sTime.substring(2, 4);
+            }
+            return sTime;
+        },
+        
+
+        /**
+         * Formatuje techniczne nazwy pól na przyjazne dla użytkownika
+         * @param {string} sFieldName - Oryginalna, techniczna nazwa pola
+         * @returns {string} Sformatowana, przyjazna dla użytkownika nazwa pola
+         * @private
+         */
+        _formatFieldName: function(sFieldName) {
+            var oFieldNameMap = {
+                "OrderId": "ID",
+                "Firstname": "Imię",
+                "Lastname": "Nazwisko",
+                "Phonenumber": "Numer telefonu",
+                "Addressfirstline": "Adres linia 1",
+                "Addresssecondline": "Adres linia 2",
+                "Addresscity": "Miasto",
+                "Addresszipcode": "Kod pocztowy",
+                "Devicetype": "Typ urządzenia",
+                "Devicemodel": "Model urządzenia",
+                "Faultdescription": "Opis usterki",
+                "Visitdate": "Data wizyty",
+                "Visittime": "Godzina wizyty",
+                "Status": "Status zlecenia",
+            };
+            
+            return oFieldNameMap[sFieldName];
+        },
+        
+        
     });
 });

@@ -7,9 +7,6 @@
     xmlns:grid="sap.ui.layout.cssgrid">
     <Page id="homePage" title="{i18n>title}">
         <content>
-            <!-- Szybkie akcje -->
-            <Title text="Szybkie akcje" level="H2" class="sapUiResponsiveMargin" titleStyle="H2" />
-            
             <!-- Szersze kafelki z wyraźniejszymi ikonami -->
             <l:HorizontalLayout class="sapUiResponsiveMargin" allowWrapping="true">
                 <!-- Kafelek "Zamów serwis" -->
@@ -19,7 +16,6 @@
                             <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
                                 <VBox alignItems="Start" justifyContent="Center" class="sapUiSmallMarginEnd" width="70%">
                                     <Title text="Zamów serwis" level="H2" class="sapUiTinyMarginBottom" />
-                                    <Text text="Zgłoś usterkę i umów wizytę serwisową" class="sapUiSmallMarginBottom" />
                                     <Text text="Zgłoś swoją usterkę, wybierz dogodny termin i otrzymaj szybką pomoc od naszych ekspertów." class="sapUiMediumMarginBottom" />
                                     <Button text="Zamów serwis" press="onNavToCreateOrder" type="Emphasized" icon="sap-icon://add" />
                                 </VBox>
@@ -36,7 +32,6 @@
                             <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
                                 <VBox alignItems="Start" justifyContent="Center" class="sapUiSmallMarginEnd" width="70%">
                                     <Title text="Moje zamówienia" level="H2" class="sapUiTinyMarginBottom" />
-                                    <Text text="Sprawdź status zgłoszeń serwisowych" class="sapUiSmallMarginBottom" />
                                     <Text text="Przeglądaj historię swoich zgłoszeń serwisowych i sprawdź status realizacji naprawy." class="sapUiMediumMarginBottom" />
                                     <Button text="Zobacz zamówienia" press="onNavToOrders" type="Emphasized" icon="sap-icon://history" />
                                 </VBox>

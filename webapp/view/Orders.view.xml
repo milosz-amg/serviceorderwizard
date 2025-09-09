@@ -2,70 +2,136 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
-    controllerName="com.mr.serviceorderwizard.controller.Orders">
-    <Page id="ordersPage" title="Zlecenia serwisowe">
+    controllerName="com.mr.serviceorderwizard.controller.Orders"
+>
+    <Page
+        id="ordersPage"
+        title="Zlecenia serwisowe"
+    >
         <content>
-            <VBox id="mainBox" width="100%" class="sapUiMediumMargin">
+            <VBox
+                id="mainBox"
+                width="100%"
+                class="sapUiMediumMargin"
+            >
                 <!-- Header with buttons -->
-                <HBox id="headerBox" justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMarginBottom">
-                    <Title id="ordersTitle" text="Lista zleceń serwisowych" level="H2"/>
-                    <HBox id="buttonBox">
-                        <Button id="refreshButton" text="Odśwież" press="onRefresh" icon="sap-icon://refresh" type="Emphasized" class="sapUiTinyMarginEnd"/>
+                <HBox
+                    id="headerBox"
+                    justifyContent="SpaceBetween"
+                    alignItems="Center"
+                    class="sapUiSmallMarginBottom"
+                >
+                    <Title
+                        id="ordersTitle"
+                        text="Lista zleceń serwisowych"
+                        level="H2"
+                    />
+                    <HBox
+                        id="buttonBox"
+                        class="sapUiMediumMarginEnd"
+                    >
+                        <Button
+                            id="refreshButton"
+                            text="Odśwież"
+                            press="onRefresh"
+                            icon="sap-icon://refresh"
+                            type="Emphasized"
+                            class="sapUiTinyMarginEnd"
+                        />
                     </HBox>
                 </HBox>
 
                 <!-- Status message -->
-                <MessageStrip id="statusMessage" 
-                             text="{/statusMessage}" 
-                             type="{/messageType}" 
-                             visible="{/showMessage}"
-                             class="sapUiSmallMarginBottom"/>
+                <MessageStrip
+                    id="statusMessage"
+                    text="{/statusMessage}"
+                    type="{/messageType}"
+                    visible="{/showMessage}"
+                    class="sapUiSmallMarginBottom"
+                />
 
                 <!-- Table view -->
-                <Table id="ordersTable" 
-                       items="{/orders}"
-                       visible="true"
-                       inset="false"
-                       growing="true"
-                       growingThreshold="20"
-                       noDataText="Brak danych do wyświetlenia">
-                    
+                <Table
+                    id="ordersTable"
+                    items="{/orders}"
+                    visible="true"
+                    inset="false"
+                    growing="true"
+                    growingThreshold="20"
+                    noDataText="Brak danych do wyświetlenia"
+                >
                     <headerToolbar>
                         <OverflowToolbar id="tableToolbar">
                             <content>
-                                <Title id="tableTitle" text="Zlecenia ({/ordersCount})"/>
-                                <ToolbarSpacer id="toolbarSpacer"/>
-                                <!-- <SearchField id="searchField" width="300px" search="onSearch" placeholder="Szukaj..."/> -->
+                                <Title
+                                    id="tableTitle"
+                                    text="Zlecenia ({/ordersCount})"
+                                />
                             </content>
                         </OverflowToolbar>
                     </headerToolbar>
 
                     <columns>
                         <Column id="col1">
-                            <Text id="header1" text="ID Zlecenia"/>
+                            <Text
+                                id="header1"
+                                text="ID Zlecenia"
+                            />
                         </Column>
                         <Column id="col4">
-                            <Text id="header4" text="Miasto"/>
+                            <Text
+                                id="header4"
+                                text="Miasto"
+                            />
                         </Column>
                         <Column id="col7">
-                            <Text id="header7" text="Data"/>
+                            <Text
+                                id="header7"
+                                text="Data"
+                            />
                         </Column>
                         <Column id="col8">
-                            <Text id="header8" text="Status"/>
+                            <Text
+                                id="header8"
+                                text="Status"
+                            />
                         </Column>
                         <Column id="colDetails">
-                            <Text id="headerDetails" text="Akcje"/>
+                            <Text
+                                id="headerDetails"
+                                text="Więcej"
+                            />
                         </Column>
                     </columns>
 
                     <items>
-                        <ColumnListItem id="orderItem" press="onOrderPress">
+                        <ColumnListItem
+                            id="orderItem"
+                            press="onOrderPress"
+                        >
                             <cells>
-                                <Text id="cell1" text="{OrderId}"/>
-                                <Text id="cell4" text="{Addresscity}"/>
-                                <Text id="cell7" text="{Visitdate}"/>
-                                <Text id="cell8" text="{Status}"/>
-                                <Button id="detailsButton" text="Details" press="onShowDetails" type="Transparent"/>
+                                <Text
+                                    id="cell1"
+                                    text="{OrderId}"
+                                />
+                                <Text
+                                    id="cell4"
+                                    text="{Addresscity}"
+                                />
+                                <Text
+                                    id="cell7"
+                                    text="{Visitdate}"
+                                />
+                                <Text
+                                    id="cell8"
+                                    text="{Status}"
+                                />
+                                <Button
+                                    id="detailsButton"
+                                    text="Więcej"
+                                    press="onShowDetails"
+                                    type="Transparent"
+                                />
                             </cells>
                         </ColumnListItem>
                     </items>
