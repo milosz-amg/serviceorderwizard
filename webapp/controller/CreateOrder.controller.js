@@ -192,14 +192,14 @@ sap.ui.define([
             var oFaultDescInput = oView.byId("faultDescInput");
 
             // Walidacja typu urządzenia
-            if (!oDeviceTypeComboBox.getSelectedKey()) {
+            if (!oDeviceTypeComboBox.getValue().trim()) {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
                 oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia");
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
                 // Aktualizacja modelu
-                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getSelectedItem().getText());
+                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue().trim());
             }
 
             // Walidacja modelu urządzenia
@@ -288,7 +288,7 @@ sap.ui.define([
 
             return oDate.toLocaleDateString();
         },
-        
+
         onSubmitOrder: function () {
             // Przejdź do ekranu podsumowania
             this.wizardCompletedHandler();
@@ -421,7 +421,6 @@ sap.ui.define([
         },
 
         onStepActivate: function (oEvent) {
-            var oWizard = this.byId("createOrderWizard");
             var oStep = oEvent.getSource();
 
             // Sprawdź, który krok jest aktywny i wykonaj odpowiednią walidację
