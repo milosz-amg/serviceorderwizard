@@ -7,7 +7,7 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.CreateOrder", {
-        
+
         onInit: function () {
             this._initODataModel();
 
@@ -176,6 +176,47 @@ sap.ui.define([
             }
 
             return bValid;
+        },
+
+        onDeviceTypeChange: function (oEvent) {
+            var oView = this.getView();
+            var sSelectedDeviceType = oEvent.getParameter("value");
+            var oDeviceModelComboBox = oView.byId("deviceModelInput");
+
+            // Wyczyść wszystkie opcje
+            oDeviceModelComboBox.setValue("");
+            oDeviceModelComboBox.removeAllItems();
+
+            if (sSelectedDeviceType === "Konsola") {
+                // Dodaj predefiniowane modele dla konsol
+                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
+                    key: "PlayStation5",
+                    text: "PlayStation 5"
+                }));
+                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
+                    key: "PlayStation4",
+                    text: "PlayStation 4"
+                }));
+                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
+                    key: "XboxSeriesX",
+                    text: "Xbox Series X"
+                }));
+                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
+                    key: "XboxOne",
+                    text: "Xbox One"
+                }));
+                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
+                    key: "NintendoSwitch",
+                    text: "Nintendo Switch"
+                }));
+            }
+
+            // Aktualizuj model danych
+            var oModel = this.getView().getModel("orderData");
+            oModel.setProperty("/deviceData/deviceType", sSelectedDeviceType);
+
+            // Wywołaj walidację
+            this.validateFaultDesc();
         },
 
         validateFaultDesc: function () {

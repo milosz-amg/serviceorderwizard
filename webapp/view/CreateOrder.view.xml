@@ -170,7 +170,7 @@
                                     id="deviceTypeComboBox"
                                     required="true"
                                     placeholder="Podaj typ urządzenia"
-                                    change="validateFaultDesc"
+                                    change="onDeviceTypeChange"
                                     valueState="None"
                                     selectedKey="{orderData>/deviceData/deviceType}"
                                 >
@@ -221,17 +221,16 @@
                                 </ComboBox>
 
                                 <Label
-                                    id="deviceModelLabel"
                                     text="Model urządzenia"
-                                    labelFor="deviceModelInput"
-                                />
-                                <Input
-                                    id="deviceModelInput"
-                                    placeholder="Wpisz model urządzenia"
                                     required="true"
-                                    liveChange="validateFaultDesc"
-                                    valueState="None"
+                                />
+                                <ComboBox
+                                    id="deviceModelInput"
+                                    placeholder="Wpisz lub wybierz model urządzenia"
+                                    required="true"
+                                    change="validateFaultDesc"
                                     value="{orderData>/deviceData/deviceModel}"
+                                    valueState="None"
                                 />
 
                                 <Label
@@ -285,7 +284,6 @@
                                     change="validateVisitDate"
                                     valueState="None"
                                     value="{orderData>/visitData/visitDate, UTC: true }"
-                                    
                                 />
 
                                 <Label
