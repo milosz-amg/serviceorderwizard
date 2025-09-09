@@ -67,26 +67,6 @@ sap.ui.define([
             this.getView().setModel(oModel, "orderModel");
         },
 
-        _setStepInvalid: function (sStepId) {
-            var oView = this.getView();
-            var oWizard = oView.byId("createOrderWizard");
-            var oStep = oView.byId(sStepId);
-
-            if (oStep) {
-                oWizard.invalidateStep(oStep);
-            }
-        },
-
-        _setStepValid: function (sStepId) {
-            var oView = this.getView();
-            var oWizard = oView.byId("createOrderWizard");
-            var oStep = oView.byId(sStepId);
-
-            if (oStep) {
-                oWizard.validateStep(oStep);
-            }
-        },
-
         validatePersonalData: function () {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
@@ -188,7 +168,6 @@ sap.ui.define([
             oDeviceModelComboBox.removeAllItems();
 
             if (sSelectedDeviceType === "Konsola") {
-                // Dodaj predefiniowane modele dla konsol
                 oDeviceModelComboBox.addItem(new sap.ui.core.Item({
                     key: "PlayStation5",
                     text: "PlayStation 5"
@@ -211,11 +190,9 @@ sap.ui.define([
                 }));
             }
 
-            // Aktualizuj model danych
             var oModel = this.getView().getModel("orderData");
             oModel.setProperty("/deviceData/deviceType", sSelectedDeviceType);
 
-            // Wywołaj walidację
             this.validateFaultDesc();
         },
 
