@@ -102,6 +102,12 @@
                                 text="Więcej"
                             />
                         </Column>
+                                               <Column id="colDelete">
+                            <Text
+                                id="headerDelete"
+                                text="Akcje"
+                            />
+                        </Column>
                     </columns>
 
                     <items>
@@ -132,8 +138,16 @@
                                 <Button
                                     id="detailsButton"
                                     text="Więcej"
+                                    icon="sap-icon://detail-view"
                                     press="onShowDetails"
                                     type="Transparent"
+                                />
+                                <Button
+                                    id="deleteButton"
+                                    text="Usuń"
+                                    icon="sap-icon://delete"
+                                    type="Reject"
+                                    press="onDeleteOrder"
                                 />
                             </cells>
                         </ColumnListItem>

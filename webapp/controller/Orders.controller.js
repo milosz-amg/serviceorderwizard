@@ -249,6 +249,31 @@ sap.ui.define([
             return oFieldNameMap[sFieldName];
         },
 
+        /**
+         * Obsługuje żądanie usunięcia zlecenia
+         * @param {sap.ui.base.Event} oEvent - Zdarzenie kliknięcia przycisku usunięcia
+         * @public
+         */
+        onDeleteOrder: function (oEvent) {
+
+            // Pobieramy kontekst wiersza (dane zlecenia)
+            var oButton = oEvent.getSource();
+            var oContext = oButton.getBindingContext();
+            var oOrder = oContext.getObject();
+            var sOrderId = oOrder.OrderId;
+
+            MessageBox.confirm("Czy na pewno chcesz usunąć zamówienie?", {
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                onClose: function (oAction) {
+                    if (oAction === MessageBox.Action.YES) {
+                        sap.m.MessageToast.show("Usunięto zlecenie nr " + sOrderId);
+                    }
+                }
+            });
+
+            
+        }
 
     });
+
 });

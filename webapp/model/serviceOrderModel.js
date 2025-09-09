@@ -77,5 +77,42 @@ sap.ui.define([
                 oRequest.send();
             });
         },
+        /**
+ * Deletes a service order using OData V2
+ * @param {string} sOrderId - The ID of the order to delete
+ * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
+ * @returns {Promise} Promise that resolves when order is deleted
+ */
+deleteServiceOrder: function (sOrderId, oModel) {
+    return new Promise(function (resolve, reject) {
+        // Validate order ID
+        if (!sOrderId) {
+            reject(new Error("Order ID is required"));
+            return;
+        }
+        
+        // Construct the path for the order to delete
+        var sPath = "/orderSet(OrderId='" + sOrderId + "')";
+        
+        // Send DELETE request
+        oModel.remove(sPath, {
+            success: function(oData) {
+                resolve({
+                    success: true,
+                    orderId: sOrderId,
+                    message: "Order " + sOrderId + " successfully deleted"
+                });
+            },
+            error: function(oError) {
+                reject({
+                    success: false,
+                    orderId: sOrderId,
+                    error: oError,
+                    message: "Failed to delete order " + sOrderId
+                });
+            }
+        });
+    });
+},
     };
 });
