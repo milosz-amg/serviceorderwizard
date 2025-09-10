@@ -5,11 +5,14 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageToast",
     "sap/m/MessageBox",
-    "com/mr/serviceorderwizard/model/serviceOrderModel"
-], function (Controller, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, serviceOrderModel) {
+    "com/mr/serviceorderwizard/model/serviceOrderModel",
+    "com/mr/serviceorderwizard/formatter"
+], function (Controller, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, serviceOrderModel, formatter) {
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.Orders", {
+        // Expose formatter to the view
+        formatter: formatter,
         /**
          * Inicjalizuje kontroler i ustawia model danych
          * @public

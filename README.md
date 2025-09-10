@@ -48,25 +48,26 @@ Walidacje:
 * ✅ poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
     - dodano formatery do wyświetlania adresu na podsumowaniu
 
+i18n:
+* ✅ pozbyć się hardcoded stringów
+
 Ekran Orders (tabelka):
-*  dodać formater na zera wiodące w ID
+* ✅ dodać formater na zera wiodące w ID
 * dodać pole „Kiedy złożono zamówienie”
 * dodać filtrowanie, np. po statusie
 * sortowanie od najnowszych
 * „Więcej” ładniejsze – nie sztywny tekst
 * oDatowy model zamiast JSON-owego
 
-i18n:
-* ✅ pozbyć się hardcoded stringów
 
 Refactor front:
-* formatery do formatera
+* ✅ formatery do formatera
 * oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
 * uprościć formatowanie daty – przy wysyłaniu na backend
-* po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
+* ✅ po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
 
 Refactor backend:
-lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
+* lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
 
 Extra:
 * czy `setProperty()` jest potrzebne, czy robi się automatycznie? 

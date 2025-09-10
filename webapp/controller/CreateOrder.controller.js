@@ -504,7 +504,7 @@ sap.ui.define([
                     sap.m.MessageToast.show("Zamówienie zostało pomyślnie złożone!");
                     // Optionally navigate back to home or reset wizard
                     var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-                    oRouter.navTo("RouteHome");
+                    oRouter.navTo("RouteOrders");
                 }.bind(this))
                 .catch(function (oError) {
                     var sErrorMsg = "Błąd podczas składania zamówienia";

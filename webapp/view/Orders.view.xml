@@ -118,7 +118,10 @@
                             <cells>
                                 <Text
                                     id="cell1"
-                                    text="{OrderId}"
+                                    text="{
+                                        path: 'OrderId',
+                                        formatter: '.formatter.formatOrderId'
+                                    }"
                                 />
                                 <Text
                                     id="cell4"

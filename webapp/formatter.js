@@ -115,6 +115,21 @@ sap.ui.define([], function () {
             
             // Połącz wszystkie części nową linią
             return aAddressParts.join(", ");
+        },
+        
+        /**
+         * Usuwa zera wiodące z ID zamówienia, aby było bardziej przyjazne dla użytkownika
+         * @public
+         * @param {string} sOrderId - ID zamówienia (np. "000123")
+         * @returns {string} ID zamówienia bez zer wiodących (np. "123")
+         */
+        formatOrderId: function(sOrderId) {
+            if (!sOrderId) {
+                return "";
+            }
+            
+            // Konwertuj na string (jeśli to konieczne) i usuń zera wiodące
+            return String(sOrderId).replace(/^0+/, '');
         }
     };
 
