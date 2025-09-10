@@ -48,34 +48,28 @@ sap.ui.define([
         },
 
         /**
-         * Fetches raw order data using XMLHttpRequest
-         * @returns {Promise} Promise that resolves with raw response text
+         * Fetches order data using OData V2 model
+         * @returns {Promise} Promise that resolves with orders array
          */
-        fetchRawOrderData: function () {
+        fetchOrderData: function () {
             return new Promise(function (resolve, reject) {
-                var oRequest = new XMLHttpRequest();
+                var oModel = this.createServiceOrderModel();
                 
-                oRequest.onreadystatechange = function() {
-                    if (this.readyState === 4) {
-                        if (this.status === 200) {
-                            resolve(this.responseText);
-                        } else {
-                            reject({
-                                status: this.status,
-                                statusText: this.statusText,
-                                responseText: this.responseText
-                            });
-                        }
+                console.log("Pobieranie danych przez OData V2 model...");
+                
+                oModel.read("/orderSet", {
+                    success: function(oData, response) {
+                        console.log("Pomyślnie pobrano dane:", oData);
+                        // OData V2 zwraca dane w strukturze { results: [...] }
+                        var aOrders = oData.results || [];
+                        resolve(aOrders);
+                    },
+                    error: function(oError) {
+                        console.error("Błąd podczas pobierania danych przez OData:", oError);
+                        reject(oError);
                     }
-                };
-                
-                var sUrl = "/sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/orderSet?$format=json";
-                
-                oRequest.open("GET", sUrl, true);
-                oRequest.setRequestHeader("Accept", "application/json");
-                oRequest.setRequestHeader("Content-Type", "application/json");
-                oRequest.send();
-            });
+                });
+            }.bind(this));
         },
         /**
          * Deletes a service order using OData V2

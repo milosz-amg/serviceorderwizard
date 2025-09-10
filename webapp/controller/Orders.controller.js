@@ -49,10 +49,10 @@ sap.ui.define([
             oViewModel.setProperty("/orders", []);
             oViewModel.setProperty("/ordersCount", 0);
 
-            // Use serviceOrderModel to fetch raw data
-            serviceOrderModel.fetchRawOrderData()
-                .then(function (sResponseText) {
-                    this._handleSuccessResponse(sResponseText, oViewModel);
+            // Use serviceOrderModel to fetch data
+            serviceOrderModel.fetchOrderData()
+                .then(function (aOrders) {
+                    this._handleSuccessResponse(aOrders, oViewModel);
                 }.bind(this))
                 .catch(function (oError) {
                     this._handleErrorResponse(oError, oViewModel);
@@ -61,67 +61,57 @@ sap.ui.define([
 
         /**
          * Obsługuje odpowiedź z serwera w przypadku sukcesu
-         * @param {string} sResponseText - Odpowiedź z serwera w formacie tekstowym
+         * @param {Array} aOrders - Tablica zleceń otrzymana z serwera
          * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
          * @private
          */
-        _handleSuccessResponse: function (sResponseText, oViewModel) {
-            try {
-                // Parse JSON response
-                var oResponse = JSON.parse(sResponseText);
-                var aOrders = [];
-
-                // Extract orders from OData response structure
-                if (oResponse.d && oResponse.d.results) {
-                    aOrders = oResponse.d.results;
-                } else if (Array.isArray(oResponse)) {
-                    aOrders = oResponse;
-                } else if (oResponse.value) {
-                    aOrders = oResponse.value;
-                }
-
-                // Debug: Log first order to see actual field names
-                if (aOrders.length > 0) {
-                    console.log("First order structure:", aOrders[0]);
-                    console.log("Available fields:", Object.keys(aOrders[0]));
-                }
-
-                // Update model with parsed data
-                oViewModel.setProperty("/orders", aOrders);
-                oViewModel.setProperty("/ordersCount", aOrders.length);
-                oViewModel.setProperty("/responseText", JSON.stringify(oResponse, null, 2));
-                oViewModel.setProperty("/statusMessage",
-                    "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
-                oViewModel.setProperty("/messageType", "Success");
-
-                MessageToast.show("Pobrano " + aOrders.length + " zleceń z serwera");
-
-            } catch (e) {
-                // If not valid JSON, show error
-                oViewModel.setProperty("/statusMessage", "Błąd parsowania danych JSON: " + e.message);
-                oViewModel.setProperty("/messageType", "Error");
-                oViewModel.setProperty("/responseText", sResponseText);
-
-                MessageToast.show("Błąd podczas parsowania danych");
+        _handleSuccessResponse: function (aOrders, oViewModel) {
+            // Debug: Log first order to see actual field names
+            if (aOrders.length > 0) {
+                console.log("First order structure:", aOrders[0]);
+                console.log("Available fields:", Object.keys(aOrders[0]));
             }
+
+            // Update model with parsed data
+            oViewModel.setProperty("/orders", aOrders);
+            oViewModel.setProperty("/ordersCount", aOrders.length);
+            oViewModel.setProperty("/responseText", JSON.stringify(aOrders, null, 2));
+            oViewModel.setProperty("/statusMessage",
+                "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
+            oViewModel.setProperty("/messageType", "Success");
+
+            MessageToast.show("Pobrano " + aOrders.length + " zleceń z serwera");
         },
 
         /**
          * Obsługuje odpowiedź z serwera w przypadku błędu
-         * @param {object} oError - Obiekt błędu zawierający informacje o problemie
+         * @param {object} oError - Obiekt błędu OData zawierający informacje o problemie
          * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
          * @private
          */
         _handleErrorResponse: function (oError, oViewModel) {
-            var sErrorMessage = "Błąd podczas pobierania danych: " +
-                oError.status + " - " + (oError.statusText || "Nieznany błąd");
-
-            var sDetailedError = "=== BŁĄD PODCZAS POBIERANIA DANYCH ===\n\n" +
-                "Status HTTP: " + oError.status + "\n" +
-                "Status Text: " + (oError.statusText || "Brak opisu") + "\n" +
-                "URL: /sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/orderSet?$format=json\n\n" +
-                "Szczegóły odpowiedzi:\n" +
-                (oError.responseText || "Brak szczegółów");
+            console.error("Błąd podczas pobierania danych:", oError);
+            
+            var sErrorMessage = "Błąd podczas pobierania danych";
+            var sDetailedError = "=== BŁĄD PODCZAS POBIERANIA DANYCH ===\n\n";
+            
+            // OData błędy mają inną strukturę niż XMLHttpRequest błędy
+            if (oError.response && oError.response.statusCode) {
+                sErrorMessage += ": " + oError.response.statusCode + " - " + (oError.response.statusText || "Nieznany błąd");
+                sDetailedError += "Status HTTP: " + oError.response.statusCode + "\n" +
+                    "Status Text: " + (oError.response.statusText || "Brak opisu") + "\n";
+            } else if (oError.message) {
+                sErrorMessage += ": " + oError.message;
+                sDetailedError += "Wiadomość błędu: " + oError.message + "\n";
+            }
+            
+            sDetailedError += "URL: /sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/orderSet\n\n";
+            
+            if (oError.response && oError.response.body) {
+                sDetailedError += "Szczegóły odpowiedzi:\n" + oError.response.body;
+            } else {
+                sDetailedError += "Brak szczegółowych informacji o błędzie";
+            }
 
             oViewModel.setProperty("/statusMessage", sErrorMessage);
             oViewModel.setProperty("/messageType", "Error");
@@ -129,7 +119,12 @@ sap.ui.define([
             oViewModel.setProperty("/orders", []);
             oViewModel.setProperty("/ordersCount", 0);
 
-            MessageBox.error("Nie udało się pobrać danych z serwera.\n\nStatus: " + oError.status, {
+            var sDisplayMessage = "Nie udało się pobrać danych z serwera.";
+            if (oError.response && oError.response.statusCode) {
+                sDisplayMessage += "\n\nStatus: " + oError.response.statusCode;
+            }
+            
+            MessageBox.error(sDisplayMessage, {
                 title: "Błąd połączenia"
             });
         },
