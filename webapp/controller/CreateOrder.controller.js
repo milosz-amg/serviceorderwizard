@@ -172,26 +172,17 @@ sap.ui.define([
             var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
-            if (!this.validatePersonalDataName()) {
+            if (this.byId("firstNameInput").getValueState() != sap.ui.core.ValueState.Success
+                || this.byId("lastNameInput").getValueState() != sap.ui.core.ValueState.Success
+                || this.byId("phoneNumberInput").getValueState() != sap.ui.core.ValueState.Success
+                || this.byId("addressZipCodeInput").getValueState() != sap.ui.core.ValueState.Success
+                || this.byId("addressCityInput").getValueState() != sap.ui.core.ValueState.Success
+            ) {
+                sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
                 bValid = false;
+                return bValid;
             }
-
-            if (!this.validatePersonalDataLastName()) {
-                bValid = false;
-            }
-
-            if (!this.validatePersonalDataPhoneNumber()) {
-                bValid = false;
-            }
-
-            if (!this.validatePersonalDataZipCode()) {
-                bValid = false;
-            }
-
-            if (!this.validatePersonalDataCity()) {
-                bValid = false;
-            }
-
+            
             // Aktualizacja adresów (nie są wymagane, więc tylko aktualizacja modelu)
             oModel.setProperty("/personalData/addressFirstLine", oView.byId("addressFirstLineInput").getValue().trim());
             oModel.setProperty("/personalData/addressSecondLine", oView.byId("addressSecondLineInput").getValue().trim());

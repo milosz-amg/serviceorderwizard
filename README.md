@@ -35,12 +35,16 @@ Aplikacja SAPUI5 do tworzenia zleceń serwisowych z wykorzystaniem kreatora (wiz
 
 
 ## TO DO
-✅✅✅✅✅✅✅✅
 Walidacje:
-* ✅ kod pocztowy z myślnikiem - regex
-* ✅ nr telefonu z myślnikami, spacjami - regex
-* ✅ miasto – tylko litery - regex
-* ⏳ przycisk „Dalej” dostępny, gdy pola wymagane są uzupełnione; walidacja (np. czy numer telefonu ma poprawny format) po kliknięciu „Dalej” - liveChange -> change (sprawdz po zakończeniu wpisywania)
+* ✅ kod pocztowy z myślnikiem 
+    - regex
+* ✅ nr telefonu z myślnikami, spacjami 
+    - regex
+* ✅ miasto – tylko litery 
+    - regex
+* ⏳ przycisk „Dalej” dostępny, gdy pola wymagane są uzupełnione; walidacja (np. czy numer telefonu ma poprawny format) po kliknięciu „Dalej” 
+    - liveChange -> change (sprawdz po zakończeniu wpisywania)
+     - sprawdzenie tylko statusu pól przy chęci przejscia dalej, zamiast całkowitej walidacji
 * poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
 
 Ekran Orders (tabelka):
