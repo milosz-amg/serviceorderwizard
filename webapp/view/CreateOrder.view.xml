@@ -15,7 +15,6 @@
                 <content>
                     <Wizard
                         id="createOrderWizard"
-                        finishButtonText="Zakończ"
                         complete="wizardCompletedHandler"
                     >
                         <WizardStep
@@ -153,7 +152,6 @@
                             id="stepFaultDesc"
                             title="Opis usterki"
                             validated="false"
-                            activate="onStepActivate"
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
@@ -234,7 +232,7 @@
                                     id="deviceModelInput"
                                     placeholder="Wpisz lub wybierz model urządzenia"
                                     required="true"
-                                    change="validateFaultDesc"
+                                    change="validateFaultDescDeviceModel"
                                     value="{orderData>/deviceData/deviceModel}"
                                     valueState="None"
                                 />
@@ -261,11 +259,15 @@
                                     id="faultDescInput"
                                     placeholder="Opisz usterkę"
                                     rows="8"
-                                    liveChange="validateFaultDesc"
                                     valueState="None"
                                     value="{orderData>/deviceData/faultDescription}"
                                 />
                             </form:SimpleForm>
+                            <Button 
+                            id="validateDeviceButton"
+                            text="Zatwierdź dane"
+                            press="validateFaultDesc">
+                            </Button>
                         </WizardStep>
                         <WizardStep
                             id="stepVisitDate"

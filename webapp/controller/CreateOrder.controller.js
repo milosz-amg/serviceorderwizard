@@ -182,7 +182,7 @@ sap.ui.define([
                 bValid = false;
                 return bValid;
             }
-            
+
             // Aktualizacja adresów (nie są wymagane, więc tylko aktualizacja modelu)
             oModel.setProperty("/personalData/addressFirstLine", oView.byId("addressFirstLineInput").getValue().trim());
             oModel.setProperty("/personalData/addressSecondLine", oView.byId("addressSecondLineInput").getValue().trim());
@@ -203,7 +203,6 @@ sap.ui.define([
 
             return bValid;
         },
-
         onDeviceTypeChange: function (oEvent) {
             var oView = this.getView();
             var sSelectedDeviceType = oEvent.getParameter("value");
@@ -214,6 +213,7 @@ sap.ui.define([
             oDeviceModelComboBox.removeAllItems();
 
             if (sSelectedDeviceType === "Konsola") {
+                //TODO: dodac pobranie z backendu
                 oDeviceModelComboBox.addItem(new sap.ui.core.Item({
                     key: "PlayStation5",
                     text: "PlayStation 5"
@@ -236,10 +236,45 @@ sap.ui.define([
                 }));
             }
 
-            var oModel = this.getView().getModel("orderData");
-            oModel.setProperty("/deviceData/deviceType", sSelectedDeviceType);
+            this.validateFaultDescDeviceType();
+        },
 
-            this.validateFaultDesc();
+        validateFaultDescDeviceType: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+
+            // Pola do walidacji
+            var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
+
+            if (!oDeviceTypeComboBox.getValue().trim()) {
+                oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
+                oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia");
+                bValid = false;
+            } else {
+                oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
+                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue().trim());
+            }
+            return bValid;
+        },
+
+        validateFaultDescDeviceModel: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+
+            // Pola do walidacji
+            var oDeviceModelInput = oView.byId("deviceModelInput");
+
+            if (!oDeviceModelInput.getValue().trim()) {
+                oDeviceModelInput.setValueState(sap.ui.core.ValueState.Error);
+                oDeviceModelInput.setValueStateText("Model urządzenia jest wymagany");
+                bValid = false;
+            } else {
+                oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
+                oModel.setProperty("/deviceData/deviceModel", oDeviceModelInput.getValue().trim());
+            }
+            return bValid;
         },
 
         validateFaultDesc: function () {
@@ -249,32 +284,16 @@ sap.ui.define([
             var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
-            // Pola do walidacji
-            var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
-            var oDeviceModelInput = oView.byId("deviceModelInput");
             var oDeviceSerialInput = oView.byId("deviceSerialNumberInput");
             var oFaultDescInput = oView.byId("faultDescInput");
 
-            // Walidacja typu urządzenia
-            if (!oDeviceTypeComboBox.getValue().trim()) {
-                oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia");
+            if (this.byId("deviceTypeComboBox").getValueState() != sap.ui.core.ValueState.Success
+                || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
+            ) {
+                sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
                 bValid = false;
-            } else {
-                oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
-                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue().trim());
-            }
+                return bValid;
 
-            // Walidacja modelu urządzenia
-            if (!oDeviceModelInput.getValue().trim()) {
-                oDeviceModelInput.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceModelInput.setValueStateText("Model urządzenia jest wymagany");
-                bValid = false;
-            } else {
-                oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
-                oModel.setProperty("/deviceData/deviceModel", oDeviceModelInput.getValue().trim());
             }
 
             // Aktualizacja numeru seryjnego i opisu usterki (nie są wymagane)
@@ -285,12 +304,35 @@ sap.ui.define([
             if (bValid) {
                 oWizard.validateStep(oStep);
                 sap.m.MessageToast.show("Opis usterki został pomyślnie zweryfikowany!");
+                var oValidateButton = oView.byId("validateDeviceButton");
+                if (oValidateButton) {
+                    oValidateButton.setVisible(false);
+                }
             } else {
                 oWizard.invalidateStep(oStep);
             }
 
             return bValid;
         },
+
+
+        validateVisitDateDate: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var oVisitDateInput = oView.byId("visitDateInput");
+
+            // Walidacja daty wizyty
+            if (!oVisitDate) {
+                bDateValid = false;
+                oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
+                oVisitDateInput.setValueStateText("Data wizyty jest wymagana");
+            } else {
+                oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
+                // Aktualizacja modelu
+                oModel.setProperty("/visitData/visitDate", oVisitDate);
+            }
+        },
+
         validateVisitDate: function () {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
@@ -304,19 +346,9 @@ sap.ui.define([
             var oVisitHourSelect = oView.byId("visitHourSelect");
 
             // Pobierz wartości pól
-            var oVisitDate = oVisitDateInput.getDateValue();
             var sVisitHourKey = oVisitHourSelect.getSelectedKey();
 
-            // Walidacja daty wizyty
-            if (!oVisitDate) {
-                bDateValid = false;
-                oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
-                oVisitDateInput.setValueStateText("Data wizyty jest wymagana");
-            } else {
-                oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
-                oModel.setProperty("/visitData/visitDate", oVisitDate);
-            }
+
 
             // Walidacja godziny wizyty
             if (!sVisitHourKey) {
