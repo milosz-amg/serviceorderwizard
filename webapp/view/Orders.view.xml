@@ -6,7 +6,7 @@
 >
     <Page
         id="ordersPage"
-        title="Zlecenia serwisowe"
+        title="{i18n>ordersPageTitle}"
     >
         <content>
             <VBox
@@ -23,7 +23,7 @@
                 >
                     <Title
                         id="ordersTitle"
-                        text="Lista zleceń serwisowych"
+                        text="{i18n>ordersListTitle}"
                         level="H2"
                     />
                     <HBox
@@ -32,7 +32,7 @@
                     >
                         <Button
                             id="refreshButton"
-                            text="Odśwież"
+                            text="{i18n>refreshButton}"
                             press="onRefresh"
                             icon="sap-icon://refresh"
                             type="Emphasized"
@@ -51,21 +51,21 @@
                 />
 
                 <!-- Table view -->
-                <Table
+                    <Table
                     id="ordersTable"
                     items="{/orders}"
                     visible="true"
                     inset="false"
                     growing="true"
                     growingThreshold="20"
-                    noDataText="Brak danych do wyświetlenia"
+                        noDataText="{i18n>ordersNoDataText}"
                 >
                     <headerToolbar>
                         <OverflowToolbar id="tableToolbar">
                             <content>
                                 <Title
                                     id="tableTitle"
-                                    text="Zlecenia ({/ordersCount})"
+                                    text="{= ${i18n>ordersTableTitle} + ' (' + ${/ordersCount} + ')' }"
                                 />
                             </content>
                         </OverflowToolbar>
@@ -75,37 +75,37 @@
                         <Column id="col1">
                             <Text
                                 id="header1"
-                                text="ID Zlecenia"
+                                text="{i18n>ordersColId}"
                             />
                         </Column>
                         <Column id="col4">
                             <Text
                                 id="header4"
-                                text="Miasto"
+                                text="{i18n>ordersColCity}"
                             />
                         </Column>
                         <Column id="col7">
                             <Text
                                 id="header7"
-                                text="Data wizyty"
+                                text="{i18n>ordersColVisitDate}"
                             />
                         </Column>
                         <Column id="col8">
                             <Text
                                 id="header8"
-                                text="Status"
+                                text="{i18n>ordersColStatus}"
                             />
                         </Column>
                         <Column id="colDetails">
                             <Text
                                 id="headerDetails"
-                                text="Więcej"
+                                text="{i18n>ordersColDetails}"
                             />
                         </Column>
                                                <Column id="colDelete">
                             <Text
                                 id="headerDelete"
-                                text="Akcje"
+                                text="{i18n>ordersColActions}"
                             />
                         </Column>
                     </columns>
@@ -137,14 +137,14 @@
                                 />
                                 <Button
                                     id="detailsButton"
-                                    text="Więcej"
+                                    text="{i18n>detailsButton}"
                                     icon="sap-icon://detail-view"
                                     press="onShowDetails"
                                     type="Transparent"
                                 />
                                 <Button
                                     id="deleteButton"
-                                    text="Usuń"
+                                    text="{i18n>deleteButton}"
                                     icon="sap-icon://delete"
                                     type="Reject"
                                     press="onDeleteOrder"

@@ -34,7 +34,7 @@ Aplikacja SAPUI5 do tworzenia zleceń serwisowych z wykorzystaniem kreatora (wiz
 1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
 
 
-## TO DO
+## TO DO ⏳
 Walidacje:
 * ✅ kod pocztowy z myślnikiem 
     - regex
@@ -49,7 +49,7 @@ Walidacje:
     - dodano formatery do wyświetlania adresu na podsumowaniu
 
 Ekran Orders (tabelka):
-* ⏳ dodać formater na zera wiodące w ID
+*  dodać formater na zera wiodące w ID
 * dodać pole „Kiedy złożono zamówienie”
 * dodać filtrowanie, np. po statusie
 * sortowanie od najnowszych
@@ -57,7 +57,7 @@ Ekran Orders (tabelka):
 * oDatowy model zamiast JSON-owego
 
 i18n:
-* pozbyć się hardcoded stringów
+* ✅ pozbyć się hardcoded stringów
 
 Refactor front:
 * formatery do formatera

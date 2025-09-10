@@ -19,40 +19,31 @@
                     >
                         <WizardStep
                             id="stepPersonalData"
-                            title="Dane osobowe"
+                            title="{i18n>stepPersonalDataTitle}"
                             validated="false"
-                            
                         >
                             <MessageStrip
                                 id="wizardInfoMessage"
                                 class="sapUiSmallMarginBottom"
-                                text="Informacja o przetwarzaniu danych osobowych (RODO)"
+                                text="{i18n>rodoBanner}"
                                 showIcon="true"
                             />
 
-                            <Text
-                                text="Zgodnie z art. 13 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO), informujemy, że:
-                                Administratorem Twoich danych osobowych jest [Nazwa firmy/organizacji], z siedzibą w [adres firmy].
-                                Twoje dane osobowe będą przetwarzane wyłącznie w celu realizacji zamówienia oraz świadczenia usług serwisowych, zgodnie z obowiązującymi przepisami prawa.
-                                Podanie danych osobowych jest dobrowolne, ale niezbędne do realizacji zamówienia. Brak podania danych uniemożliwi realizację usługi.
-                                Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu wobec przetwarzania oraz cofnięcia zgody w dowolnym momencie.
-                                Twoje dane nie będą przekazywane podmiotom trzecim bez Twojej wyraźnej zgody, chyba że wymagają tego przepisy prawa.
-                                W przypadku pytań dotyczących przetwarzania danych osobowych prosimy o kontakt pod adresem e-mail: [adres e-mail]."
-                            />
+                            <Text text="{i18n>rodoText}" />
 
                             <form:SimpleForm
                                 editable="true"
                                 layout="ResponsiveGridLayout"
-                                title="Dane osobowe"
+                                title="{i18n>stepPersonalDataTitle}"
                             >
                                 <Label
                                     id="firstNameLabel"
-                                    text="Imię"
+                                    text="{i18n>firstNameLabel}"
                                     labelFor="firstNameInput"
                                 />
                                 <Input
                                     id="firstNameInput"
-                                    placeholder="Wpisz imię"
+                                    placeholder="{i18n>firstNamePlaceholder}"
                                     required="true"
                                     change="validatePersonalDataName"
                                     valueState="None"
@@ -61,12 +52,12 @@
 
                                 <Label
                                     id="lastNameLabel"
-                                    text="Nazwisko"
+                                    text="{i18n>lastNameLabel}"
                                     labelFor="lastNameInput"
                                 />
                                 <Input
                                     id="lastNameInput"
-                                    placeholder="Wpisz nazwisko"
+                                    placeholder="{i18n>lastNamePlaceholder}"
                                     required="true"
                                     change="validatePersonalDataLastName"
                                     valueState="None"
@@ -75,12 +66,12 @@
 
                                 <Label
                                     id="phoneNumberLabel"
-                                    text="Numer telefonu"
+                                    text="{i18n>phoneNumberLabel}"
                                     labelFor="phoneNumberInput"
                                 />
                                 <Input
                                     id="phoneNumberInput"
-                                    placeholder="Wpisz numer telefonu"
+                                    placeholder="{i18n>phoneNumberPlaceholder}"
                                     required="true"
                                     change="validatePersonalDataPhoneNumber"
                                     valueState="None"
@@ -89,37 +80,37 @@
 
                                 <Label
                                     id="addressFirstLineLabel"
-                                    text="Adres (linia 1)"
+                                    text="{i18n>addressFirstLineLabel}"
                                     labelFor="addressFirstLineInput"
                                 />
                                 <Input
                                     id="addressFirstLineInput"
-                                    placeholder="Wpisz adres (linia 1)"
+                                    placeholder="{i18n>addressFirstLinePlaceholder}"
                                     valueState="None"
                                     value="{orderData>/personalData/addressFirstLine}"
                                 />
 
                                 <Label
                                     id="addressSecondLineLabel"
-                                    text="Adres (linia 2)"
+                                    text="{i18n>addressSecondLineLabel}"
                                     labelFor="addressSecondLineInput"
                                 />
                                 <Input
                                     id="addressSecondLineInput"
-                                    placeholder="Wpisz adres (linia 2)"
+                                    placeholder="{i18n>addressSecondLinePlaceholder}"
                                     valueState="None"
                                     value="{orderData>/personalData/addressSecondLine}"
                                 />
 
                                 <Label
                                     id="addressZipCodeLabel"
-                                    text="Kod pocztowy"
+                                    text="{i18n>zipCodeLabel}"
                                     required="true"
                                     labelFor="addressZipCodeInput"
                                 />
                                 <Input
                                     id="addressZipCodeInput"
-                                    placeholder="Wpisz kod pocztowy (5 cyfr)"
+                                    placeholder="{i18n>zipCodePlaceholder}"
                                     change="validatePersonalDataZipCode"
                                     valueState="None"
                                     value="{orderData>/personalData/addressZipCode}"
@@ -127,45 +118,44 @@
 
                                 <Label
                                     id="addressCityLabel"
-                                    text="Miasto"
+                                    text="{i18n>cityLabel}"
                                     required="true"
                                     labelFor="addressCityInput"
                                 />
                                 <Input
                                     id="addressCityInput"
-                                    placeholder="Wpisz miasto"
+                                    placeholder="{i18n>cityPlaceholder}"
                                     required="true"
                                     change="validatePersonalDataCity"
                                     valueState="None"
                                     value="{orderData>/personalData/addressCity}"
                                 />
                             </form:SimpleForm>
-                            <Button 
-                            id="validatePersonalButton"
-                            text="Zatwierdź dane"
-                            press="validatePersonalData">
-                            </Button>
+                            <Button
+                                id="validatePersonalButton"
+                                text="{i18n>validateDataButton}"
+                                press="validatePersonalData"
+                            />
                         </WizardStep>
-
 
                         <WizardStep
                             id="stepFaultDesc"
-                            title="Opis usterki"
+                            title="{i18n>stepFaultDescTitle}"
                             validated="false"
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
-                                text="Dokładny opis usterki pomoże naszym technikom szybciej zdiagnozować problem i przygotować się do wizyty."
+                                text="{i18n>deviceFaultHelpMessage}"
                                 showIcon="true"
                             />
                             <form:SimpleForm
                                 editable="true"
                                 layout="ResponsiveGridLayout"
-                                title="Informacje o urządzeniu"
+                                title="{i18n>deviceInfoFormTitle}"
                             >
                                 <Label
                                     id="deviceTypeLabel"
-                                    text="Typ urządzenia"
+                                    text="{i18n>deviceTypeLabel}"
                                     required="true"
                                     labelFor="deviceTypeComboBox"
                                 />
@@ -173,64 +163,64 @@
                                     width="100%"
                                     id="deviceTypeComboBox"
                                     required="true"
-                                    placeholder="Podaj typ urządzenia"
+                                    placeholder="{i18n>deviceTypePlaceholder}"
                                     change="onDeviceTypeChange"
                                     valueState="None"
                                     selectedKey="{orderData>/deviceData/deviceType}"
                                 >
                                     <core:Item
                                         key="Laptop"
-                                        text="Laptop"
+                                        text="{i18n>deviceTypeLaptop}"
                                     />
                                     <core:Item
                                         key="Smartphone"
-                                        text="Smartphone"
+                                        text="{i18n>deviceTypeSmartphone}"
                                     />
                                     <core:Item
                                         key="Tablet"
-                                        text="Tablet"
+                                        text="{i18n>deviceTypeTablet}"
                                     />
                                     <core:Item
                                         key="Konsola"
-                                        text="Konsola"
+                                        text="{i18n>deviceTypeConsole}"
                                     />
                                     <core:Item
                                         key="Telewizor"
-                                        text="Telewizor"
+                                        text="{i18n>deviceTypeTV}"
                                     />
                                     <core:Item
                                         key="Drukarka"
-                                        text="Drukarka"
+                                        text="{i18n>deviceTypePrinter}"
                                     />
                                     <core:Item
                                         key="Router"
-                                        text="Router"
+                                        text="{i18n>deviceTypeRouter}"
                                     />
                                     <core:Item
                                         key="Monitor"
-                                        text="Monitor komputerowy"
+                                        text="{i18n>deviceTypeMonitor}"
                                     />
                                     <core:Item
                                         key="Smartwatch"
-                                        text="Smartwatch"
+                                        text="{i18n>deviceTypeSmartwatch}"
                                     />
                                     <core:Item
                                         key="GlosnikBluetooth"
-                                        text="Głośnik Bluetooth"
+                                        text="{i18n>deviceTypeBluetooth}"
                                     />
                                     <core:Item
                                         key="Inne"
-                                        text="Inne"
+                                        text="{i18n>deviceTypeOther}"
                                     />
                                 </ComboBox>
 
                                 <Label
-                                    text="Model urządzenia"
+                                    text="{i18n>deviceModelLabel}"
                                     required="true"
                                 />
                                 <ComboBox
                                     id="deviceModelInput"
-                                    placeholder="Wpisz lub wybierz model urządzenia"
+                                    placeholder="{i18n>deviceModelPlaceholder}"
                                     required="true"
                                     change="validateFaultDescDeviceModel"
                                     value="{orderData>/deviceData/deviceModel}"
@@ -239,54 +229,54 @@
 
                                 <Label
                                     id="deviceSerialNumberLabel"
-                                    text="Numer seryjny urządzenia"
+                                    text="{i18n>deviceSerialNumberLabel}"
                                     labelFor="deviceSerialNumberInput"
                                 />
                                 <Input
                                     id="deviceSerialNumberInput"
-                                    placeholder="Wpisz numer seryjny urządzenia"
+                                    placeholder="{i18n>deviceSerialNumberPlaceholder}"
                                     valueState="None"
                                     value="{orderData>/deviceData/deviceSerialNumber}"
                                 />
 
                                 <Label
                                     id="faultDescLabel"
-                                    text="Opis usterki"
+                                    text="{i18n>faultDescriptionLabel}"
                                     labelFor="faultDescInput"
                                 />
                                 <TextArea
                                     width="100%"
                                     id="faultDescInput"
-                                    placeholder="Opisz usterkę"
+                                    placeholder="{i18n>faultDescriptionPlaceholder}"
                                     rows="8"
                                     valueState="None"
                                     value="{orderData>/deviceData/faultDescription}"
                                 />
                             </form:SimpleForm>
-                            <Button 
-                            id="validateDeviceButton"
-                            text="Zatwierdź dane"
-                            press="validateFaultDesc">
-                            </Button>
+                            <Button
+                                id="validateDeviceButton"
+                                text="{i18n>validateDataButton}"
+                                press="validateFaultDesc"
+                            />
                         </WizardStep>
                         <WizardStep
                             id="stepVisitDate"
-                            title="Data wizyty"
+                            title="{i18n>stepVisitDateTitle}"
                             validated="false"
                         >
                             <form:SimpleForm
                                 editable="true"
                                 layout="ResponsiveGridLayout"
-                                title="Termin wizyty"
+                                title="{i18n>visitTermFormTitle}"
                             >
                                 <Label
                                     id="visitDateLabel"
-                                    text="Data wizyty"
+                                    text="{i18n>visitDateLabel}"
                                     labelFor="visitDateInput"
                                 />
                                 <DatePicker
                                     id="visitDateInput"
-                                    placeholder="Wybierz datę wizyty"
+                                    placeholder="{i18n>visitDatePlaceholder}"
                                     required="true"
                                     change="validateVisitDateDate"
                                     valueState="None"
@@ -295,7 +285,7 @@
 
                                 <Label
                                     id="visitTimeLabel"
-                                    text="Godzina wizyty"
+                                    text="{i18n>visitTimeLabel}"
                                     labelFor="visitHourSelect"
                                 />
                                 <Select
@@ -311,61 +301,61 @@
                                     />
                                     <core:Item
                                         key="08"
-                                        text="08:00"
+                                        text="{i18n>timeSlot08}"
                                     />
                                     <core:Item
                                         key="09"
-                                        text="09:00"
+                                        text="{i18n>timeSlot09}"
                                     />
                                     <core:Item
                                         key="10"
-                                        text="10:00"
+                                        text="{i18n>timeSlot10}"
                                     />
                                     <core:Item
                                         key="11"
-                                        text="11:00"
+                                        text="{i18n>timeSlot11}"
                                     />
                                     <core:Item
                                         key="12"
-                                        text="12:00"
+                                        text="{i18n>timeSlot12}"
                                     />
                                     <core:Item
                                         key="13"
-                                        text="13:00"
+                                        text="{i18n>timeSlot13}"
                                     />
                                     <core:Item
                                         key="14"
-                                        text="14:00"
+                                        text="{i18n>timeSlot14}"
                                     />
                                     <core:Item
                                         key="15"
-                                        text="15:00"
+                                        text="{i18n>timeSlot15}"
                                     />
                                     <core:Item
                                         key="16"
-                                        text="16:00"
+                                        text="{i18n>timeSlot16}"
                                     />
                                 </Select>
                             </form:SimpleForm>
-                            <Button 
-                            id="validateVisitButton"
-                            text="Zatwierdź dane"
-                            press="validateVisitDate">
-                            </Button>
+                            <Button
+                                id="validateVisitButton"
+                                text="{i18n>validateDataButton}"
+                                press="validateVisitDate"
+                            />
                         </WizardStep>
                         <WizardStep
                             id="stepSummary"
-                            title="Podsumowanie"
+                            title="{i18n>stepSummaryTitle}"
                             validated="true"
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
-                                text="Po kliknięciu 'Generuj zlecenie', zostaniesz przeniesiony do podsumowania zamówienia, gdzie będziesz mógł zweryfikować wszystkie wprowadzone dane przed finalnym zatwierdzeniem."
+                                text="{i18n>summaryHelpMessage}"
                                 showIcon="true"
                             />
                             <Button
                                 id="submitOrderButton"
-                                text="Generuj zlecenie"
+                                text="{i18n>generateOrderButton}"
                                 press="onSubmitOrder"
                             />
                         </WizardStep>
@@ -375,7 +365,7 @@
                     <OverflowToolbar>
                         <ToolbarSpacer />
                         <Button
-                            text="Anuluj"
+                            text="{i18n>cancelButton}"
                             press="handleWizardCancel"
                         />
                     </OverflowToolbar>
@@ -388,27 +378,27 @@
             >
                 <content>
                     <form:SimpleForm
-                        title="1. Dane osobowe"
+                        title="{i18n>summaryPersonalDataTitle}"
                         editable="false"
                         layout="ResponsiveGridLayout"
                     >
                         <form:content>
-                            <Label text="Imię" />
+                            <Label text="{i18n>summaryFirstName}" />
                             <Text
                                 id="FirstNameChosen"
                                 text="{orderData>/personalData/firstName}"
                             />
-                            <Label text="Nazwisko" />
+                            <Label text="{i18n>summaryLastName}" />
                             <Text
                                 id="LastNameChosen"
                                 text="{orderData>/personalData/lastName}"
                             />
-                            <Label text="Telefon" />
+                            <Label text="{i18n>summaryPhone}" />
                             <Text
                                 id="PhoneNumberChosen"
                                 text="{orderData>/personalData/phoneNumber}"
                             />
-                            <Label text="Adres" />
+                            <Label text="{i18n>summaryAddress}" />
                             <Text
                                 id="AddressChosen"
                                 text="{
@@ -423,63 +413,63 @@
                             />
                             <Link
                                 press="editStepOne"
-                                text="Edytuj"
+                                text="{i18n>editButton}"
                             />
                         </form:content>
                     </form:SimpleForm>
 
                     <form:SimpleForm
-                        title="2. Informacje o urządzeniu"
+                        title="{i18n>summaryDeviceInfoTitle}"
                         editable="false"
                         layout="ResponsiveGridLayout"
                     >
                         <form:content>
-                            <Label text="Typ urządzenia" />
+                            <Label text="{i18n>summaryDeviceType}" />
                             <Text
                                 id="DeviceTypeChosen"
                                 text="{orderData>/deviceData/deviceType}"
                             />
-                            <Label text="Model" />
+                            <Label text="{i18n>summaryDeviceModel}" />
                             <Text
                                 id="DeviceModelChosen"
                                 text="{orderData>/deviceData/deviceModel}"
                             />
-                            <Label text="Numer seryjny" />
+                            <Label text="{i18n>summaryDeviceSerial}" />
                             <Text
                                 id="DeviceSerialChosen"
                                 text="{orderData>/deviceData/deviceSerialNumber}"
                             />
-                            <Label text="Opis usterki" />
+                            <Label text="{i18n>summaryFaultDescription}" />
                             <Text
                                 id="FaultDescriptionChosen"
                                 text="{orderData>/deviceData/faultDescription}"
                             />
                             <Link
                                 press="editStepTwo"
-                                text="Edytuj"
+                                text="{i18n>editButton}"
                             />
                         </form:content>
                     </form:SimpleForm>
 
                     <form:SimpleForm
-                        title="3. Termin wizyty"
+                        title="{i18n>summaryVisitTermTitle}"
                         editable="false"
                         layout="ResponsiveGridLayout"
                     >
                         <form:content>
-                            <Label text="Data wizyty" />
+                            <Label text="{i18n>summaryVisitDate}" />
                             <Text
                                 id="VisitDateChosen"
                                 text="{path: 'orderData>/visitData/visitDate', formatter: '.formatter.formatDate'}"
                             />
-                            <Label text="Godzina wizyty" />
+                            <Label text="{i18n>summaryVisitTime}" />
                             <Text
                                 id="VisitTimeChosen"
                                 text="{orderData>/visitData/visitTime}"
                             />
                             <Link
                                 press="editStepThree"
-                                text="Edytuj"
+                                text="{i18n>editButton}"
                             />
                         </form:content>
                     </form:SimpleForm>
@@ -488,11 +478,11 @@
                     <Bar>
                         <contentRight>
                             <Button
-                                text="Wyślij"
+                                text="{i18n>sendButton}"
                                 press="handleWizardSubmit"
                             />
                             <Button
-                                text="Anuluj"
+                                text="{i18n>cancelButton}"
                                 press="handleWizardCancel"
                             />
                         </contentRight>

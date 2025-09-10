@@ -15,9 +15,9 @@
                         <FlexBox height="100%" alignItems="Center" justifyContent="Start" class="sapUiSmallMargin">
                             <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
                                 <VBox alignItems="Start" justifyContent="Center" class="sapUiSmallMarginEnd" width="70%">
-                                    <Title text="Zamów serwis" level="H2" class="sapUiTinyMarginBottom" />
-                                    <Text text="Zgłoś swoją usterkę, wybierz dogodny termin i otrzymaj szybką pomoc od naszych ekspertów." class="sapUiMediumMarginBottom" />
-                                    <Button text="Zamów serwis" press="onNavToCreateOrder" type="Emphasized" icon="sap-icon://add" />
+                                    <Title text="{i18n>homeOrderTitle}" level="H2" class="sapUiTinyMarginBottom" />
+                                    <Text text="{i18n>homeOrderDescription}" class="sapUiMediumMarginBottom" />
+                                    <Button text="{i18n>homeOrderButton}" press="onNavToCreateOrder" type="Emphasized" icon="sap-icon://add" />
                                 </VBox>
                                 <core:Icon src="sap-icon://appointment-2" size="5rem" color="#0854a0" class="sapUiMediumMargin" />
                             </HBox>
@@ -31,9 +31,9 @@
                         <FlexBox height="100%" alignItems="Center" justifyContent="Start" class="sapUiSmallMargin">
                             <HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
                                 <VBox alignItems="Start" justifyContent="Center" class="sapUiSmallMarginEnd" width="70%">
-                                    <Title text="Moje zamówienia" level="H2" class="sapUiTinyMarginBottom" />
-                                    <Text text="Przeglądaj historię swoich zgłoszeń serwisowych i sprawdź status realizacji naprawy." class="sapUiMediumMarginBottom" />
-                                    <Button text="Zobacz zamówienia" press="onNavToOrders" type="Emphasized" icon="sap-icon://history" />
+                                    <Title text="{i18n>homeOrdersTitle}" level="H2" class="sapUiTinyMarginBottom" />
+                                    <Text text="{i18n>homeOrdersDescription}" class="sapUiMediumMarginBottom" />
+                                    <Button text="{i18n>homeOrdersButton}" press="onNavToOrders" type="Emphasized" icon="sap-icon://history" />
                                 </VBox>
                                 <core:Icon src="sap-icon://list" size="5rem" color="#0854a0" class="sapUiMediumMargin" />
                             </HBox>
