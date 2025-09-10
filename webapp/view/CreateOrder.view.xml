@@ -135,7 +135,7 @@
                                     id="addressCityInput"
                                     placeholder="Wpisz miasto"
                                     required="true"
-                                    liveChange="validatePersonalDataCity"
+                                    change="validatePersonalDataCity"
                                     valueState="None"
                                     value="{orderData>/personalData/addressCity}"
                                 />
@@ -273,7 +273,6 @@
                             id="stepVisitDate"
                             title="Data wizyty"
                             validated="false"
-                            activate="onStepActivate"
                         >
                             <form:SimpleForm
                                 editable="true"
@@ -358,7 +357,6 @@
                             id="stepSummary"
                             title="Podsumowanie"
                             validated="true"
-                            activate="onStepActivate"
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
@@ -413,7 +411,15 @@
                             <Label text="Adres" />
                             <Text
                                 id="AddressChosen"
-                                text="{orderData>/personalData/addressFirstLine} {orderData>/personalData/addressSecondLine}, {orderData>/personalData/addressZipCode} {orderData>/personalData/addressCity}"
+                                text="{
+                                    parts: [
+                                        'orderData>/personalData/addressFirstLine',
+                                        'orderData>/personalData/addressSecondLine',
+                                        'orderData>/personalData/addressZipCode',
+                                        'orderData>/personalData/addressCity'
+                                    ],
+                                    formatter: '.formatter.formatAddress'
+                                }"
                             />
                             <Link
                                 press="editStepOne"
@@ -464,7 +470,7 @@
                             <Label text="Data wizyty" />
                             <Text
                                 id="VisitDateChosen"
-                                text="{path: 'orderData>/visitData/visitDate', formatter: '.formatDate'}"
+                                text="{path: 'orderData>/visitData/visitDate', formatter: '.formatter.formatDate'}"
                             />
                             <Label text="Godzina wizyty" />
                             <Text

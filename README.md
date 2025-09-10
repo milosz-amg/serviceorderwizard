@@ -45,15 +45,15 @@ Walidacje:
 * ✅ przycisk „Dalej” dostępny, gdy pola wymagane są uzupełnione; walidacja (np. czy numer telefonu ma poprawny format) po kliknięciu „Dalej” 
     - liveChange -> change (sprawdz po zakończeniu wpisywania)
      - sprawdzenie tylko statusu pól przy chęci przejscia dalej, zamiast całkowitej walidacji
-* ⏳ poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
+* ✅ poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
+    - dodano formatery do wyświetlania adresu na podsumowaniu
 
 Ekran Orders (tabelka):
+* ⏳ dodać formater na zera wiodące w ID
+* dodać pole „Kiedy złożono zamówienie”
 * dodać filtrowanie, np. po statusie
 * sortowanie od najnowszych
-* dodać pole „Kiedy złożono zamówienie”
 * „Więcej” ładniejsze – nie sztywny tekst
-* dodać formater na zera wiodące w ID
-* dodać edycję zamówienia już utworzonego
 * oDatowy model zamiast JSON-owego
 
 i18n:
@@ -69,7 +69,8 @@ Refactor backend:
 lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
 
 Extra:
-* czy `setProperty()` jest potrzebne, czy robi się automatycznie?
+* czy `setProperty()` jest potrzebne, czy robi się automatycznie? 
+    - chyba niekoniecznie, bylo przydatne przy live update, ale nie jest to konieczne
 * czy czyszczenie modelu JSON można zrobić przez `unbind`?
 * resource model z manifestu
 * path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu

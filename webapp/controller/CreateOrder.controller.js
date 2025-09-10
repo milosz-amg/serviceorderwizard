@@ -8,7 +8,7 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.CreateOrder", {
-
+        formatter: formatter,
         onInit: function () {
             this._initODataModel();
 
@@ -334,6 +334,7 @@ sap.ui.define([
             } else {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
                 oModel.setProperty("/visitData/visitDate", oVisitDate);
+                console.log(oVisitDate);
             }
             return bValid;
         },
@@ -344,7 +345,6 @@ sap.ui.define([
             var oVisitHourSelect = oView.byId("visitHourSelect");
             var bValid = true;
 
-            // Walidacja godziny wizyty
             if (!oVisitHourSelect.getSelectedKey()) {
                 bValid = false;
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Error);
@@ -373,7 +373,6 @@ sap.ui.define([
                 return bValid;
             }
 
-            // Ustaw stan kroku w zależności od wyników walidacji
             if (bValid) {
                 oWizard.validateStep(oStep);
                 sap.m.MessageToast.show("Termin wizyty został pomyślnie wybrany!");
@@ -386,18 +385,6 @@ sap.ui.define([
             }
 
             return bValid;
-        },
-
-        formatDate: function (oDate) {
-            if (!oDate) {
-                return "";
-            }
-
-            if (typeof oDate === "string") {
-                return oDate;
-            }
-
-            return oDate.toLocaleDateString();
         },
 
         onSubmitOrder: function () {
@@ -529,25 +516,6 @@ sap.ui.define([
                     sap.m.MessageBox.error(sErrorMsg);
                     console.error("Order creation error:", oError);
                 });
-        },
-
-        onStepActivate: function (oEvent) {
-            var oStep = oEvent.getSource();
-
-            // Sprawdź, który krok jest aktywny i wykonaj odpowiednią walidację
-            switch (oStep.getId()) {
-                case this.createId("stepPersonalData"):
-                    this.validatePersonalData();
-                    break;
-                case this.createId("stepFaultDesc"):
-                    this.validateFaultDesc();
-                    break;
-                case this.createId("stepVisitDate"):
-                    this.validateVisitDate();
-                    break;
-                default:
-                    break;
-            }
         },
 
         // Funkcje edycji kroków
