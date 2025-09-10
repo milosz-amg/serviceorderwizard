@@ -67,46 +67,51 @@ sap.ui.define([
             this.getView().setModel(oModel, "orderModel");
         },
 
-        validatePersonalData: function () {
+        validatePersonalDataName: function () {
             var oView = this.getView();
-            var oWizard = oView.byId("createOrderWizard");
-            var oStep = oView.byId("stepPersonalData");
             var oModel = this.getView().getModel("orderData");
             var bValid = true;
-
             // Pola do walidacji
             var oFirstNameInput = oView.byId("firstNameInput");
-            var oLastNameInput = oView.byId("lastNameInput");
-            var oPhoneNumberInput = oView.byId("phoneNumberInput");
-            var oZipCodeInput = oView.byId("addressZipCodeInput");
-            var oCityInput = oView.byId("addressCityInput");
-            var oFirstLineInput = oView.byId("addressFirstLineInput");
 
-            // Walidacja imienia
             if (!oFirstNameInput.getValue().trim() || oFirstNameInput.getValue().trim().length < 3) {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
                 oFirstNameInput.setValueStateText("Imię musi mieć co najmniej 3 znaki");
                 bValid = false;
             } else {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
                 oModel.setProperty("/personalData/firstName", oFirstNameInput.getValue().trim());
             }
+            return bValid;
+        },
 
-            // Walidacja nazwiska
+        validatePersonalDataLastName: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+            // Pola do walidacji
+            var oLastNameInput = oView.byId("lastNameInput");
+
             if (!oLastNameInput.getValue().trim() || oLastNameInput.getValue().trim().length < 2) {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
                 oLastNameInput.setValueStateText("Nazwisko musi mieć co najmniej 2 znaki");
                 bValid = false;
             } else {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
                 oModel.setProperty("/personalData/lastName", oLastNameInput.getValue().trim());
             }
+            return bValid;
+        },
 
-            // Walidacja numeru telefonu
+        validatePersonalDataPhoneNumber: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+
+            var oPhoneNumberInput = oView.byId("phoneNumberInput");
             var sPhoneNumber = oPhoneNumberInput.getValue().trim();
-            var oPhoneRegex = /^[+\d\s]+$/; // RegEx: cyfry, + i spacje
+            //TODO: nr telefonu z myślnikami, spacjami
+            var oPhoneRegex = /^(?:\+\d{2}[ -]?)?(?:\d{9}|\d{3}(?:[ -]\d{3}){2})$/;
 
             if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Error);
@@ -114,13 +119,21 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
                 oModel.setProperty("/personalData/phoneNumber", sPhoneNumber);
             }
 
-            // Walidacja kodu pocztowego (tylko 5 cyfr)
+            return bValid;
+        },
+
+        validatePersonalDataZipCode: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+
+            var oZipCodeInput = oView.byId("addressZipCodeInput");
             var sZipCode = oZipCodeInput.getValue().trim();
-            var oZipCodeRegex = /^\d{5}$/; // Regex dla dokładnie 5 cyfr
+            //TODO: Regex dla formatów: 00000, 00 000, 00-000
+            var oZipCodeRegex = /^\d{5}$|^\d{2} \d{3}$|^\d{2}-\d{3}$/;
 
             if (!sZipCode || !oZipCodeRegex.test(sZipCode)) {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Error);
@@ -128,29 +141,71 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
-                oModel.setProperty("/personalData/addressZipCode", sZipCode); 
+                oModel.setProperty("/personalData/addressZipCode", sZipCode);
             }
+            return bValid;
+        },
 
-            // Walidacja miasta
-            if (!oCityInput.getValue().trim()) {
+        validatePersonalDataCity: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+            var oCityInput = oView.byId("addressCityInput");
+            //TODO: regex dla liter, spacji, myślników
+            var oCityRegex = /^\p{L}+(?:[ \p{L}'’\.]*\p{L}+)*(?:\s*-\s*\p{L}+(?:[ \p{L}'’\.]*\p{L}+)*)*$/u;
+
+            if (!oCityInput.getValue().trim() || !oCityRegex.test(oCityInput.getValue().trim())) {
                 oCityInput.setValueState(sap.ui.core.ValueState.Error);
                 oCityInput.setValueStateText("Miasto jest wymagane");
                 bValid = false;
             } else {
                 oCityInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
                 oModel.setProperty("/personalData/addressCity", oCityInput.getValue().trim());
+            }
+            return bValid;
+        },
+
+        validatePersonalData: function () {
+            var oView = this.getView();
+            var oWizard = oView.byId("createOrderWizard");
+            var oStep = oView.byId("stepPersonalData");
+            var oModel = this.getView().getModel("orderData");
+            var bValid = true;
+
+            if (!this.validatePersonalDataName()) {
+                bValid = false;
+            }
+
+            if (!this.validatePersonalDataLastName()) {
+                bValid = false;
+            }
+
+            if (!this.validatePersonalDataPhoneNumber()) {
+                bValid = false;
+            }
+
+            if (!this.validatePersonalDataZipCode()) {
+                bValid = false;
+            }
+
+            if (!this.validatePersonalDataCity()) {
+                bValid = false;
             }
 
             // Aktualizacja adresów (nie są wymagane, więc tylko aktualizacja modelu)
-            oModel.setProperty("/personalData/addressFirstLine", oFirstLineInput.getValue().trim());
+            oModel.setProperty("/personalData/addressFirstLine", oView.byId("addressFirstLineInput").getValue().trim());
             oModel.setProperty("/personalData/addressSecondLine", oView.byId("addressSecondLineInput").getValue().trim());
 
             // Ustaw stan kroku w zależności od wyników walidacji
             if (bValid) {
                 oWizard.validateStep(oStep);
                 sap.m.MessageToast.show("Dane osobowe zostały pomyślnie zweryfikowane!");
+
+
+                var oValidateButton = oView.byId("validatePersonalButton");
+                if (oValidateButton) {
+                    oValidateButton.setVisible(false);
+                }
             } else {
                 oWizard.invalidateStep(oStep);
             }

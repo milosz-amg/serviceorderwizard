@@ -34,14 +34,14 @@ Aplikacja SAPUI5 do tworzenia zleceń serwisowych z wykorzystaniem kreatora (wiz
 1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
 
 
-## TODO
+## TO DO
 ✅✅✅✅✅✅✅✅
 Walidacje:
-* kod pocztowy z myślnikiem
-* nr telefonu z myślnikami, spacjami
+* ✅ kod pocztowy z myślnikiem - regex
+* ✅ nr telefonu z myślnikami, spacjami - regex
+* ✅ miasto – tylko litery - regex
+* ⏳ przycisk „Dalej” dostępny, gdy pola wymagane są uzupełnione; walidacja (np. czy numer telefonu ma poprawny format) po kliknięciu „Dalej” - liveChange -> change (sprawdz po zakończeniu wpisywania)
 * poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
-* miasto – tylko litery
-* przycisk „Dalej” dostępny, gdy pola wymagane są uzupełnione; walidacja (np. czy numer telefonu ma poprawny format) po kliknięciu „Dalej”
 
 Ekran Orders (tabelka):
 * dodać filtrowanie, np. po statusie
