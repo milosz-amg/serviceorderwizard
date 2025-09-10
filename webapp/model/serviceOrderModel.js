@@ -78,41 +78,47 @@ sap.ui.define([
             });
         },
         /**
- * Deletes a service order using OData V2
- * @param {string} sOrderId - The ID of the order to delete
- * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
- * @returns {Promise} Promise that resolves when order is deleted
- */
-deleteServiceOrder: function (sOrderId, oModel) {
-    return new Promise(function (resolve, reject) {
-        // Validate order ID
-        if (!sOrderId) {
-            reject(new Error("Order ID is required"));
-            return;
-        }
-        
-        // Construct the path for the order to delete
-        var sPath = "/orderSet(OrderId='" + sOrderId + "')";
-        
-        // Send DELETE request
-        oModel.remove(sPath, {
-            success: function(oData) {
-                resolve({
-                    success: true,
-                    orderId: sOrderId,
-                    message: "Order " + sOrderId + " successfully deleted"
+         * Deletes a service order using OData V2
+         * @param {string} sOrderId - The ID of the order to delete
+         * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
+         * @returns {Promise} Promise that resolves when order is deleted
+         */
+        deleteServiceOrder: function (sOrderId, oModel) {
+            return new Promise(function (resolve, reject) {
+                // Validate order ID
+                if (!sOrderId) {
+                    reject(new Error("Order ID is required"));
+                    return;
+                }
+                
+                console.log("Usuwanie zlecenia o ID:", sOrderId);
+                
+                // Construct the path for the order to delete - używamy tylko ścieżki relative do service root
+                var sPath = "/orderSet(OrderId='" + sOrderId + "')";
+                
+                console.log("Ścieżka usuwania:", sPath);
+                
+                // Send DELETE request
+                oModel.remove(sPath, {
+                    success: function(oData, oResponse) {
+                        console.log("Usunięto pomyślnie zlecenie:", sOrderId);
+                        resolve({
+                            success: true,
+                            orderId: sOrderId,
+                            message: "Zlecenie " + sOrderId + " zostało pomyślnie usunięte"
+                        });
+                    },
+                    error: function(oError) {
+                        console.error("Błąd podczas usuwania zlecenia:", oError);
+                        reject({
+                            success: false,
+                            orderId: sOrderId,
+                            error: oError,
+                            message: "Nie udało się usunąć zlecenia " + sOrderId
+                        });
+                    }
                 });
-            },
-            error: function(oError) {
-                reject({
-                    success: false,
-                    orderId: sOrderId,
-                    error: oError,
-                    message: "Failed to delete order " + sOrderId
-                });
-            }
-        });
-    });
-},
+            });
+        },
     };
 });

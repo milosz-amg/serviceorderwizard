@@ -255,23 +255,92 @@ sap.ui.define([
          * @public
          */
         onDeleteOrder: function (oEvent) {
-
-            // Pobieramy kontekst wiersza (dane zlecenia)
+            console.log("onDeleteOrder wywołane");
+            
+            // Pobieramy przycisk i jego kontekst bindingu (tak samo jak w onShowDetails)
             var oButton = oEvent.getSource();
             var oContext = oButton.getBindingContext();
-            var oOrder = oContext.getObject();
-            var sOrderId = oOrder.OrderId;
-
-            MessageBox.confirm("Czy na pewno chcesz usunąć zamówienie?", {
-                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                onClose: function (oAction) {
-                    if (oAction === MessageBox.Action.YES) {
-                        sap.m.MessageToast.show("Usunięto zlecenie nr " + sOrderId);
-                    }
-                }
-            });
-
             
+            console.log("Przycisk:", oButton);
+            console.log("Kontekst bindingu:", oContext);
+            
+            if (!oContext) {
+                MessageBox.error("Nie można pobrać kontekstu danych zlecenia.");
+                return;
+            }
+            
+            var oOrder = oContext.getObject();
+            console.log("Dane zlecenia:", oOrder);
+            
+            if (!oOrder || !oOrder.OrderId) {
+                MessageBox.error("Nie można zidentyfikować ID zlecenia.");
+                return;
+            }
+            
+            var sOrderId = oOrder.OrderId;
+            console.log("ID zlecenia do usunięcia:", sOrderId);
+            
+            var oViewModel = this.getView().getModel();
+            
+            // Wyświetlamy dialog potwierdzenia
+            MessageBox.confirm(
+                "Czy na pewno chcesz usunąć zlecenie nr " + sOrderId + "?", {
+                    title: "Potwierdzenie usunięcia",
+                    actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                    emphasizedAction: MessageBox.Action.NO,
+                    onClose: function(sAction) {
+                        if (sAction === MessageBox.Action.YES) {
+                            console.log("Użytkownik potwierdził usunięcie zlecenia:", sOrderId);
+                            
+                            // Pokazujemy wskaźnik ładowania
+                            oViewModel.setProperty("/statusMessage", "Usuwanie zlecenia nr " + sOrderId + "...");
+                            oViewModel.setProperty("/messageType", "Warning");
+                            oViewModel.setProperty("/showMessage", true);
+                            
+                            // Tworzymy model OData
+                            var oODataModel = serviceOrderModel.createServiceOrderModel();
+                            
+                            // Wywołujemy metodę usuwania
+                            serviceOrderModel.deleteServiceOrder(sOrderId, oODataModel)
+                                .then(function(oResult) {
+                                    console.log("Pomyślnie usunięto zlecenie:", oResult);
+                                    
+                                    // Obsługa sukcesu
+                                    MessageToast.show("Usunięto zlecenie nr " + sOrderId);
+                                    
+                                    // Aktualizujemy model widoku - usuwamy zlecenie z listy
+                                    var aOrders = oViewModel.getProperty("/orders");
+                                    var aUpdatedOrders = aOrders.filter(function(oItem) {
+                                        return oItem.OrderId !== sOrderId;
+                                    });
+                                    
+                                    oViewModel.setProperty("/orders", aUpdatedOrders);
+                                    oViewModel.setProperty("/ordersCount", aUpdatedOrders.length);
+                                    oViewModel.setProperty("/statusMessage", 
+                                        "Usunięto zlecenie nr " + sOrderId + ". Pozostało " + aUpdatedOrders.length + " zleceń.");
+                                    oViewModel.setProperty("/messageType", "Success");
+                                })
+                                .catch(function(oError) {
+                                    console.error("Błąd podczas usuwania zlecenia:", oError);
+                                    
+                                    var sErrorMessage = "Nie udało się usunąć zlecenia nr " + sOrderId;
+                                    if (oError.message) {
+                                        sErrorMessage += ": " + oError.message;
+                                    }
+                                    
+                                    MessageBox.error(sErrorMessage, {
+                                        title: "Błąd usuwania"
+                                    });
+                                    
+                                    oViewModel.setProperty("/statusMessage", "Błąd podczas usuwania zlecenia: " + sErrorMessage);
+                                    oViewModel.setProperty("/messageType", "Error");
+                                });
+                        } else {
+                            console.log("Użytkownik anulował usuwanie zlecenia");
+                        }
+                    }.bind(this)
+                }
+            );
         }
 
     });
