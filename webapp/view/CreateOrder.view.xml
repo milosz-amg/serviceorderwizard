@@ -289,7 +289,7 @@
                                     id="visitDateInput"
                                     placeholder="Wybierz datę wizyty"
                                     required="true"
-                                    change="validateVisitDate"
+                                    change="validateVisitDateDate"
                                     valueState="None"
                                     value="{orderData>/visitData/visitDate, UTC: true }"
                                 />
@@ -302,7 +302,7 @@
                                 <Select
                                     id="visitHourSelect"
                                     required="true"
-                                    change="validateVisitDate"
+                                    change="validateVisitDateHour"
                                     valueState="None"
                                     selectedKey="{orderData>/visitData/visitTimeKey}"
                                 >
@@ -348,6 +348,11 @@
                                     />
                                 </Select>
                             </form:SimpleForm>
+                            <Button 
+                            id="validateVisitButton"
+                            text="Zatwierdź dane"
+                            press="validateVisitDate">
+                            </Button>
                         </WizardStep>
                         <WizardStep
                             id="stepSummary"

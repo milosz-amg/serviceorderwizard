@@ -2,8 +2,9 @@ sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "com/mr/serviceorderwizard/model/models",
     "com/mr/serviceorderwizard/model/serviceOrderModel",
-    "sap/m/MessageBox"
-], function (Controller, models, serviceOrderModel, MessageBox) {
+    "sap/m/MessageBox",
+    "com/mr/serviceorderwizard/formatter"
+], function (Controller, models, serviceOrderModel, MessageBox, formatter) {
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.CreateOrder", {
@@ -172,6 +173,7 @@ sap.ui.define([
             var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
+
             if (this.byId("firstNameInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("lastNameInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("phoneNumberInput").getValueState() != sap.ui.core.ValueState.Success
@@ -320,57 +322,70 @@ sap.ui.define([
             var oView = this.getView();
             var oModel = this.getView().getModel("orderData");
             var oVisitDateInput = oView.byId("visitDateInput");
+            var bValid = true;
+            var oVisitDate = oVisitDateInput.getDateValue();
 
             // Walidacja daty wizyty
             if (!oVisitDate) {
                 bDateValid = false;
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
                 oVisitDateInput.setValueStateText("Data wizyty jest wymagana");
+                bValid = false;
             } else {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
                 oModel.setProperty("/visitData/visitDate", oVisitDate);
             }
+            return bValid;
+        },
+
+        validateVisitDateHour: function () {
+            var oView = this.getView();
+            var oModel = this.getView().getModel("orderData");
+            var oVisitHourSelect = oView.byId("visitHourSelect");
+            var bValid = true;
+
+            // Walidacja godziny wizyty
+            if (!oVisitHourSelect.getSelectedKey()) {
+                bValid = false;
+                oVisitHourSelect.setValueState(sap.ui.core.ValueState.Error);
+                oVisitHourSelect.setValueStateText("Wybierz godzinę wizyty");
+                bValid = false;
+            } else {
+                oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
+                oModel.setProperty("/visitData/visitTime", oVisitHourSelect.getSelectedItem().getText());
+                oModel.setProperty("/visitData/visitTimeKey", oVisitHourSelect.getSelectedKey());
+            }
+
+            return bValid;
         },
 
         validateVisitDate: function () {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepVisitDate");
-            var oModel = this.getView().getModel("orderData");
-            var bDateValid = true;
-            var bHourValid = true;
+            var bValid = true;
 
-            // Pola do walidacji
-            var oVisitDateInput = oView.byId("visitDateInput");
-            var oVisitHourSelect = oView.byId("visitHourSelect");
-
-            // Pobierz wartości pól
-            var sVisitHourKey = oVisitHourSelect.getSelectedKey();
-
-
-
-            // Walidacja godziny wizyty
-            if (!sVisitHourKey) {
-                bHourValid = false;
-                oVisitHourSelect.setValueState(sap.ui.core.ValueState.Error);
-                oVisitHourSelect.setValueStateText("Wybierz godzinę wizyty");
-            } else {
-                oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizacja modelu
-                oModel.setProperty("/visitData/visitTime", oVisitHourSelect.getSelectedItem().getText());
-                oModel.setProperty("/visitData/visitTimeKey", sVisitHourKey);
+            if (this.byId("visitDateInput").getValueState() != sap.ui.core.ValueState.Success
+                || this.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
+            ) {
+                sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                bValid = false;
+                return bValid;
             }
 
             // Ustaw stan kroku w zależności od wyników walidacji
-            if (bDateValid && bHourValid) {
+            if (bValid) {
                 oWizard.validateStep(oStep);
                 sap.m.MessageToast.show("Termin wizyty został pomyślnie wybrany!");
+                var oValidateButton = oView.byId("validateVisitButton");
+                if (oValidateButton) {
+                    oValidateButton.setVisible(false);
+                }
             } else {
                 oWizard.invalidateStep(oStep);
             }
 
-            return bDateValid && bHourValid;
+            return bValid;
         },
 
         formatDate: function (oDate) {
@@ -387,6 +402,7 @@ sap.ui.define([
 
         onSubmitOrder: function () {
             // Przejdź do ekranu podsumowania
+
             this.wizardCompletedHandler();
         },
 
@@ -398,6 +414,7 @@ sap.ui.define([
         handleWizardSubmit: function () {
             var that = this;
             MessageBox.confirm("Czy na pewno chcesz złożyć zamówienie?", {
+                title: "Potwierdzenie zamówienia",
                 actions: [MessageBox.Action.YES, MessageBox.Action.NO],
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.YES) {
