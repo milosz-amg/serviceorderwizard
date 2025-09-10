@@ -129,7 +129,7 @@ sap.ui.define([
             } else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
                 // Aktualizacja modelu
-                oModel.setProperty("/personalData/addressZipCode", sZipCode);
+                oModel.setProperty("/personalData/addressZipCode", sZipCode); 
             }
 
             // Walidacja miasta

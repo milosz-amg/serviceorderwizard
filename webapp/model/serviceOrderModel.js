@@ -39,15 +39,6 @@ sap.ui.define([
         },
 
         /**
-         * Gets all service orders
-         * @param {sap.ui.model.odata.v4.ODataModel} oModel - The OData model
-         * @returns {sap.ui.model.odata.v4.Context} List binding context
-         */
-        getServiceOrders: function (oModel) {
-            return oModel.bindList("/orderSet");
-        },
-
-        /**
          * Fetches order data using OData V2 model
          * @returns {Promise} Promise that resolves with orders array
          */

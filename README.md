@@ -34,3 +34,42 @@ Aplikacja SAPUI5 do tworzenia zleceń serwisowych z wykorzystaniem kreatora (wiz
 1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
 
 
+## TODO
+✅✅✅✅✅✅✅✅
+Walidacje:
+* kod pocztowy z myślnikiem
+* nr telefonu z myślnikami, spacjami
+* poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
+* miasto – tylko litery
+* przycisk „Dalej” dostępny, gdy pola wymagane są uzupełnione; walidacja (np. czy numer telefonu ma poprawny format) po kliknięciu „Dalej”
+
+Ekran Orders (tabelka):
+* dodać filtrowanie, np. po statusie
+* sortowanie od najnowszych
+* dodać pole „Kiedy złożono zamówienie”
+* „Więcej” ładniejsze – nie sztywny tekst
+* dodać formater na zera wiodące w ID
+* dodać edycję zamówienia już utworzonego
+* oDatowy model zamiast JSON-owego
+
+i18n:
+* pozbyć się hardcoded stringów
+
+Refactor front:
+* formatery do formatera
+* oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
+* uprościć formatowanie daty – przy wysyłaniu na backend
+* po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
+
+Refactor backend:
+lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
+
+Extra:
+* czy `setProperty()` jest potrzebne, czy robi się automatycznie?
+* czy czyszczenie modelu JSON można zrobić przez `unbind`?
+* resource model z manifestu
+* path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
+
+
+
+
