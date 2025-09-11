@@ -51,14 +51,14 @@
                 />
 
                 <!-- Table view -->
-                    <Table
+                <Table
                     id="ordersTable"
                     items="{/orders}"
                     visible="true"
                     inset="false"
                     growing="true"
                     growingThreshold="20"
-                        noDataText="{i18n>ordersNoDataText}"
+                    noDataText="{i18n>ordersNoDataText}"
                 >
                     <headerToolbar>
                         <OverflowToolbar id="tableToolbar">
@@ -72,37 +72,54 @@
                     </headerToolbar>
 
                     <columns>
-                        <Column id="col1">
+                        <!-- ID column (narrow) -->
+                        <Column id="col1" width="6rem">
                             <Text
                                 id="header1"
                                 text="{i18n>ordersColId}"
                             />
                         </Column>
-                        <Column id="col4">
+
+                        <!-- Order creation date (narrow) -->
+                        <Column id="colCreated" width="8rem">
                             <Text
-                                id="header4"
-                                text="{i18n>ordersColCity}"
+                                id="headerCreated"
+                                text="{i18n>ordersColCreatedDate}"
                             />
                         </Column>
-                        <Column id="col7">
+
+                        <!-- Visit date (narrow) -->
+                        <Column id="col7" width="8rem">
                             <Text
                                 id="header7"
                                 text="{i18n>ordersColVisitDate}"
                             />
                         </Column>
-                        <Column id="col8">
+
+                        <!-- City (flexible) -->
+                        <Column id="col4" width="12rem">
+                            <Text
+                                id="header4"
+                                text="{i18n>ordersColCity}"
+                            />
+                        </Column>
+
+                        <!-- Status (narrow) -->
+                        <Column id="col8" width="7rem">
                             <Text
                                 id="header8"
                                 text="{i18n>ordersColStatus}"
                             />
                         </Column>
-                        <Column id="colDetails">
+
+                        <Column id="colDetails" width="6rem">
                             <Text
                                 id="headerDetails"
                                 text="{i18n>ordersColDetails}"
                             />
                         </Column>
-                                               <Column id="colDelete">
+
+                        <Column id="colDelete" width="6rem">
                             <Text
                                 id="headerDelete"
                                 text="{i18n>ordersColActions}"
@@ -124,16 +141,25 @@
                                     }"
                                 />
                                 <Text
-                                    id="cell4"
-                                    text="{Addresscity}"
+                                    id="cell77"
+                                    text="{
+                                        path: 'OrderCreationDate',
+                                        formatter: '.formatDate'
+                         }"
                                 />
                                 <Text
                                     id="cell7"
                                     text="{
                                         path: 'Visitdate',
                                         formatter: '.formatDate'
-                         }"  
+                         }"
                                 />
+
+                                <Text
+                                    id="cell4"
+                                    text="{Addresscity}"
+                                />
+
                                 <Text
                                     id="cell8"
                                     text="{Status}"

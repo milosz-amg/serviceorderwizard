@@ -53,9 +53,9 @@ i18n:
 
 Ekran Orders (tabelka):
 * ✅ dodać formater na zera wiodące w ID
-* dodać pole „Kiedy złożono zamówienie”
+* ✅ dodać pole „Kiedy złożono zamówienie”
 * dodać filtrowanie, np. po statusie
-* sortowanie od najnowszych
+* ⏳sortowanie od najnowszych
 * „Więcej” ładniejsze – nie sztywny tekst
 * oDatowy model zamiast JSON-owego
 

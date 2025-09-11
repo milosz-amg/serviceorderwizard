@@ -495,7 +495,8 @@ sap.ui.define([
                 Faultdescription: oOrderData.faultDescription,
                 Visitdate: formattedDate,
                 Visittime: formattedTime,
-                Status: oOrderData.status
+                Status: oOrderData.status,
+                OrderCreationDate: new Date().toISOString().slice(0, 10).replace(/-/g, "") // Dzisiejsza data w formacie YYYYMMDD
             };
 
             // Use service order model layer to create service order
