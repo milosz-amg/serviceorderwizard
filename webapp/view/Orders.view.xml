@@ -44,16 +44,16 @@
                 <!-- Status message -->
                 <MessageStrip
                     id="statusMessage"
-                    text="{/statusMessage}"
-                    type="{/messageType}"
-                    visible="{/showMessage}"
+                    text="{viewModel>/statusMessage}"
+                    type="{viewModel>/messageType}"
+                    visible="{viewModel>/showMessage}"
                     class="sapUiSmallMarginBottom"
                 />
 
                 <!-- Table view -->
                 <Table
                     id="ordersTable"
-                    items="{/orders}"
+                    items="{/orderSet}"
                     visible="true"
                     inset="false"
                     growing="true"
@@ -65,7 +65,7 @@
                             <content>
                                 <Title
                                     id="tableTitle"
-                                    text="{= ${i18n>ordersTableTitle} + ' (' + ${/ordersCount} + ')' }"
+                                    text="{= ${i18n>ordersTableTitle} + ' (' + ${viewModel>/ordersCount} + ')' }"
                                 />
                             </content>
                         </OverflowToolbar>
@@ -144,15 +144,15 @@
                                     id="cell77"
                                     text="{
                                         path: 'OrderCreationDate',
-                                        formatter: '.formatDate'
-                         }"
+                                        formatter: '.formatter.formatDate'
+                                    }"
                                 />
                                 <Text
                                     id="cell7"
                                     text="{
                                         path: 'Visitdate',
-                                        formatter: '.formatDate'
-                         }"
+                                        formatter: '.formatter.formatDate'
+                                    }"
                                 />
 
                                 <Text

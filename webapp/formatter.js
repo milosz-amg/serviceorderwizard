@@ -13,9 +13,9 @@ sap.ui.define([], function () {
         },
 
         /**
-         * Formatuje datę z <Date> do formatu "DD.MM.YYYY"
+         * Formatuje datę z różnych formatów OData do formatu "DD.MM.YYYY"
          * @public
-         * @param {Date|string} oDate - Data do sformatowania
+         * @param {Date|string} oDate - Data do sformatowania (może być Date object, string YYYYMMDD, /Date(...)/, ISO string)
          * @returns {string} Sformatowana data lub pusty string jeśli brak daty
          */
         formatDate: function (oDate) {
@@ -23,11 +23,41 @@ sap.ui.define([], function () {
                 return "";
             }
 
+            // Jeśli to już jest obiekt Date
+            if (oDate instanceof Date) {
+                return oDate.toLocaleDateString("pl-PL");
+            }
+
+            // Jeśli to string
             if (typeof oDate === "string") {
+                // OData format /Date(1234567890000)/
+                if (oDate.indexOf("/Date(") === 0) {
+                    var timestamp = parseInt(oDate.replace(/\/Date\((\d+)\)\//, "$1"));
+                    var date = new Date(timestamp);
+                    return date.toLocaleDateString("pl-PL");
+                }
+                
+                // Format YYYYMMDD (8 znaków)
+                if (oDate.length === 8 && /^\d{8}$/.test(oDate)) {
+                    var year = oDate.substring(0, 4);
+                    var month = oDate.substring(4, 6);
+                    var day = oDate.substring(6, 8);
+                    return day + "." + month + "." + year;
+                }
+                
+                // ISO format (YYYY-MM-DD lub YYYY-MM-DDTHH:mm:ss)
+                if (oDate.indexOf("-") > 0) {
+                    var date = new Date(oDate);
+                    if (!isNaN(date.getTime())) {
+                        return date.toLocaleDateString("pl-PL");
+                    }
+                }
+                
+                // Jeśli nic nie pasuje, zwróć oryginalny string
                 return oDate;
             }
 
-            return oDate.toLocaleDateString();
+            return "";
         },
 
         /**

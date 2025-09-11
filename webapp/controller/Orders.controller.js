@@ -14,132 +14,69 @@ sap.ui.define([
         // Expose formatter to the view
         formatter: formatter,
         /**
-         * Inicjalizuje kontroler i ustawia model danych
+         * Inicjalizuje kontroler i ustawia model OData
          * @public
          */
         onInit: function () {
-            // Create a JSON model to hold the orders data
+            // Create OData model and set it as default model
+            var oODataModel = serviceOrderModel.createServiceOrderModel();
+            this.getView().setModel(oODataModel);
+            
+            // Create a view model for UI state (messages, counters, etc.)
             var oViewModel = new JSONModel({
-                orders: [],
-                ordersCount: 0,
-                responseText: "",
                 statusMessage: "Gotowy do pobierania danych",
                 messageType: "Information",
                 showMessage: true,
-                showTable: true,
-                showJson: false,
-                showDebug: false,
-                debugInfo: "",
-                isFormatted: true
+                ordersCount: 0
             });
-            this.getView().setModel(oViewModel);
+            this.getView().setModel(oViewModel, "viewModel");
 
-            // Automatically fetch data on initialization
-            this.fetchOrderData();
+            // Bind orders count to OData model
+            this._bindOrdersCount();
         },
 
         /**
-         * Pobiera dane zleceń z serwera i aktualizuje model widoku
-         * @public
-         */
-        fetchOrderData: function () {
-            var oViewModel = this.getView().getModel();
-
-            // Set loading state
-            oViewModel.setProperty("/statusMessage", "Pobieranie danych z serwera...");
-            oViewModel.setProperty("/messageType", "Information");
-            oViewModel.setProperty("/showMessage", true);
-            oViewModel.setProperty("/orders", []);
-            oViewModel.setProperty("/ordersCount", 0);
-
-            // Use serviceOrderModel to fetch data
-            serviceOrderModel.fetchOrderData()
-                .then(function (aOrders) {
-                    this._handleSuccessResponse(aOrders, oViewModel);
-                }.bind(this))
-                .catch(function (oError) {
-                    this._handleErrorResponse(oError, oViewModel);
-                }.bind(this));
-        },
-
-        /**
-         * Obsługuje odpowiedź z serwera w przypadku sukcesu
-         * @param {Array} aOrders - Tablica zleceń otrzymana z serwera
-         * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
+         * Binds orders count to OData model changes
          * @private
          */
-        _handleSuccessResponse: function (aOrders, oViewModel) {
-            // Debug: Log first order to see actual field names
-            if (aOrders.length > 0) {
-                console.log("First order structure:", aOrders[0]);
-                console.log("Available fields:", Object.keys(aOrders[0]));
-            }
-
-            // Update model with parsed data
-            oViewModel.setProperty("/orders", aOrders);
-            oViewModel.setProperty("/ordersCount", aOrders.length);
-            oViewModel.setProperty("/responseText", JSON.stringify(aOrders, null, 2));
-            oViewModel.setProperty("/statusMessage",
-                "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
-            oViewModel.setProperty("/messageType", "Success");
-
-            MessageToast.show("Pobrano " + aOrders.length + " zleceń z serwera");
-        },
-
-        /**
-         * Obsługuje odpowiedź z serwera w przypadku błędu
-         * @param {object} oError - Obiekt błędu OData zawierający informacje o problemie
-         * @param {sap.ui.model.json.JSONModel} oViewModel - Model widoku do zaktualizowania
-         * @private
-         */
-        _handleErrorResponse: function (oError, oViewModel) {
-            console.error("Błąd podczas pobierania danych:", oError);
+        _bindOrdersCount: function () {
+            var oODataModel = this.getView().getModel();
+            var oViewModel = this.getView().getModel("viewModel");
             
-            var sErrorMessage = "Błąd podczas pobierania danych";
-            var sDetailedError = "=== BŁĄD PODCZAS POBIERANIA DANYCH ===\n\n";
+            // Listen to data changes to update counter
+            oODataModel.attachRequestCompleted(function () {
+                var aOrders = oODataModel.getProperty("/orderSet");
+                if (aOrders) {
+                    oViewModel.setProperty("/ordersCount", aOrders.length);
+                    oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
+                    oViewModel.setProperty("/messageType", "Success");
+                }
+            });
             
-            // OData błędy mają inną strukturę niż XMLHttpRequest błędy
-            if (oError.response && oError.response.statusCode) {
-                sErrorMessage += ": " + oError.response.statusCode + " - " + (oError.response.statusText || "Nieznany błąd");
-                sDetailedError += "Status HTTP: " + oError.response.statusCode + "\n" +
-                    "Status Text: " + (oError.response.statusText || "Brak opisu") + "\n";
-            } else if (oError.message) {
-                sErrorMessage += ": " + oError.message;
-                sDetailedError += "Wiadomość błędu: " + oError.message + "\n";
-            }
-            
-            sDetailedError += "URL: /sap/opu/odata/SAP/ZMR_ORDER_SRV_SRV/orderSet\n\n";
-            
-            if (oError.response && oError.response.body) {
-                sDetailedError += "Szczegóły odpowiedzi:\n" + oError.response.body;
-            } else {
-                sDetailedError += "Brak szczegółowych informacji o błędzie";
-            }
-
-            oViewModel.setProperty("/statusMessage", sErrorMessage);
-            oViewModel.setProperty("/messageType", "Error");
-            oViewModel.setProperty("/responseText", sDetailedError);
-            oViewModel.setProperty("/orders", []);
-            oViewModel.setProperty("/ordersCount", 0);
-
-            var sDisplayMessage = "Nie udało się pobrać danych z serwera.";
-            if (oError.response && oError.response.statusCode) {
-                sDisplayMessage += "\n\nStatus: " + oError.response.statusCode;
-            }
-            
-            MessageBox.error(sDisplayMessage, {
-                title: "Błąd połączenia"
+            oODataModel.attachRequestFailed(function (oEvent) {
+                var oError = oEvent.getParameter("response");
+                oViewModel.setProperty("/statusMessage", "Błąd podczas pobierania danych: " + (oError.statusText || "Nieznany błąd"));
+                oViewModel.setProperty("/messageType", "Error");
+                oViewModel.setProperty("/ordersCount", 0);
             });
         },
 
         /**
-         * Odświeża dane zleceń poprzez ponowne pobranie ich z serwera
+         * Odświeża dane poprzez odświeżenie modelu OData
          * @public
          */
         onRefresh: function () {
+            var oODataModel = this.getView().getModel();
+            var oViewModel = this.getView().getModel("viewModel");
+            
+            oViewModel.setProperty("/statusMessage", "Odświeżanie danych...");
+            oViewModel.setProperty("/messageType", "Information");
+            
             MessageToast.show("Odświeżanie danych...");
-            this.fetchOrderData();
+            oODataModel.refresh(true); // Force refresh
         },
+
+
 
         /**
          * Wyświetla szczegóły wybranego zlecenia w oknie dialogowym
@@ -153,21 +90,16 @@ sap.ui.define([
             // string dla szczegółów
             var sDetailsText = "";
 
-            // Format 
+            // Format each field
             for (var sKey in oOrder) {
                 if (oOrder.hasOwnProperty(sKey) && sKey !== "__metadata") {
                     var sValue = oOrder[sKey];
                     var sDisplayKey = this._formatFieldName(sKey);
 
                     if (sValue !== null && sValue !== undefined && sValue !== "") {
-                        // Format date 
-                        if (sKey.toLowerCase().includes("date") && typeof sValue === "string" && sValue.length === 8) {
-                            sValue = this._formatDateString(sValue);
-                        }
-
-                        // Format time 
-                        if (sKey.toLowerCase().includes("time") && typeof sValue === "string" && sValue.length === 4) {
-                            sValue = this._formatTimeString(sValue);
+                        // Use formatter for dates
+                        if (sKey.toLowerCase().includes("date") && sValue) {
+                            sValue = formatter.formatDate(sValue);
                         }
 
                         sDetailsText += sDisplayKey + ": " + sValue + "\n";
@@ -181,44 +113,6 @@ sap.ui.define([
                 contentWidth: "500px"
             });
         },
-
-        /**
-         * Publiczny formater daty do użycia w widoku
-         * @param {string} sDate - Data w formacie YYYYMMDD
-         * @returns {string} Sformatowana data w formacie DD.MM.YYYY
-         * @public
-         */
-        formatDate: function (sDate) {
-            return this._formatDateString(sDate);
-        },
-
-        /**
-         * Formatuje datę z postaci RRRRMMDD do DD.MM.RRRR
-         * @param {string} sDate - Data w formacie RRRRMMDD
-         * @returns {string} Sformatowana data w formacie DD.MM.RRRR
-         * @private
-         */
-
-        _formatDateString: function (sDate) {
-            if (sDate && sDate.length === 8) {
-                return sDate.substring(6, 8) + "." + sDate.substring(4, 6) + "." + sDate.substring(0, 4);
-            }
-            return sDate;
-        },
-
-        /**
-         * Formatuje ciąg znaków reprezentujący czas z formatu HHMM na HH:MM
-         * @param {string} sTime - Czas w formacie HHMM
-         * @returns {string} Sformatowany czas w formacie HH:MM
-         * @private
-         */
-        _formatTimeString: function (sTime) {
-            if (sTime && sTime.length === 4) {
-                return sTime.substring(0, 2) + ":" + sTime.substring(2, 4);
-            }
-            return sTime;
-        },
-
 
         /**
          * Formatuje techniczne nazwy pól na przyjazne dla użytkownika
@@ -242,25 +136,19 @@ sap.ui.define([
                 "Visitdate": "Data wizyty",
                 "Visittime": "Godzina wizyty",
                 "Status": "Status zlecenia",
+                "OrderCreationDate": "Data złożenia"
             };
 
-            return oFieldNameMap[sFieldName];
+            return oFieldNameMap[sFieldName] || sFieldName;
         },
 
         /**
-         * Obsługuje żądanie usunięcia zlecenia
+         * Obsługuje żądanie usunięcia zlecenia przez OData model
          * @param {sap.ui.base.Event} oEvent - Zdarzenie kliknięcia przycisku usunięcia
          * @public
          */
         onDeleteOrder: function (oEvent) {
-            console.log("onDeleteOrder wywołane");
-            
-            // Pobieramy przycisk i jego kontekst bindingu (tak samo jak w onShowDetails)
-            var oButton = oEvent.getSource();
-            var oContext = oButton.getBindingContext();
-            
-            console.log("Przycisk:", oButton);
-            console.log("Kontekst bindingu:", oContext);
+            var oContext = oEvent.getSource().getBindingContext();
             
             if (!oContext) {
                 MessageBox.error("Nie można pobrać kontekstu danych zlecenia.");
@@ -268,17 +156,14 @@ sap.ui.define([
             }
             
             var oOrder = oContext.getObject();
-            console.log("Dane zlecenia:", oOrder);
-            
             if (!oOrder || !oOrder.OrderId) {
                 MessageBox.error("Nie można zidentyfikować ID zlecenia.");
                 return;
             }
             
             var sOrderId = oOrder.OrderId;
-            console.log("ID zlecenia do usunięcia:", sOrderId);
-            
-            var oViewModel = this.getView().getModel();
+            var oODataModel = this.getView().getModel();
+            var oViewModel = this.getView().getModel("viewModel");
             
             // Wyświetlamy dialog potwierdzenia
             MessageBox.confirm(
@@ -288,57 +173,48 @@ sap.ui.define([
                     emphasizedAction: MessageBox.Action.NO,
                     onClose: function(sAction) {
                         if (sAction === MessageBox.Action.YES) {
-                            console.log("Użytkownik potwierdził usunięcie zlecenia:", sOrderId);
-                            
                             // Pokazujemy wskaźnik ładowania
                             oViewModel.setProperty("/statusMessage", "Usuwanie zlecenia nr " + sOrderId + "...");
                             oViewModel.setProperty("/messageType", "Warning");
-                            oViewModel.setProperty("/showMessage", true);
                             
-                            // Tworzymy model OData
-                            var oODataModel = serviceOrderModel.createServiceOrderModel();
-                            
-                            // Wywołujemy metodę usuwania
-                            serviceOrderModel.deleteServiceOrder(sOrderId, oODataModel)
-                                .then(function(oResult) {
-                                    console.log("Pomyślnie usunięto zlecenie:", oResult);
-                                    
-                                    // Obsługa sukcesu
+                            // Usuwamy przez OData model - to automatycznie zaktualizuje binding
+                            var sPath = oContext.getPath();
+                            oODataModel.remove(sPath, {
+                                success: function() {
                                     MessageToast.show("Usunięto zlecenie nr " + sOrderId);
-                                    
-                                    // Aktualizujemy model widoku - usuwamy zlecenie z listy
-                                    var aOrders = oViewModel.getProperty("/orders");
-                                    var aUpdatedOrders = aOrders.filter(function(oItem) {
-                                        return oItem.OrderId !== sOrderId;
-                                    });
-                                    
-                                    oViewModel.setProperty("/orders", aUpdatedOrders);
-                                    oViewModel.setProperty("/ordersCount", aUpdatedOrders.length);
-                                    oViewModel.setProperty("/statusMessage", 
-                                        "Usunięto zlecenie nr " + sOrderId + ". Pozostało " + aUpdatedOrders.length + " zleceń.");
+                                    oViewModel.setProperty("/statusMessage", "Usunięto zlecenie nr " + sOrderId);
                                     oViewModel.setProperty("/messageType", "Success");
-                                })
-                                .catch(function(oError) {
-                                    console.error("Błąd podczas usuwania zlecenia:", oError);
                                     
+                                    // Odśwież licznik po usunięciu
+                                    this._updateOrdersCount();
+                                }.bind(this),
+                                error: function(oError) {
                                     var sErrorMessage = "Nie udało się usunąć zlecenia nr " + sOrderId;
-                                    if (oError.message) {
-                                        sErrorMessage += ": " + oError.message;
-                                    }
-                                    
                                     MessageBox.error(sErrorMessage, {
                                         title: "Błąd usuwania"
                                     });
-                                    
-                                    oViewModel.setProperty("/statusMessage", "Błąd podczas usuwania zlecenia: " + sErrorMessage);
+                                    oViewModel.setProperty("/statusMessage", sErrorMessage);
                                     oViewModel.setProperty("/messageType", "Error");
-                                });
-                        } else {
-                            console.log("Użytkownik anulował usuwanie zlecenia");
+                                }
+                            });
                         }
                     }.bind(this)
                 }
             );
+        },
+
+        /**
+         * Aktualizuje licznik zleceń na podstawie aktualnego stanu modelu OData
+         * @private
+         */
+        _updateOrdersCount: function() {
+            var oODataModel = this.getView().getModel();
+            var oViewModel = this.getView().getModel("viewModel");
+            var aOrders = oODataModel.getProperty("/orderSet");
+            
+            if (aOrders) {
+                oViewModel.setProperty("/ordersCount", aOrders.length);
+            }
         }
 
     });

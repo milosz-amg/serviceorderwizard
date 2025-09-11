@@ -50,10 +50,16 @@ Walidacje:
 
 i18n:
 * ✅ pozbyć się hardcoded stringów
+    - przeniesienie elementów tekstowych do i18n
 
 Ekran Orders (tabelka):
 * ✅ dodać formater na zera wiodące w ID
+    - formatter
 * ✅ dodać pole „Kiedy złożono zamówienie”
+    - nowe pole w bazie ZMR_ORDERS
+    - dodanie odpowiendiego property w oDacie
+    - dodanie OrderCreationDate bezpośrednio do Payload
+    - wyświetlanie OrderCreationDate w Orders.view (tabela)
 * dodać filtrowanie, np. po statusie
 * ⏳sortowanie od najnowszych
 * „Więcej” ładniejsze – nie sztywny tekst
@@ -79,6 +85,8 @@ Extra:
 
 ## Dodatkowe bugfixy TODO
 * Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
+* poprawić resetowanie wizarda
+* odśwież dane - usunąć? dane bindowane bezpośrednio więc useless
 
 
 
