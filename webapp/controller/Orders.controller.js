@@ -33,6 +33,31 @@ sap.ui.define([
 
             // Bind orders count to OData model
             this._bindOrdersCount();
+            
+            // Rejestruj zdarzenie routingu, aby odświeżać dane przy każdym wejściu na tę stronę
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
+        },
+        
+        /**
+         * Obsługuje dopasowanie wzorca trasy - używane do odświeżania danych przy nawigacji
+         * @private
+         */
+        _onRouteMatched: function() {
+            // Odśwież dane za każdym razem, gdy użytkownik wchodzi na tę stronę
+            this._loadAllOrders();
+        },
+        
+        /**
+         * Wykonuje się przed renderowaniem widoku
+         * @public 
+         */
+        onBeforeRendering: function() {
+            // Załaduj dane podczas pierwszego renderowania widoku
+            if (!this._initialDataLoaded) {
+                this._loadAllOrders();
+                this._initialDataLoaded = true;
+            }
         },
 
         /**
@@ -62,18 +87,56 @@ sap.ui.define([
         },
 
         /**
+         * Ładuje wszystkie zamówienia z serwera
+         * @private
+         */
+        _loadAllOrders: function() {
+            var oODataModel = this.getView().getModel();
+            var oViewModel = this.getView().getModel("viewModel");
+            
+            oViewModel.setProperty("/statusMessage", "Ładowanie danych...");
+            oViewModel.setProperty("/messageType", "Information");
+            
+            // Wyczyść wszystkie buforowane dane
+            oODataModel.refresh(true);
+            
+            // Pobierz dane od nowa
+            oODataModel.read("/orderSet", {
+                success: function(oData) {
+                    if (oData && oData.results) {
+                        var aOrders = oData.results;
+                        // Aktualizuj licznik i status
+                        oViewModel.setProperty("/ordersCount", aOrders.length);
+                        oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
+                        oViewModel.setProperty("/messageType", "Success");
+                    } else {
+                        oViewModel.setProperty("/ordersCount", 0);
+                        oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Nie znaleziono żadnych zleceń.");
+                        oViewModel.setProperty("/messageType", "Success");
+                    }
+                },
+                error: function(oError) {
+                    var sErrorMessage = oError.statusText || oError.message || "Nieznany błąd";
+                    oViewModel.setProperty("/statusMessage", "Błąd podczas ładowania danych: " + sErrorMessage);
+                    oViewModel.setProperty("/messageType", "Error");
+                }
+            });
+        },
+
+        /**
          * Odświeża dane poprzez odświeżenie modelu OData
          * @public
          */
         onRefresh: function () {
-            var oODataModel = this.getView().getModel();
             var oViewModel = this.getView().getModel("viewModel");
             
             oViewModel.setProperty("/statusMessage", "Odświeżanie danych...");
             oViewModel.setProperty("/messageType", "Information");
             
             MessageToast.show("Odświeżanie danych...");
-            oODataModel.refresh(true); // Force refresh
+            
+            // Użyj wspólnej metody do ładowania danych
+            this._loadAllOrders();
         },
 
 
@@ -205,16 +268,15 @@ sap.ui.define([
 
         /**
          * Aktualizuje licznik zleceń na podstawie aktualnego stanu modelu OData
+         * Wykonuje zapytanie do serwera aby mieć pewność, że dane są aktualne
          * @private
          */
         _updateOrdersCount: function() {
-            var oODataModel = this.getView().getModel();
             var oViewModel = this.getView().getModel("viewModel");
-            var aOrders = oODataModel.getProperty("/orderSet");
+            oViewModel.setProperty("/statusMessage", "Usuwanie zlecenia...");
             
-            if (aOrders) {
-                oViewModel.setProperty("/ordersCount", aOrders.length);
-            }
+            // Użyj wspólnej metody do odświeżenia wszystkich danych
+            this._loadAllOrders();
         }
 
     });
