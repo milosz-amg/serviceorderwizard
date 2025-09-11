@@ -160,6 +160,79 @@ sap.ui.define([], function () {
             
             // Konwertuj na string (jeśli to konieczne) i usuń zera wiodące
             return String(sOrderId).replace(/^0+/, '');
+        },
+        
+        /**
+         * Formatuje godzinę z formatu HHMM na HH:MM
+         * @public
+         * @param {string} sTime - Godzina w formacie HHMM (np. "0830")
+         * @returns {string} Godzina w formacie HH:MM (np. "08:30")
+         */
+        formatTime: function(sTime) {
+            if (!sTime) {
+                return "";
+            }
+            
+            // Sprawdź czy to string i ma 4 znaki
+            var timeStr = String(sTime);
+            if (timeStr.length === 4) {
+                var hours = timeStr.substring(0, 2);
+                var minutes = timeStr.substring(2, 4);
+                return hours + ":" + minutes;
+            }
+            
+            // Jeśli format jest inny, zwróć oryginalną wartość
+            return timeStr;
+        },
+        
+        /**
+         * Formatuje kod pocztowy dodając myślnik (np. "12345" -> "12-345")
+         * @public
+         * @param {string} sZipCode - Kod pocztowy (np. "12345")
+         * @returns {string} Sformatowany kod pocztowy (np. "12-345")
+         */
+        formatZipCode: function(sZipCode) {
+            if (!sZipCode) {
+                return "";
+            }
+            
+            // Sprawdź czy to string i ma 5 znaków
+            var zipStr = String(sZipCode).trim();
+            if (zipStr.length === 5 && /^\d{5}$/.test(zipStr)) {
+                return zipStr.substring(0, 2) + "-" + zipStr.substring(2, 5);
+            }
+            
+            // Jeśli kod już zawiera myślnik lub ma inny format, zwróć oryginalną wartość
+            return zipStr;
+        },
+        
+        /**
+         * Formatuje techniczne nazwy pól na przyjazne dla użytkownika
+         * @public
+         * @param {string} sFieldName - Oryginalna, techniczna nazwa pola
+         * @returns {string} Sformatowana, przyjazna dla użytkownika nazwa pola
+         */
+        formatFieldName: function (sFieldName) {
+            var oFieldNameMap = {
+                "OrderId": "ID",
+                "Firstname": "Imię",
+                "Lastname": "Nazwisko",
+                "Phonenumber": "Numer telefonu",
+                "Addressfirstline": "Adres linia 1",
+                "Addresssecondline": "Adres linia 2",
+                "Addresscity": "Miasto",
+                "Addresszipcode": "Kod pocztowy",
+                "Devicetype": "Typ urządzenia",
+                "Devicemodel": "Model urządzenia",
+                "Deviceserialnumber": "Numer seryjny urządzenia",
+                "Faultdescription": "Opis usterki",
+                "Visitdate": "Data wizyty",
+                "Visittime": "Godzina wizyty",
+                "Status": "Status zlecenia",
+                "OrderCreationDate": "Data złożenia"
+            };
+
+            return oFieldNameMap[sFieldName] || sFieldName;
         }
     };
 

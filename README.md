@@ -49,7 +49,7 @@ Walidacje:
     - dodano formatery do wyświetlania adresu na podsumowaniu
 
 i18n:
-* ✅ pozbyć się hardcoded stringów
+* ⏳ pozbyć się hardcoded stringów
     - przeniesienie elementów tekstowych do i18n
 
 Ekran Orders (tabelka):
@@ -64,12 +64,12 @@ Ekran Orders (tabelka):
 * ✅ sortowanie od najnowszych
     - wysylanie zapytania z urlparameters i stosowanie ich w zapytaniu select na backenddzie
 * dodać filtrowanie, np. po statusie
-* ⏳ „Więcej” ładniejsze – nie sztywny tekst
+* ✅ „Więcej” ładniejsze – nie sztywny tekst
 
 
 Refactor front:
 * ✅ formatery do formatera
-* oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
+* ❌ oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
 * ✅ uprościć formatowanie daty – przy wysyłaniu na backend
     - data wywylana normalnie, dodane formatery do wyswietlania daty na podsumowaniu i w Orders.veiw
 * ✅ po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
@@ -83,12 +83,12 @@ Extra:
     - chyba niekoniecznie, bylo przydatne przy live update, ale nie jest to konieczne
 * ✅ czy czyszczenie modelu JSON można zrobić przez `unbind`?
     - niedokońca, model resetujemy i tworzymy nowy pusty jak on init, a ten stary jest unbindowany
-* resource model z manifestu
-* path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
+* ❌ resource model z manifestu
+* ❌ path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
 
 
 ## Dodatkowe bugfixy TODO
-* Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
+* ❌ Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
 * ✅ poprawić resetowanie wizarda
 * ✅ device model nie przesyla sie do bazy danych
     - brakowało w payloadzie

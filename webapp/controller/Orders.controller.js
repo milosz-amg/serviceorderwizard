@@ -5,13 +5,15 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/m/MessageToast",
     "sap/m/MessageBox",
+    "sap/m/List",
+    "sap/m/CustomListItem",
+    "sap/m/Title",
     "com/mr/serviceorderwizard/model/serviceOrderModel",
     "com/mr/serviceorderwizard/formatter"
-], function (Controller, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, serviceOrderModel, formatter) {
+], function (Controller, JSONModel, Filter, FilterOperator, MessageToast, MessageBox, List, CustomListItem, Title, serviceOrderModel, formatter) {
     "use strict";
 
     return Controller.extend("com.mr.serviceorderwizard.controller.Orders", {
-        // Expose formatter to the view
         formatter: formatter,
         /**
          * Inicjalizuje kontroler i ustawia model OData
@@ -121,7 +123,7 @@ sap.ui.define([
 
 
         /**
-         * Wyświetla szczegóły wybranego zlecenia w oknie dialogowym
+         * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
          * @param {sap.ui.base.Event} oEvent - Zdarzenie zawierające informacje o klikniętym elemencie
          * @public
          */
@@ -141,61 +143,176 @@ sap.ui.define([
                 oOrder = oContext.getObject();
             }
 
-            // string dla szczegółów
-            var sDetailsText = "";
-
-            // Format each field
-            for (var sKey in oOrder) {
-                if (oOrder.hasOwnProperty(sKey) && sKey !== "__metadata") {
-                    var sValue = oOrder[sKey];
-                    var sDisplayKey = this._formatFieldName(sKey);
-
-                    if (sValue !== null && sValue !== undefined && sValue !== "") {
-                        // Use formatter for dates
-                        if (sKey.toLowerCase().includes("date") && sValue) {
-                            sValue = formatter.formatDate(sValue);
+            if (!oOrder) {
+                MessageBox.error("Nie można wczytać danych zlecenia.");
+                return;
+            }
+            
+            // Organizujemy dane w kategorie
+            var oFormattedData = this._groupOrderData(oOrder);
+            
+            // Tworzenie formatowanego dialogu o mniejszej szerokości
+            var oDialog = new sap.m.Dialog({
+                title: "Szczegóły zlecenia: " + formatter.formatOrderId(oOrder.OrderId || ""),
+                contentWidth: "500px",
+                resizable: true,
+                draggable: true,
+                type: sap.m.DialogType.Standard,
+                state: sap.ui.core.ValueState.None,
+                contentHeight: "auto",
+                content: this._createDetailContent(oFormattedData),
+                beginButton: new sap.m.Button({
+                    text: "Zamknij",
+                    press: function() {
+                        oDialog.close();
+                    }
+                }),
+                afterClose: function() {
+                    oDialog.destroy();
+                }
+            });
+            
+            // Otwórz dialog
+            oDialog.open();
+        },
+        
+        /**
+         * Grupuje dane zamówienia według kategorii
+         * @param {Object} oOrder - Obiekt zawierający dane zamówienia
+         * @returns {Object} Pogrupowane dane
+         * @private
+         */
+        _groupOrderData: function(oOrder) {
+            // Zdefiniuj grupy i przypisz do nich pola
+            return {
+                orderInfo: {
+                    title: "Informacje o zamówieniu",
+                    fields: [
+                        { key: "OrderId", value: oOrder.OrderId, formatter: formatter.formatOrderId },
+                        { key: "OrderCreationDate", value: oOrder.OrderCreationDate, formatter: formatter.formatDate },
+                        { key: "Status", value: oOrder.Status }
+                    ]
+                },
+                customerInfo: {
+                    title: "Dane klienta",
+                    fields: [
+                        { key: "Firstname", value: oOrder.Firstname },
+                        { key: "Lastname", value: oOrder.Lastname },
+                        { key: "Phonenumber", value: oOrder.Phonenumber }
+                    ]
+                },
+                addressInfo: {
+                    title: "Adres",
+                    fields: [
+                        { key: "Addressfirstline", value: oOrder.Addressfirstline },
+                        { key: "Addresssecondline", value: oOrder.Addresssecondline },
+                        { key: "Addresscity", value: oOrder.Addresscity },
+                        { key: "Addresszipcode", value: oOrder.Addresszipcode, formatter: formatter.formatZipCode }
+                    ]
+                },
+                deviceInfo: {
+                    title: "Urządzenie",
+                    fields: [
+                        { key: "Devicetype", value: oOrder.Devicetype },
+                        { key: "Devicemodel", value: oOrder.Devicemodel },
+                        { key: "Deviceserialnumber", value: oOrder.Deviceserialnumber },
+                        { key: "Faultdescription", value: oOrder.Faultdescription }
+                    ]
+                },
+                visitInfo: {
+                    title: "Wizyta serwisowa",
+                    fields: [
+                        { key: "Visitdate", value: oOrder.Visitdate, formatter: formatter.formatDate },
+                        { key: "Visittime", value: oOrder.Visittime, formatter: formatter.formatTime }
+                    ]
+                }
+            };
+        },
+        
+        /**
+         * Tworzy zawartość dialogu szczegółów
+         * @param {Object} oFormattedData - Pogrupowane dane zamówienia
+         * @returns {sap.m.VBox} Kontener z zawartością
+         * @private
+         */
+        _createDetailContent: function(oFormattedData) {
+            var aContent = [];
+            
+            // Iteracja po grupach
+            for (var sGroupKey in oFormattedData) {
+                if (oFormattedData.hasOwnProperty(sGroupKey)) {
+                    var oGroup = oFormattedData[sGroupKey];
+                    
+                    // Dodaj nagłówek sekcji bez ikony (mniejsze marginesy)
+                    var oSectionHeader = new sap.m.Title({
+                        text: oGroup.title,
+                        level: "H3",
+                        wrapping: true
+                    }).addStyleClass("sapUiTinyMarginBottom sapUiTinyMarginTop sapUiTinyMarginBegin");
+                    
+                    aContent.push(oSectionHeader);
+                    
+                    // Dodaj listę pól w formacie "Etykieta: Wartość" (z marginesem od lewej strony)
+                    var oList = new sap.m.List({
+                        showSeparators: sap.m.ListSeparators.None,
+                        backgroundDesign: sap.m.BackgroundDesign.Transparent
+                    }).addStyleClass("sapUiNoMarginBottom sapUiTinyMarginBegin");
+                    
+                    // Dodaj pola do listy
+                    oGroup.fields.forEach(function(oField) {
+                        if (oField.value) {
+                            var sDisplayValue = oField.value;
+                            if (oField.formatter) {
+                                sDisplayValue = oField.formatter(sDisplayValue);
+                            }
+                            
+                            // Tworzenie obiektu z etykietą i wartością w jednej linii (z lepszymi marginesami)
+                            var oListItem = new sap.m.CustomListItem({
+                                content: [
+                                    new sap.m.HBox({
+                                        wrap: sap.m.FlexWrap.Wrap,
+                                        items: [
+                                            new sap.m.Text({
+                                                text: formatter.formatFieldName(oField.key) + ": ",
+                                                textAlign: "End"
+                                            }).addStyleClass("sapUiTinyMarginEnd sapMTextForceBold"),
+                                            new sap.m.Text({
+                                                text: sDisplayValue
+                                            })
+                                        ]
+                                    }).addStyleClass("sapUiTinyMarginBegin sapUiTinyMarginTop")
+                                ],
+                                class: "sapUiNoMarginTop sapUiNoMarginBottom"
+                            });
+                            
+                            oList.addItem(oListItem);
                         }
-
-                        sDetailsText += sDisplayKey + ": " + sValue + "\n";
+                    }.bind(this));
+                    
+                    aContent.push(oList);
+                    
+                    // Dodaj separator po każdej sekcji (z marginesem)
+                    if (Object.keys(oFormattedData).indexOf(sGroupKey) < Object.keys(oFormattedData).length - 1) {
+                        // Separator dla sekcji, które nie są ostatnie
+                        var oSeparator = new sap.m.HBox({height: "1px"})
+                            .addStyleClass("sapUiTinyMarginTop sapUiTinyMarginBottom sapUiSharedBorderColor");
+                        aContent.push(oSeparator);
+                    } else {
+                        // Dodaj pusty element z marginesem dolnym dla ostatniej sekcji
+                        var oBottomMargin = new sap.m.HBox({height: "8px"})
+                            .addStyleClass("sapUiTinyMarginTop");
+                        aContent.push(oBottomMargin);
                     }
                 }
             }
-
-            // Display message box
-            MessageBox.information(sDetailsText, {
-                title: "Szczegóły zlecenia: " + (oOrder.OrderId || "Brak"),
-                contentWidth: "500px"
-            });
+            
+            return new sap.m.VBox({
+                items: aContent,
+                width: "100%"
+            }).addStyleClass("sapUiContentPadding sapUiTinyMarginBegin");
         },
 
-        /**
-         * Formatuje techniczne nazwy pól na przyjazne dla użytkownika
-         * @param {string} sFieldName - Oryginalna, techniczna nazwa pola
-         * @returns {string} Sformatowana, przyjazna dla użytkownika nazwa pola
-         * @private
-         */
-        _formatFieldName: function (sFieldName) {
-            var oFieldNameMap = {
-                "OrderId": "ID",
-                "Firstname": "Imię",
-                "Lastname": "Nazwisko",
-                "Phonenumber": "Numer telefonu",
-                "Addressfirstline": "Adres linia 1",
-                "Addresssecondline": "Adres linia 2",
-                "Addresscity": "Miasto",
-                "Addresszipcode": "Kod pocztowy",
-                "Devicetype": "Typ urządzenia",
-                "Devicemodel": "Model urządzenia",
-                "Deviceserialnumber": "Numer seryjny urządzenia",
-                "Faultdescription": "Opis usterki",
-                "Visitdate": "Data wizyty",
-                "Visittime": "Godzina wizyty",
-                "Status": "Status zlecenia",
-                "OrderCreationDate": "Data złożenia"
-            };
-
-            return oFieldNameMap[sFieldName] || sFieldName;
-        },
+        // Funkcja _formatFieldName została przeniesiona do formattera jako formatFieldName
 
         /**
          * Obsługuje żądanie usunięcia zlecenia używając metody z serviceOrderModel
@@ -265,9 +382,6 @@ sap.ui.define([
                 }
             );
         },
-
-        // Metoda _updateOrdersCount została usunięta, ponieważ użycie metody _loadAllOrders
-        // już teraz aktualizuje licznik zleceń
 
     });
 
