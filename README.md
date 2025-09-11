@@ -60,16 +60,17 @@ Ekran Orders (tabelka):
     - dodanie odpowiendiego property w oDacie
     - dodanie OrderCreationDate bezpośrednio do Payload
     - wyświetlanie OrderCreationDate w Orders.view (tabela)
+* ✅ oDatowy model zamiast JSON-owego
+* sortowanie od najnowszych
 * dodać filtrowanie, np. po statusie
-* ⏳sortowanie od najnowszych
 * „Więcej” ładniejsze – nie sztywny tekst
-* oDatowy model zamiast JSON-owego
 
 
 Refactor front:
 * ✅ formatery do formatera
 * oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
-* uprościć formatowanie daty – przy wysyłaniu na backend
+* ✅ uprościć formatowanie daty – przy wysyłaniu na backend
+    - data wywylana normalnie, dodane formatery do wyswietlania daty na podsumowaniu i w Orders.veiw
 * ✅ po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
 
 Refactor backend:
@@ -85,8 +86,8 @@ Extra:
 
 ## Dodatkowe bugfixy TODO
 * Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
-* poprawić resetowanie wizarda
-* odśwież dane - usunąć? dane bindowane bezpośrednio więc useless
+* ⏳ poprawić resetowanie wizarda
+
 
 
 

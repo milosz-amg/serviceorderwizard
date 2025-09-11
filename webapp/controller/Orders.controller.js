@@ -105,6 +105,18 @@ sap.ui.define([
                 success: function(oData) {
                     if (oData && oData.results) {
                         var aOrders = oData.results;
+
+                        // Sortowanie po OrderCreationDate i OrderId
+                aOrders.sort(function (a, b) {
+                    var dateComparison = new Date(b.OrderCreationDate) - new Date(a.OrderCreationDate);
+                    if (dateComparison !== 0) {
+                        return dateComparison;
+                    }
+                    // Sort by OrderId in descending order
+                    return b.OrderId.localeCompare(a.OrderId);
+                });
+
+
                         // Aktualizuj licznik i status
                         oViewModel.setProperty("/ordersCount", aOrders.length);
                         oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");

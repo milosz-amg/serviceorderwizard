@@ -436,8 +436,9 @@ sap.ui.define([
 
         handleWizardCancel: function () {
             var that = this;
-            MessageBox.warning("Czy na pewno chcesz anulować zamówienie?", {
+            MessageBox.confirm("Czy na pewno chcesz anulować zamówienie?", {
                 actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                title: "Anulowanie zamówienia",
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.YES) {
                         that._resetWizard();
@@ -577,6 +578,23 @@ sap.ui.define([
             });
 
             this.getView().setModel(oOrderModel, "orderData");
+
+            // Przywróć widoczność przycisków walidacyjnych dla każdego kroku
+            var oValidatePersonalButton = oView.byId("validatePersonalButton");
+            var oValidateDeviceButton = oView.byId("validateDeviceButton");
+            var oValidateVisitButton = oView.byId("validateVisitButton");
+
+            if (oValidatePersonalButton) {
+                oValidatePersonalButton.setVisible(true);
+            }
+
+            if (oValidateDeviceButton) {
+                oValidateDeviceButton.setVisible(true);
+            }
+
+            if (oValidateVisitButton) {
+                oValidateVisitButton.setVisible(true);
+            }
 
             // Reset all input fields
             oView.findAggregatedObjects(true, function (oControl) {
