@@ -53,7 +53,7 @@
                 <!-- Table view -->
                 <Table
                     id="ordersTable"
-                    items="{/orderSet}"
+                    items="{orders>/}"
                     visible="true"
                     inset="false"
                     growing="true"
@@ -136,33 +136,33 @@
                                 <Text
                                     id="cell1"
                                     text="{
-                                        path: 'OrderId',
+                                        path: 'orders>OrderId',
                                         formatter: '.formatter.formatOrderId'
                                     }"
                                 />
                                 <Text
                                     id="cell77"
                                     text="{
-                                        path: 'OrderCreationDate',
+                                        path: 'orders>OrderCreationDate',
                                         formatter: '.formatter.formatDate'
                                     }"
                                 />
                                 <Text
                                     id="cell7"
                                     text="{
-                                        path: 'Visitdate',
+                                        path: 'orders>Visitdate',
                                         formatter: '.formatter.formatDate'
                                     }"
                                 />
 
                                 <Text
                                     id="cell4"
-                                    text="{Addresscity}"
+                                    text="{orders>Addresscity}"
                                 />
 
                                 <Text
                                     id="cell8"
-                                    text="{Status}"
+                                    text="{orders>Status}"
                                 />
                                 <Button
                                     id="detailsButton"

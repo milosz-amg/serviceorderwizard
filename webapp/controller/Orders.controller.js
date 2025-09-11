@@ -18,7 +18,7 @@ sap.ui.define([
          * @public
          */
         onInit: function () {
-            // Create OData model and set it as default model
+            // Create OData model and set it as default model (still needed for some operations)
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
             
@@ -30,9 +30,10 @@ sap.ui.define([
                 ordersCount: 0
             });
             this.getView().setModel(oViewModel, "viewModel");
-
-            // Bind orders count to OData model
-            this._bindOrdersCount();
+            
+            // Przygotuj pusty model dla zleceń
+            var oOrdersModel = new JSONModel([]);
+            this.getView().setModel(oOrdersModel, "orders");
             
             // Rejestruj zdarzenie routingu, aby odświeżać dane przy każdym wejściu na tę stronę
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -60,79 +61,45 @@ sap.ui.define([
             }
         },
 
-        /**
-         * Binds orders count to OData model changes
-         * @private
-         */
-        _bindOrdersCount: function () {
-            var oODataModel = this.getView().getModel();
-            var oViewModel = this.getView().getModel("viewModel");
-            
-            // Listen to data changes to update counter
-            oODataModel.attachRequestCompleted(function () {
-                var aOrders = oODataModel.getProperty("/orderSet");
-                if (aOrders) {
-                    oViewModel.setProperty("/ordersCount", aOrders.length);
-                    oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
-                    oViewModel.setProperty("/messageType", "Success");
-                }
-            });
-            
-            oODataModel.attachRequestFailed(function (oEvent) {
-                var oError = oEvent.getParameter("response");
-                oViewModel.setProperty("/statusMessage", "Błąd podczas pobierania danych: " + (oError.statusText || "Nieznany błąd"));
-                oViewModel.setProperty("/messageType", "Error");
-                oViewModel.setProperty("/ordersCount", 0);
-            });
-        },
+        // Metoda _bindOrdersCount została usunięta, ponieważ korzystamy teraz z bezpośredniego ustawiania licznika
+        // w metodzie _loadAllOrders
 
         /**
-         * Ładuje wszystkie zamówienia z serwera
+         * Ładuje wszystkie zamówienia z serwera używając metody fetchOrderData z serviceOrderModel
          * @private
          */
         _loadAllOrders: function() {
-            var oODataModel = this.getView().getModel();
             var oViewModel = this.getView().getModel("viewModel");
+            var oTable = this.byId("ordersTable");
             
             oViewModel.setProperty("/statusMessage", "Ładowanie danych...");
             oViewModel.setProperty("/messageType", "Information");
             
-            // Wyczyść wszystkie buforowane dane
-            oODataModel.refresh(true);
-            
-            // Pobierz dane od nowa
-            oODataModel.read("/orderSet", {
-                success: function(oData) {
-                    if (oData && oData.results) {
-                        var aOrders = oData.results;
-
-                        // Sortowanie po OrderCreationDate i OrderId
-                aOrders.sort(function (a, b) {
-                    var dateComparison = new Date(b.OrderCreationDate) - new Date(a.OrderCreationDate);
-                    if (dateComparison !== 0) {
-                        return dateComparison;
+            // Użyj metody fetchOrderData z serviceOrderModel, która zawiera już parametry sortowania
+            serviceOrderModel.fetchOrderData()
+                .then(function(aOrders) {
+                    // Utwórz model JSON z danymi i przypisz go do tabeli
+                    var oOrdersModel = new JSONModel(aOrders);
+                    
+                    // Aktualizuj tabelę bezpośrednio z nowym modelem
+                    if (oTable) {
+                        oTable.setModel(oOrdersModel, "orders");
+                        oTable.bindItems({
+                            path: "orders>/",
+                            template: oTable.getBindingInfo("items").template
+                        });
                     }
-                    // Sort by OrderId in descending order
-                    return b.OrderId.localeCompare(a.OrderId);
-                });
-
-
-                        // Aktualizuj licznik i status
-                        oViewModel.setProperty("/ordersCount", aOrders.length);
-                        oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
-                        oViewModel.setProperty("/messageType", "Success");
-                    } else {
-                        oViewModel.setProperty("/ordersCount", 0);
-                        oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Nie znaleziono żadnych zleceń.");
-                        oViewModel.setProperty("/messageType", "Success");
-                    }
-                },
-                error: function(oError) {
+                    
+                    // Aktualizuj licznik i status
+                    oViewModel.setProperty("/ordersCount", aOrders.length);
+                    oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
+                    oViewModel.setProperty("/messageType", "Success");
+                })
+                .catch(function(oError) {
                     var sErrorMessage = oError.statusText || oError.message || "Nieznany błąd";
                     oViewModel.setProperty("/statusMessage", "Błąd podczas ładowania danych: " + sErrorMessage);
                     oViewModel.setProperty("/messageType", "Error");
-                }
-            });
+                });
         },
 
         /**
@@ -159,8 +126,20 @@ sap.ui.define([
          * @public
          */
         onShowDetails: function (oEvent) {
-            var oContext = oEvent.getSource().getBindingContext();
-            var oOrder = oContext.getObject();
+            var oSource = oEvent.getSource();
+            var oContext;
+            var oOrder;
+            
+            // Sprawdź, czy mamy kontekst OData czy JSONModel
+            if (oSource.getBindingContext()) {
+                // Stary sposób - OData binding
+                oContext = oSource.getBindingContext();
+                oOrder = oContext.getObject();
+            } else if (oSource.getBindingContext("orders")) {
+                // Nowy sposób - JSONModel binding
+                oContext = oSource.getBindingContext("orders");
+                oOrder = oContext.getObject();
+            }
 
             // string dla szczegółów
             var sDetailsText = "";
@@ -218,19 +197,26 @@ sap.ui.define([
         },
 
         /**
-         * Obsługuje żądanie usunięcia zlecenia przez OData model
+         * Obsługuje żądanie usunięcia zlecenia używając metody z serviceOrderModel
          * @param {sap.ui.base.Event} oEvent - Zdarzenie kliknięcia przycisku usunięcia
          * @public
          */
         onDeleteOrder: function (oEvent) {
-            var oContext = oEvent.getSource().getBindingContext();
+            var oSource = oEvent.getSource();
+            var oContext;
+            var oOrder;
             
-            if (!oContext) {
-                MessageBox.error("Nie można pobrać kontekstu danych zlecenia.");
-                return;
+            // Sprawdź, czy mamy kontekst OData czy JSONModel
+            if (oSource.getBindingContext()) {
+                // Stary sposób - OData binding
+                oContext = oSource.getBindingContext();
+                oOrder = oContext.getObject();
+            } else if (oSource.getBindingContext("orders")) {
+                // Nowy sposób - JSONModel binding
+                oContext = oSource.getBindingContext("orders");
+                oOrder = oContext.getObject();
             }
             
-            var oOrder = oContext.getObject();
             if (!oOrder || !oOrder.OrderId) {
                 MessageBox.error("Nie można zidentyfikować ID zlecenia.");
                 return;
@@ -252,44 +238,35 @@ sap.ui.define([
                             oViewModel.setProperty("/statusMessage", "Usuwanie zlecenia nr " + sOrderId + "...");
                             oViewModel.setProperty("/messageType", "Warning");
                             
-                            // Usuwamy przez OData model - to automatycznie zaktualizuje binding
-                            var sPath = oContext.getPath();
-                            oODataModel.remove(sPath, {
-                                success: function() {
+                            // Użyj metody z serviceOrderModel do usunięcia
+                            serviceOrderModel.deleteServiceOrder(sOrderId, oODataModel)
+                                .then(function(oResult) {
                                     MessageToast.show("Usunięto zlecenie nr " + sOrderId);
                                     oViewModel.setProperty("/statusMessage", "Usunięto zlecenie nr " + sOrderId);
                                     oViewModel.setProperty("/messageType", "Success");
                                     
-                                    // Odśwież licznik po usunięciu
-                                    this._updateOrdersCount();
-                                }.bind(this),
-                                error: function(oError) {
+                                    // Odśwież dane po usunięciu
+                                    this._loadAllOrders();
+                                }.bind(this))
+                                .catch(function(oError) {
                                     var sErrorMessage = "Nie udało się usunąć zlecenia nr " + sOrderId;
+                                    if (oError.message) {
+                                        sErrorMessage += ": " + oError.message;
+                                    }
                                     MessageBox.error(sErrorMessage, {
                                         title: "Błąd usuwania"
                                     });
                                     oViewModel.setProperty("/statusMessage", sErrorMessage);
                                     oViewModel.setProperty("/messageType", "Error");
-                                }
-                            });
+                                });
                         }
                     }.bind(this)
                 }
             );
         },
 
-        /**
-         * Aktualizuje licznik zleceń na podstawie aktualnego stanu modelu OData
-         * Wykonuje zapytanie do serwera aby mieć pewność, że dane są aktualne
-         * @private
-         */
-        _updateOrdersCount: function() {
-            var oViewModel = this.getView().getModel("viewModel");
-            oViewModel.setProperty("/statusMessage", "Usuwanie zlecenia...");
-            
-            // Użyj wspólnej metody do odświeżenia wszystkich danych
-            this._loadAllOrders();
-        }
+        // Metoda _updateOrdersCount została usunięta, ponieważ użycie metody _loadAllOrders
+        // już teraz aktualizuje licznik zleceń
 
     });
 

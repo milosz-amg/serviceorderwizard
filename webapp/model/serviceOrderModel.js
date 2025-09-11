@@ -49,6 +49,9 @@ sap.ui.define([
                 console.log("Pobieranie danych przez OData V2 model...");
                 
                 oModel.read("/orderSet", {
+                    urlParameters: {
+                        "$orderby": "OrderCreationDate desc, OrderId desc"
+                    },
                     success: function(oData, response) {
                         console.log("Pomyślnie pobrano dane:", oData);
                         // OData V2 zwraca dane w strukturze { results: [...] }

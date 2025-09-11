@@ -61,7 +61,8 @@ Ekran Orders (tabelka):
     - dodanie OrderCreationDate bezpośrednio do Payload
     - wyświetlanie OrderCreationDate w Orders.view (tabela)
 * ✅ oDatowy model zamiast JSON-owego
-* sortowanie od najnowszych
+* ✅ sortowanie od najnowszych
+    - wysylanie zapytania z urlparameters i stosowanie ich w zapytaniu select na backenddzie
 * dodać filtrowanie, np. po statusie
 * „Więcej” ładniejsze – nie sztywny tekst
 
@@ -72,6 +73,7 @@ Refactor front:
 * ✅ uprościć formatowanie daty – przy wysyłaniu na backend
     - data wywylana normalnie, dodane formatery do wyswietlania daty na podsumowaniu i w Orders.veiw
 * ✅ po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
+    - routing na inny view
 
 Refactor backend:
 * lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
@@ -79,7 +81,8 @@ Refactor backend:
 Extra:
 * czy `setProperty()` jest potrzebne, czy robi się automatycznie? 
     - chyba niekoniecznie, bylo przydatne przy live update, ale nie jest to konieczne
-* czy czyszczenie modelu JSON można zrobić przez `unbind`?
+* ✅ czy czyszczenie modelu JSON można zrobić przez `unbind`?
+    - niedokońca, model resetujemy i tworzymy nowy pusty jak on init, a ten stary jest unbindowany
 * resource model z manifestu
 * path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
 

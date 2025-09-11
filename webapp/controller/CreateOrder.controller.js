@@ -542,6 +542,117 @@ sap.ui.define([
             this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
             this.backToWizardContent();
         },
+        
+        /**
+         * Pobiera listę kontrolek z przywiązaniem do modelu orderData
+         * @param {sap.ui.core.mvc.View} oView - Widok zawierający kontrolki
+         * @returns {Array} Lista kontrolek z przywiązaniem
+         * @private
+         */
+        _getBindedControls: function(oView) {
+            var aControls = [];
+            var that = this;
+            
+            // Funkcja rekurencyjna do przeszukiwania kontrolek
+            function findBindings(oControl) {
+                if (!oControl) {
+                    return;
+                }
+                
+                // Sprawdź czy kontrolka ma przywiązania do modelu orderData
+                var aBindingInfos = oControl.getBindingInfo ? Object.keys(oControl.getBindingInfo() || {}) : [];
+                if (aBindingInfos.length > 0) {
+                    var bHasOrderDataBinding = false;
+                    
+                    aBindingInfos.forEach(function(sProperty) {
+                        var oBinding = oControl.getBindingInfo(sProperty);
+                        if (oBinding && oBinding.parts) {
+                            oBinding.parts.forEach(function(oPart) {
+                                if (oPart.model === "orderData") {
+                                    bHasOrderDataBinding = true;
+                                }
+                            });
+                        }
+                    });
+                    
+                    if (bHasOrderDataBinding) {
+                        aControls.push({
+                            control: oControl,
+                            bindings: aBindingInfos
+                        });
+                    }
+                }
+                
+                // Rekurencyjnie sprawdź zagnieżdżone kontrolki
+                if (oControl.getContent) {
+                    var aContent = oControl.getContent() || [];
+                    aContent.forEach(findBindings);
+                }
+                
+                if (oControl.getItems) {
+                    var aItems = oControl.getItems() || [];
+                    aItems.forEach(findBindings);
+                }
+                
+                if (oControl.getPages) {
+                    var aPages = oControl.getPages() || [];
+                    aPages.forEach(findBindings);
+                }
+                
+                if (oControl.getSections) {
+                    var aSections = oControl.getSections() || [];
+                    aSections.forEach(findBindings);
+                }
+            }
+            
+            findBindings(oView);
+            return aControls;
+        },
+        
+        /**
+         * Odwiązuje przywiązania modelu od kontrolek
+         * @param {Array} aControls - Lista kontrolek do odwiązania
+         * @private
+         */
+        _unbindControls: function(aControls) {
+            aControls.forEach(function(oControlInfo) {
+                var oControl = oControlInfo.control;
+                var aBindings = oControlInfo.bindings;
+                
+                aBindings.forEach(function(sProperty) {
+                    // Zachowaj informacje o przywiązaniu przed odwiązaniem
+                    var oBindingInfo = oControl.getBindingInfo(sProperty);
+                    oControl._savedBindingInfo = oControl._savedBindingInfo || {};
+                    oControl._savedBindingInfo[sProperty] = oBindingInfo;
+                    
+                    oControl.unbindProperty(sProperty);
+                });
+            });
+        },
+        
+        /**
+         * Ponownie przywiązuje kontrolki do modelu
+         * @param {Array} aControls - Lista kontrolek do przywiązania
+         * @param {sap.ui.model.json.JSONModel} oModel - Model do przywiązania
+         * @private
+         */
+        _rebindControls: function(aControls, oModel) {
+            aControls.forEach(function(oControlInfo) {
+                var oControl = oControlInfo.control;
+                
+                if (oControl._savedBindingInfo) {
+                    Object.keys(oControl._savedBindingInfo).forEach(function(sProperty) {
+                        var oBindingInfo = oControl._savedBindingInfo[sProperty];
+                        
+                        // Odtwórz przywiązanie z zachowanych informacji
+                        oControl.bindProperty(sProperty, oBindingInfo);
+                    });
+                    
+                    // Wyczyść zapisane informacje o przywiązaniach
+                    delete oControl._savedBindingInfo;
+                }
+            });
+        },
 
         _resetWizard: function () {
             var oView = this.getView();
@@ -552,32 +663,29 @@ sap.ui.define([
                 this._oNavContainer.to(this._oWizardContentPage);
             }
 
-            // Resetowanie modelu danych do pustych wartości
-            var oOrderModel = new sap.ui.model.json.JSONModel({
-                personalData: {
-                    firstName: "",
-                    lastName: "",
-                    phoneNumber: "",
-                    addressFirstLine: "",
-                    addressSecondLine: "",
-                    addressZipCode: "",
-                    addressCity: ""
-                },
-                deviceData: {
-                    deviceType: "",
-                    deviceModel: "",
-                    deviceSerialNumber: "",
-                    faultDescription: ""
-                },
-                visitData: {
-                    visitDate: null,
-                    visitTime: "",
-                    visitTimeKey: ""
-                },
+            // Pobierz istniejący model
+            var oOrderModel = oView.getModel("orderData");
+            
+            // Tymczasowo odbinduj model aby przyspieszyć reset i uniknąć niepotrzebnych aktualizacji UI
+            var aControls = this._getBindedControls(oView);
+            this._unbindControls(aControls);
+            
+            // Utwórz nowy pusty model z taką samą strukturą jak początkowy
+            var oInitModel = new sap.ui.model.json.JSONModel({
+                personalData: {},
+                deviceData: {},
+                visitData: {},
                 status: "New"
             });
-
-            this.getView().setModel(oOrderModel, "orderData");
+            
+            // Ustaw dane z nowego modelu na istniejący, zachowując strukturę
+            oOrderModel.setData(oInitModel.getData());
+            
+            // Odśwież model aby zmiany zostały zarejestrowane
+            oOrderModel.refresh(true);
+            
+            // Ponownie przywiąż kontrolki do modelu
+            this._rebindControls(aControls, oOrderModel);
 
             // Przywróć widoczność przycisków walidacyjnych dla każdego kroku
             var oValidatePersonalButton = oView.byId("validatePersonalButton");
