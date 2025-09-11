@@ -86,7 +86,7 @@ Extra:
 
 ## Dodatkowe bugfixy TODO
 * Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
-* ⏳ poprawić resetowanie wizarda
+* ✅ poprawić resetowanie wizarda
 
 
 
