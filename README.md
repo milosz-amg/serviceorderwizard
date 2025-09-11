@@ -76,7 +76,7 @@ Refactor front:
     - routing na inny view
 
 Refactor backend:
-* lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
+* ✅ lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
 
 Extra:
 * czy `setProperty()` jest potrzebne, czy robi się automatycznie? 
