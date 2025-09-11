@@ -492,6 +492,7 @@ sap.ui.define([
                 Addresszipcode: oOrderData.addressZipCode,
                 Addresscity: oOrderData.addressCity,
                 Devicetype: oOrderData.deviceType,
+                Devicemodel: oOrderData.deviceModel,
                 Deviceserialnumber: oOrderData.deviceSerialNumber,
                 Faultdescription: oOrderData.faultDescription,
                 Visitdate: formattedDate,

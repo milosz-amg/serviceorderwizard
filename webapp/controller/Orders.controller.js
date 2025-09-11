@@ -186,6 +186,7 @@ sap.ui.define([
                 "Addresszipcode": "Kod pocztowy",
                 "Devicetype": "Typ urządzenia",
                 "Devicemodel": "Model urządzenia",
+                "Deviceserialnumber": "Numer seryjny urządzenia",
                 "Faultdescription": "Opis usterki",
                 "Visitdate": "Data wizyty",
                 "Visittime": "Godzina wizyty",

@@ -64,7 +64,7 @@ Ekran Orders (tabelka):
 * ✅ sortowanie od najnowszych
     - wysylanie zapytania z urlparameters i stosowanie ich w zapytaniu select na backenddzie
 * dodać filtrowanie, np. po statusie
-* „Więcej” ładniejsze – nie sztywny tekst
+* ⏳ „Więcej” ładniejsze – nie sztywny tekst
 
 
 Refactor front:
@@ -90,6 +90,8 @@ Extra:
 ## Dodatkowe bugfixy TODO
 * Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
 * ✅ poprawić resetowanie wizarda
+* ✅ device model nie przesyla sie do bazy danych
+    - brakowało w payloadzie
 
 
 
