@@ -79,9 +79,11 @@ Refactor backend:
 * ✅ lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
 
 Extra:
-* czy `setProperty()` jest potrzebne, czy robi się automatycznie? 
+* ✅ czy `setProperty()` jest potrzebne, czy robi się automatycznie? 
     - chyba niekoniecznie, bylo przydatne przy live update, ale nie jest to konieczne
     - dla DatePickera lepiej zostawic bo jest zbugowany i nie zawsze działa na two-way banding
+    - wartości wpisywane z ręki były nieprawidłowe bez setProperty()
+    - przy statusMessage setProperty zostało bo zmieniamy wartości na bannerach dynamicznie, bez inputu usera
 * ✅ czy czyszczenie modelu JSON można zrobić przez `unbind`?
     - niedokońca, model resetujemy i tworzymy nowy pusty jak on init, a ten stary jest unbindowany
 * ??? ❌ resource model z manifestu

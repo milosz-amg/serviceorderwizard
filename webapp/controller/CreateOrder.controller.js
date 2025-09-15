@@ -260,18 +260,21 @@ sap.ui.define([
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
             var oDeviceModelComboBox = oView.byId("deviceModelInput");
             
-            // Pobierz ID wybranego typu urządzenia na różne sposoby dla bezpieczeństwa
+            // Pobierz ID wybranego typu urządzenia
             var sSelectedDeviceTypeId = oEvent.getParameter("selectedKey") || 
                                         oDeviceTypeComboBox.getSelectedKey() ||
                                         oEvent.getSource().getSelectedKey();
             
-            // Wyczyść wszystkie opcje modeli
+            // Wyczyść wszystkie opcje modeli tylko jeśli wybrano typ z listy
             oDeviceModelComboBox.setValue("");
             oDeviceModelComboBox.removeAllItems();
 
-            // Dynamicznie załaduj modele urządzeń dla wybranego typu
+            // Dynamicznie załaduj modele urządzeń tylko dla wybranego typu z bazy danych
             if (sSelectedDeviceTypeId) {
                 this._loadDeviceModels(sSelectedDeviceTypeId);
+            } else {
+                // Jeśli użytkownik wpisał własną wartość, nie ładuj modeli z bazy
+                console.log("Użytkownik wpisał własny typ urządzenia:", oDeviceTypeComboBox.getValue());
             }
 
             this.validateFaultDescDeviceType();
@@ -283,13 +286,21 @@ sap.ui.define([
 
             // Pola do walidacji
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
+            var sValue = oDeviceTypeComboBox.getValue();
 
-            if (!oDeviceTypeComboBox.getSelectedKey()) {
+            // Akceptuj jeśli jest wybrana opcja z listy lub wpisana niepusta wartość
+            if (!oDeviceTypeComboBox.getSelectedKey() && (!sValue || sValue.trim() === "")) {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia");
+                oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia z listy lub wpisz własny");
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
+                // Jeśli wartość została wpisana ręcznie (brak selectedKey), upewnij się że jest w modelu
+                if (!oDeviceTypeComboBox.getSelectedKey() && sValue) {
+                    var oModel = this.getView().getModel("orderData");
+                    oModel.setProperty("/deviceData/deviceType", sValue.trim());
+                    oModel.setProperty("/deviceData/deviceTypeKey", ""); // Wyczyść klucz dla wartości niestandardowej
+                }
             }
             return bValid;
         },
@@ -300,13 +311,21 @@ sap.ui.define([
 
             // Pola do walidacji
             var oDeviceModelInput = oView.byId("deviceModelInput");
+            var sValue = oDeviceModelInput.getValue();
 
-            if (!oDeviceModelInput.getSelectedKey() || !oDeviceModelInput.getValue()) {
+            // Akceptuj jeśli jest wybrana opcja z listy lub wpisana niepusta wartość
+            if (!oDeviceModelInput.getSelectedKey() && (!sValue || sValue.trim() === "")) {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceModelInput.setValueStateText("Model urządzenia jest wymagany");
+                oDeviceModelInput.setValueStateText("Wybierz model urządzenia z listy lub wpisz własny");
                 bValid = false;
             } else {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
+                //wartosc reczna setProperty
+                if (!oDeviceModelInput.getSelectedKey() && sValue) {
+                    var oModel = this.getView().getModel("orderData");
+                    oModel.setProperty("/deviceData/deviceModel", sValue.trim());
+                    oModel.setProperty("/deviceData/deviceModelKey", ""); // czyszczenie klucza
+                }
             }
             return bValid;
         },

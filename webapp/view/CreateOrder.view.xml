@@ -168,6 +168,8 @@
                                     valueState="None"
                                     selectedKey="{orderData>/deviceData/deviceTypeKey}"
                                     value="{orderData>/deviceData/deviceType}"
+                                    showSecondaryValues="true"
+                                    filterSecondaryValues="true"
                                     items="{deviceTypes>/}"
                                 >
                                     <core:Item
@@ -187,6 +189,8 @@
                                     change="validateFaultDescDeviceModel"
                                     selectedKey="{orderData>/deviceData/deviceModelKey}"
                                     value="{orderData>/deviceData/deviceModel}"
+                                    showSecondaryValues="true"
+                                    filterSecondaryValues="true"
                                     valueState="None"
                                 />
 
