@@ -166,51 +166,11 @@
                                     placeholder="{i18n>deviceTypePlaceholder}"
                                     change="onDeviceTypeChange"
                                     valueState="None"
-                                    selectedKey="{orderData>/deviceData/deviceType}"
+                                    items="{deviceTypes>/}"
                                 >
                                     <core:Item
-                                        key="Laptop"
-                                        text="{i18n>deviceTypeLaptop}"
-                                    />
-                                    <core:Item
-                                        key="Smartphone"
-                                        text="{i18n>deviceTypeSmartphone}"
-                                    />
-                                    <core:Item
-                                        key="Tablet"
-                                        text="{i18n>deviceTypeTablet}"
-                                    />
-                                    <core:Item
-                                        key="Konsola"
-                                        text="{i18n>deviceTypeConsole}"
-                                    />
-                                    <core:Item
-                                        key="Telewizor"
-                                        text="{i18n>deviceTypeTV}"
-                                    />
-                                    <core:Item
-                                        key="Drukarka"
-                                        text="{i18n>deviceTypePrinter}"
-                                    />
-                                    <core:Item
-                                        key="Router"
-                                        text="{i18n>deviceTypeRouter}"
-                                    />
-                                    <core:Item
-                                        key="Monitor"
-                                        text="{i18n>deviceTypeMonitor}"
-                                    />
-                                    <core:Item
-                                        key="Smartwatch"
-                                        text="{i18n>deviceTypeSmartwatch}"
-                                    />
-                                    <core:Item
-                                        key="GlosnikBluetooth"
-                                        text="{i18n>deviceTypeBluetooth}"
-                                    />
-                                    <core:Item
-                                        key="Inne"
-                                        text="{i18n>deviceTypeOther}"
+                                        key="{deviceTypes>Id}"
+                                        text="{deviceTypes>Name}"
                                     />
                                 </ComboBox>
 
@@ -223,7 +183,7 @@
                                     placeholder="{i18n>deviceModelPlaceholder}"
                                     required="true"
                                     change="validateFaultDescDeviceModel"
-                                    value="{orderData>/deviceData/deviceModel}"
+                                    selectedKey="{orderData>/deviceData/deviceModel}"
                                     valueState="None"
                                 />
 

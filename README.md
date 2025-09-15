@@ -69,7 +69,7 @@ Ekran Orders (tabelka):
 
 Refactor front:
 * ✅ formatery do formatera
-* ❌ oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
+* ✅ oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
 * ✅ uprościć formatowanie daty – przy wysyłaniu na backend
     - data wywylana normalnie, dodane formatery do wyswietlania daty na podsumowaniu i w Orders.veiw
 * ✅ po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*

@@ -39,6 +39,9 @@ sap.ui.define([
 
             this.getView().setModel(oOrderModel, "orderData");
 
+            // Załaduj typy urządzeń z serwera
+            this._loadDeviceTypes();
+
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
 
@@ -66,6 +69,60 @@ sap.ui.define([
             // Create OData model
             var oModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oModel, "orderModel");
+        },
+
+        /**
+         * Ładuje typy urządzeń z serwera OData
+         * @private
+         */
+        _loadDeviceTypes: function () {
+            serviceOrderModel.fetchDeviceTypes()
+                .then(function(aDeviceTypes) {
+                    // Utwórz model JSON z typami urządzeń
+                    var oDeviceTypesModel = new sap.ui.model.json.JSONModel(aDeviceTypes);
+                    this.getView().setModel(oDeviceTypesModel, "deviceTypes");
+                    console.log("Załadowano typy urządzeń:", aDeviceTypes);
+                }.bind(this))
+                .catch(function(oError) {
+                    console.error("Błąd podczas ładowania typów urządzeń:", oError);
+                    sap.m.MessageBox.error("Nie udało się załadować typów urządzeń. Spróbuj ponownie później.");
+                });
+        },
+
+        _loadDeviceModels: function(deviceTypeId) {
+            console.log("Loading device models for type ID:", deviceTypeId);
+            var oView = this.getView();
+            var oDeviceModelComboBox = oView.byId("deviceModelInput");
+            
+            // Pokaż loading indicator
+            oDeviceModelComboBox.setBusy(true);
+            
+            serviceOrderModel.fetchDeviceModelsByType(deviceTypeId)
+                .then(function(aDeviceModels) {
+                    console.log("Device models loaded:", aDeviceModels);
+                    
+                    // Utwórz model JSON z modelami urządzeń
+                    var oDeviceModelsModel = new sap.ui.model.json.JSONModel(aDeviceModels);
+                    oView.setModel(oDeviceModelsModel, "deviceModels");
+                    
+                    // Usuń loading indicator
+                    oDeviceModelComboBox.setBusy(false);
+                    
+                    // Dodaj items do ComboBox
+                    oDeviceModelComboBox.removeAllItems();
+                    aDeviceModels.forEach(function(oModel) {
+                        oDeviceModelComboBox.addItem(new sap.ui.core.Item({
+                            key: oModel.Id,
+                            text: oModel.ModelName
+                        }));
+                    });
+                    
+                }.bind(this))
+                .catch(function(oError) {
+                    console.error("Error loading device models:", oError);
+                    oDeviceModelComboBox.setBusy(false);
+                    sap.m.MessageToast.show("Błąd podczas ładowania modeli urządzeń");
+                });
         },
 
         validatePersonalDataName: function () {
@@ -207,35 +264,40 @@ sap.ui.define([
         },
         onDeviceTypeChange: function (oEvent) {
             var oView = this.getView();
-            var sSelectedDeviceType = oEvent.getParameter("value");
+            var oModel = this.getView().getModel("orderData");
+            var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
             var oDeviceModelComboBox = oView.byId("deviceModelInput");
+            
+            // Pobierz ID wybranego typu urządzenia na różne sposoby dla bezpieczeństwa
+            var sSelectedDeviceTypeId = oEvent.getParameter("selectedKey") || 
+                                        oDeviceTypeComboBox.getSelectedKey() ||
+                                        oEvent.getSource().getSelectedKey();
+            
+            console.log("Event parameters:", oEvent.getParameters());
+            console.log("Selected key from event:", oEvent.getParameter("selectedKey"));
+            console.log("Selected key from combobox:", oDeviceTypeComboBox.getSelectedKey());
+            console.log("Selected item:", oDeviceTypeComboBox.getSelectedItem());
 
-            // Wyczyść wszystkie opcje
+            // Zapisz nazwę typu urządzenia do modelu (getValue zwraca wyświetlaną nazwę)
+            if (oDeviceTypeComboBox.getValue()) {
+                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue());
+            }
+
+            // Wyczyść wszystkie opcje modeli
             oDeviceModelComboBox.setValue("");
             oDeviceModelComboBox.removeAllItems();
 
-            if (sSelectedDeviceType === "Konsola") {
-                //TODO: dodac pobranie z backendu
-                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
-                    key: "PlayStation5",
-                    text: "PlayStation 5"
-                }));
-                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
-                    key: "PlayStation4",
-                    text: "PlayStation 4"
-                }));
-                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
-                    key: "XboxSeriesX",
-                    text: "Xbox Series X"
-                }));
-                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
-                    key: "XboxOne",
-                    text: "Xbox One"
-                }));
-                oDeviceModelComboBox.addItem(new sap.ui.core.Item({
-                    key: "NintendoSwitch",
-                    text: "Nintendo Switch"
-                }));
+            // Dynamicznie załaduj modele urządzeń dla wybranego typu
+            if (sSelectedDeviceTypeId) {
+                console.log("Wybrano typ urządzenia o ID:", sSelectedDeviceTypeId);
+                this._loadDeviceModels(sSelectedDeviceTypeId);
+            } else {
+                console.log("Nie wybrano typu urządzenia");
+                console.log("Wszystkie próby pobrania ID zwróciły:", {
+                    fromEvent: oEvent.getParameter("selectedKey"),
+                    fromComboBox: oDeviceTypeComboBox.getSelectedKey(),
+                    fromSource: oEvent.getSource().getSelectedKey()
+                });
             }
 
             this.validateFaultDescDeviceType();
@@ -249,13 +311,15 @@ sap.ui.define([
             // Pola do walidacji
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
 
-            if (!oDeviceTypeComboBox.getValue().trim()) {
+            if (!oDeviceTypeComboBox.getSelectedKey()) {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
                 oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia");
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue().trim());
+                
+                // Zapisz nazwę typu urządzenia do modelu (getValue zwraca wyświetlaną nazwę)
+                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue());
             }
             return bValid;
         },
@@ -268,13 +332,14 @@ sap.ui.define([
             // Pola do walidacji
             var oDeviceModelInput = oView.byId("deviceModelInput");
 
-            if (!oDeviceModelInput.getValue().trim()) {
+            if (!oDeviceModelInput.getSelectedKey() || !oDeviceModelInput.getValue()) {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Error);
                 oDeviceModelInput.setValueStateText("Model urządzenia jest wymagany");
                 bValid = false;
             } else {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/deviceData/deviceModel", oDeviceModelInput.getValue().trim());
+                // Zapisz nazwę modelu urządzenia (getValue zwraca wyświetlaną nazwę)
+                oModel.setProperty("/deviceData/deviceModel", oDeviceModelInput.getValue());
             }
             return bValid;
         },
