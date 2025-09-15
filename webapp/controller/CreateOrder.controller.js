@@ -121,7 +121,7 @@ sap.ui.define([
                 .catch(function(oError) {
                     console.error("Error loading device models:", oError);
                     oDeviceModelComboBox.setBusy(false);
-                    sap.m.MessageToast.show("Błąd podczas ładowania modeli urządzeń");
+                    
                 });
         },
 

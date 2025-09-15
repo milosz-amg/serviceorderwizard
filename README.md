@@ -83,8 +83,9 @@ Extra:
     - chyba niekoniecznie, bylo przydatne przy live update, ale nie jest to konieczne
 * ✅ czy czyszczenie modelu JSON można zrobić przez `unbind`?
     - niedokońca, model resetujemy i tworzymy nowy pusty jak on init, a ten stary jest unbindowany
-* ❌ resource model z manifestu
-* ❌ path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
+* ??? ❌ resource model z manifestu
+* ✅ path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
+    - wywoływanie po prostu read na modelach
 
 
 ## Dodatkowe bugfixy TODO
