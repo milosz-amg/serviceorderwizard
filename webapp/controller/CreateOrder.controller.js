@@ -25,7 +25,9 @@ sap.ui.define([
                 },
                 deviceData: {
                     deviceType: "",
+                    deviceTypeKey: "",
                     deviceModel: "",
+                    deviceModelKey: "",
                     deviceSerialNumber: "",
                     faultDescription: ""
                 },
@@ -138,7 +140,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/personalData/firstName", oFirstNameInput.getValue().trim());
             }
             return bValid;
         },
@@ -156,7 +157,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/personalData/lastName", oLastNameInput.getValue().trim());
             }
             return bValid;
         },
@@ -177,7 +177,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/personalData/phoneNumber", sPhoneNumber);
             }
 
             return bValid;
@@ -199,7 +198,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/personalData/addressZipCode", sZipCode);
             }
             return bValid;
         },
@@ -218,7 +216,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oCityInput.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/personalData/addressCity", oCityInput.getValue().trim());
             }
             return bValid;
         },
@@ -242,10 +239,6 @@ sap.ui.define([
                 return bValid;
             }
 
-            // Aktualizacja adresów (nie są wymagane, więc tylko aktualizacja modelu)
-            oModel.setProperty("/personalData/addressFirstLine", oView.byId("addressFirstLineInput").getValue().trim());
-            oModel.setProperty("/personalData/addressSecondLine", oView.byId("addressSecondLineInput").getValue().trim());
-
             // Ustaw stan kroku w zależności od wyników walidacji
             if (bValid) {
                 oWizard.validateStep(oStep);
@@ -264,7 +257,6 @@ sap.ui.define([
         },
         onDeviceTypeChange: function (oEvent) {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
             var oDeviceModelComboBox = oView.byId("deviceModelInput");
             
@@ -273,31 +265,13 @@ sap.ui.define([
                                         oDeviceTypeComboBox.getSelectedKey() ||
                                         oEvent.getSource().getSelectedKey();
             
-            console.log("Event parameters:", oEvent.getParameters());
-            console.log("Selected key from event:", oEvent.getParameter("selectedKey"));
-            console.log("Selected key from combobox:", oDeviceTypeComboBox.getSelectedKey());
-            console.log("Selected item:", oDeviceTypeComboBox.getSelectedItem());
-
-            // Zapisz nazwę typu urządzenia do modelu (getValue zwraca wyświetlaną nazwę)
-            if (oDeviceTypeComboBox.getValue()) {
-                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue());
-            }
-
             // Wyczyść wszystkie opcje modeli
             oDeviceModelComboBox.setValue("");
             oDeviceModelComboBox.removeAllItems();
 
             // Dynamicznie załaduj modele urządzeń dla wybranego typu
             if (sSelectedDeviceTypeId) {
-                console.log("Wybrano typ urządzenia o ID:", sSelectedDeviceTypeId);
                 this._loadDeviceModels(sSelectedDeviceTypeId);
-            } else {
-                console.log("Nie wybrano typu urządzenia");
-                console.log("Wszystkie próby pobrania ID zwróciły:", {
-                    fromEvent: oEvent.getParameter("selectedKey"),
-                    fromComboBox: oDeviceTypeComboBox.getSelectedKey(),
-                    fromSource: oEvent.getSource().getSelectedKey()
-                });
             }
 
             this.validateFaultDescDeviceType();
@@ -305,7 +279,6 @@ sap.ui.define([
 
         validateFaultDescDeviceType: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
             // Pola do walidacji
@@ -317,16 +290,12 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
-                
-                // Zapisz nazwę typu urządzenia do modelu (getValue zwraca wyświetlaną nazwę)
-                oModel.setProperty("/deviceData/deviceType", oDeviceTypeComboBox.getValue());
             }
             return bValid;
         },
 
         validateFaultDescDeviceModel: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
             // Pola do walidacji
@@ -338,8 +307,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
-                // Zapisz nazwę modelu urządzenia (getValue zwraca wyświetlaną nazwę)
-                oModel.setProperty("/deviceData/deviceModel", oDeviceModelInput.getValue());
             }
             return bValid;
         },
@@ -348,7 +315,6 @@ sap.ui.define([
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepFaultDesc");
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
             var oDeviceSerialInput = oView.byId("deviceSerialNumberInput");
@@ -363,14 +329,9 @@ sap.ui.define([
 
             }
 
-            // Aktualizacja numeru seryjnego i opisu usterki (nie są wymagane)
-            oModel.setProperty("/deviceData/deviceSerialNumber", oDeviceSerialInput.getValue().trim());
-            oModel.setProperty("/deviceData/faultDescription", oFaultDescInput.getValue().trim());
-
             // Ustaw stan kroku w zależności od wyników walidacji
             if (bValid) {
                 oWizard.validateStep(oStep);
-                sap.m.MessageToast.show("Opis usterki został pomyślnie zweryfikowany!");
                 var oValidateButton = oView.byId("validateDeviceButton");
                 if (oValidateButton) {
                     oValidateButton.setVisible(false);
@@ -392,14 +353,14 @@ sap.ui.define([
 
             // Walidacja daty wizyty
             if (!oVisitDate) {
-                bDateValid = false;
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
                 oVisitDateInput.setValueStateText("Data wizyty jest wymagana");
                 bValid = false;
             } else {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
+                // Aktualizuj model z wybraną datą
                 oModel.setProperty("/visitData/visitDate", oVisitDate);
-                console.log(oVisitDate);
+                console.log("Data wizyty ustawiona:", oVisitDate);
             }
             return bValid;
         },
@@ -417,8 +378,11 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
-                oModel.setProperty("/visitData/visitTime", oVisitHourSelect.getSelectedItem().getText());
-                oModel.setProperty("/visitData/visitTimeKey", oVisitHourSelect.getSelectedKey());
+                // Aktualizuj nazwę czasu na podstawie wybranej opcji
+                var oSelectedItem = oVisitHourSelect.getSelectedItem();
+                if (oSelectedItem) {
+                    oModel.setProperty("/visitData/visitTime", oSelectedItem.getText());
+                }
             }
 
             return bValid;

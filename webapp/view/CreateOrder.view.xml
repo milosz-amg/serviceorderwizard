@@ -166,6 +166,8 @@
                                     placeholder="{i18n>deviceTypePlaceholder}"
                                     change="onDeviceTypeChange"
                                     valueState="None"
+                                    selectedKey="{orderData>/deviceData/deviceTypeKey}"
+                                    value="{orderData>/deviceData/deviceType}"
                                     items="{deviceTypes>/}"
                                 >
                                     <core:Item
@@ -183,7 +185,8 @@
                                     placeholder="{i18n>deviceModelPlaceholder}"
                                     required="true"
                                     change="validateFaultDescDeviceModel"
-                                    selectedKey="{orderData>/deviceData/deviceModel}"
+                                    selectedKey="{orderData>/deviceData/deviceModelKey}"
+                                    value="{orderData>/deviceData/deviceModel}"
                                     valueState="None"
                                 />
 
