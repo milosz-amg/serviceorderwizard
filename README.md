@@ -63,7 +63,7 @@ Ekran Orders (tabelka):
 * ✅ oDatowy model zamiast JSON-owego
 * ✅ sortowanie od najnowszych
     - wysylanie zapytania z urlparameters i stosowanie ich w zapytaniu select na backenddzie
-* dodać filtrowanie, np. po statusie
+* ✅ dodać filtrowanie, np. po statusie
 * ✅ „Więcej” ładniejsze – nie sztywny tekst
 
 
@@ -86,13 +86,14 @@ Extra:
     - przy statusMessage setProperty zostało bo zmieniamy wartości na bannerach dynamicznie, bez inputu usera
 * ✅ czy czyszczenie modelu JSON można zrobić przez `unbind`?
     - niedokońca, model resetujemy i tworzymy nowy pusty jak on init, a ten stary jest unbindowany
-* ??? ❌ resource model z manifestu
+* ✅ resource model z manifestu
+    - załadować teksty z i18n
 * ✅ path pobierany z modeli zamiast hardcoded endpointa – spróbować na końcu
     - wywoływanie po prostu read na modelach
 
 
 ## Dodatkowe bugfixy TODO
-* ❌ Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
+* ✅ Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
 * ✅ poprawić resetowanie wizarda
 * ✅ device model nie przesyla sie do bazy danych
     - brakowało w payloadzie

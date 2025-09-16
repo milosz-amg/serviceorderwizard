@@ -87,8 +87,8 @@ sap.ui.define([
                 }.bind(this))
                 .catch(function(oError) {
                     console.error("Błąd podczas ładowania typów urządzeń:", oError);
-                    sap.m.MessageBox.error("Nie udało się załadować typów urządzeń. Spróbuj ponownie później.");
-                });
+                    sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypesLoadError"));
+                }.bind(this));
         },
 
         _loadDeviceModels: function(deviceTypeId) {
@@ -136,7 +136,7 @@ sap.ui.define([
 
             if (!oFirstNameInput.getValue().trim() || oFirstNameInput.getValue().trim().length < 3) {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
-                oFirstNameInput.setValueStateText("Imię musi mieć co najmniej 3 znaki");
+                oFirstNameInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("firstNameValidationError"));
                 bValid = false;
             } else {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Success);
@@ -153,7 +153,7 @@ sap.ui.define([
 
             if (!oLastNameInput.getValue().trim() || oLastNameInput.getValue().trim().length < 2) {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
-                oLastNameInput.setValueStateText("Nazwisko musi mieć co najmniej 2 znaki");
+                oLastNameInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("lastNameValidationError"));
                 bValid = false;
             } else {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Success);
@@ -173,7 +173,7 @@ sap.ui.define([
 
             if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Error);
-                oPhoneNumberInput.setValueStateText("Numer telefonu może zawierać tylko cyfry, znak '+' i spacje");
+                oPhoneNumberInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("phoneNumberValidationError"));
                 bValid = false;
             } else {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Success);
@@ -194,7 +194,7 @@ sap.ui.define([
 
             if (!sZipCode || !oZipCodeRegex.test(sZipCode)) {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Error);
-                oZipCodeInput.setValueStateText("Wpisz poprawny kod pocztowy (5 cyfr)");
+                oZipCodeInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("zipCodeValidationError"));
                 bValid = false;
             } else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
@@ -212,7 +212,7 @@ sap.ui.define([
 
             if (!oCityInput.getValue().trim() || !oCityRegex.test(oCityInput.getValue().trim())) {
                 oCityInput.setValueState(sap.ui.core.ValueState.Error);
-                oCityInput.setValueStateText("Miasto jest wymagane");
+                oCityInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("cityValidationError"));
                 bValid = false;
             } else {
                 oCityInput.setValueState(sap.ui.core.ValueState.Success);
@@ -235,7 +235,7 @@ sap.ui.define([
                 || this.byId("addressCityInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
                 if (!bSilent) {
-                    sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
@@ -245,7 +245,7 @@ sap.ui.define([
             if (bValid) {
                 oWizard.validateStep(oStep);
                 if (!bSilent) {
-                    sap.m.MessageToast.show("Dane osobowe zostały pomyślnie zweryfikowane!");
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("personalDataValidationSuccess"));
                 }
 
 
@@ -295,7 +295,7 @@ sap.ui.define([
             // Akceptuj jeśli jest wybrana opcja z listy lub wpisana niepusta wartość
             if (!oDeviceTypeComboBox.getSelectedKey() && (!sValue || sValue.trim() === "")) {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceTypeComboBox.setValueStateText("Wybierz typ urządzenia z listy lub wpisz własny");
+                oDeviceTypeComboBox.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypeValidationError"));
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
@@ -320,7 +320,7 @@ sap.ui.define([
             // Akceptuj jeśli jest wybrana opcja z listy lub wpisana niepusta wartość
             if (!oDeviceModelInput.getSelectedKey() && (!sValue || sValue.trim() === "")) {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceModelInput.setValueStateText("Wybierz model urządzenia z listy lub wpisz własny");
+                oDeviceModelInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("deviceModelValidationError"));
                 bValid = false;
             } else {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
@@ -347,7 +347,7 @@ sap.ui.define([
                 || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
                 if (!bSilent) {
-                    sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
@@ -379,7 +379,7 @@ sap.ui.define([
             // Walidacja daty wizyty
             if (!oVisitDate) {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
-                oVisitDateInput.setValueStateText("Data wizyty jest wymagana");
+                oVisitDateInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("visitDateValidationError"));
                 bValid = false;
             } else {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
@@ -399,7 +399,7 @@ sap.ui.define([
             if (!oVisitHourSelect.getSelectedKey()) {
                 bValid = false;
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Error);
-                oVisitHourSelect.setValueStateText("Wybierz godzinę wizyty");
+                oVisitHourSelect.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("visitTimeValidationError"));
                 bValid = false;
             } else {
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
@@ -423,7 +423,7 @@ sap.ui.define([
                 || this.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
             ) {
                 if (!bSilent) {
-                    sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
@@ -432,7 +432,7 @@ sap.ui.define([
             if (bValid) {
                 oWizard.validateStep(oStep);
                 if (!bSilent) {
-                    sap.m.MessageToast.show("Termin wizyty został pomyślnie wybrany!");
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("visitDateValidationSuccess"));
                 }
                 var oValidateButton = oView.byId("validateVisitButton");
                 if (oValidateButton) {
@@ -454,8 +454,8 @@ sap.ui.define([
                 this.wizardCompletedHandler();
             } else {
                 // Jeśli któryś z kroków jest nieprawidłowy, pokaż komunikat
-                sap.m.MessageBox.error("Niektóre dane są nieprawidłowe. Proszę sprawdzić wszystkie kroki i poprawić błędy przed przejściem do podsumowania.", {
-                    title: "Błędy walidacji"
+                sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("dataValidationError"), {
+                    title: this.getView().getModel("i18n").getResourceBundle().getText("dataValidationErrorTitle")
                 });
             }
         },
@@ -506,8 +506,8 @@ sap.ui.define([
 
         handleWizardSubmit: function () {
             var that = this;
-            MessageBox.confirm("Czy na pewno chcesz złożyć zamówienie?", {
-                title: "Potwierdzenie zamówienia",
+            MessageBox.confirm(this.getView().getModel("i18n").getResourceBundle().getText("orderConfirmationMessage"), {
+                title: this.getView().getModel("i18n").getResourceBundle().getText("orderConfirmationTitle"),
                 actions: [MessageBox.Action.YES, MessageBox.Action.NO],
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.YES) {
@@ -542,9 +542,9 @@ sap.ui.define([
 
         handleWizardCancel: function () {
             var that = this;
-            MessageBox.confirm("Czy na pewno chcesz anulować zamówienie?", {
+            MessageBox.confirm(this.getView().getModel("i18n").getResourceBundle().getText("orderCancelConfirmationMessage"), {
                 actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                title: "Anulowanie zamówienia",
+                title: this.getView().getModel("i18n").getResourceBundle().getText("orderCancelConfirmationTitle"),
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.YES) {
                         that._resetWizard();
@@ -610,13 +610,13 @@ sap.ui.define([
             // Use service order model layer to create service order
             serviceOrderModel.createServiceOrder(oPayload, oModel)
                 .then(function (oData) {
-                    sap.m.MessageToast.show("Zamówienie zostało pomyślnie złożone!");
+                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("orderSubmitSuccess"));
                     // Optionally navigate back to home or reset wizard
                     var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                     oRouter.navTo("RouteOrders");
                 }.bind(this))
                 .catch(function (oError) {
-                    var sErrorMsg = "Błąd podczas składania zamówienia";
+                    var sErrorMsg = this.getView().getModel("i18n").getResourceBundle().getText("orderCreationError");
                     if (oError.message) {
                         sErrorMsg += ": " + oError.message;
                     } else if (oError.responseText) {
@@ -624,7 +624,7 @@ sap.ui.define([
                     }
                     sap.m.MessageBox.error(sErrorMsg);
                     console.error("Order creation error:", oError);
-                });
+                }.bind(this));
         },
 
         // Funkcje edycji kroków
