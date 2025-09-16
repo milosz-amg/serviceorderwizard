@@ -23,7 +23,7 @@ sap.ui.define([
             // Create OData model and set it as default model (still needed for some operations)
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
-            
+
             // Create a view model for UI state (messages, counters, etc.)
             var oViewModel = new JSONModel({
                 statusMessage: "Gotowy do pobierania danych",
@@ -32,30 +32,34 @@ sap.ui.define([
                 ordersCount: 0
             });
             this.getView().setModel(oViewModel, "viewModel");
-            
+
             // Przygotuj pusty model dla zleceń
             var oOrdersModel = new JSONModel([]);
             this.getView().setModel(oOrdersModel, "orders");
-            
+
             // Rejestruj zdarzenie routingu, aby odświeżać dane przy każdym wejściu na tę stronę
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
         },
-        
+
+        _getText: function (sKey, aArgs) {
+            return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
+        },
+
         /**
          * Obsługuje dopasowanie wzorca trasy - używane do odświeżania danych przy nawigacji
          * @private
          */
-        _onRouteMatched: function() {
+        _onRouteMatched: function () {
             // Odśwież dane za każdym razem, gdy użytkownik wchodzi na tę stronę
             this._loadAllOrders();
         },
-        
+
         /**
          * Wykonuje się przed renderowaniem widoku
          * @public 
          */
-        onBeforeRendering: function() {
+        onBeforeRendering: function () {
             // Załaduj dane podczas pierwszego renderowania widoku
             if (!this._initialDataLoaded) {
                 this._loadAllOrders();
@@ -70,19 +74,19 @@ sap.ui.define([
          * Ładuje wszystkie zamówienia z serwera używając metody fetchOrderData z serviceOrderModel
          * @private
          */
-        _loadAllOrders: function() {
+        _loadAllOrders: function () {
             var oViewModel = this.getView().getModel("viewModel");
             var oTable = this.byId("ordersTable");
-            
-            oViewModel.setProperty("/statusMessage", "Ładowanie danych...");
+
+            oViewModel.setProperty("/statusMessage", this._getText("loadingDataMessage"));
             oViewModel.setProperty("/messageType", "Information");
-            
+
             // Użyj metody fetchOrderData z serviceOrderModel, która zawiera już parametry sortowania
             serviceOrderModel.fetchOrderData()
-                .then(function(aOrders) {
+                .then((aOrders) => {
                     // Utwórz model JSON z danymi i przypisz go do tabeli
                     var oOrdersModel = new JSONModel(aOrders);
-                    
+
                     // Aktualizuj tabelę bezpośrednio z nowym modelem
                     if (oTable) {
                         oTable.setModel(oOrdersModel, "orders");
@@ -90,15 +94,15 @@ sap.ui.define([
                             path: "orders>/"
                         });
                     }
-                    
+
                     // Aktualizuj licznik i status
                     oViewModel.setProperty("/ordersCount", aOrders.length);
-                    oViewModel.setProperty("/statusMessage", "Dane pobrane pomyślnie. Znaleziono " + aOrders.length + " zleceń.");
+                    oViewModel.setProperty("/statusMessage", this._getText("dataLoadedMessage", [aOrders.length]));
                     oViewModel.setProperty("/messageType", "Success");
                 })
-                .catch(function(oError) {
+                .catch(function (oError) {
                     var sErrorMessage = oError.statusText || oError.message || "Nieznany błąd";
-                    oViewModel.setProperty("/statusMessage", "Błąd podczas ładowania danych: " + sErrorMessage);
+                    oViewModel.setProperty("/statusMessage", this._getText("dataLoadErrorMessage", [sErrorMessage]));
                     oViewModel.setProperty("/messageType", "Error");
                 });
         },
@@ -109,12 +113,12 @@ sap.ui.define([
          */
         onRefresh: function () {
             var oViewModel = this.getView().getModel("viewModel");
-            
-            oViewModel.setProperty("/statusMessage", "Odświeżanie danych...");
+
+            oViewModel.setProperty("/statusMessage", this._getText("refreshingDataMessage"));
             oViewModel.setProperty("/messageType", "Information");
-            
-            MessageToast.show("Odświeżanie danych...");
-            
+
+            MessageToast.show(this._getText("refreshingDataMessage"));
+
             // Użyj wspólnej metody do ładowania danych
             this._loadAllOrders();
         },
@@ -130,7 +134,7 @@ sap.ui.define([
             var oSource = oEvent.getSource();
             var oContext;
             var oOrder;
-            
+
             // Sprawdź, czy mamy kontekst OData czy JSONModel
             if (oSource.getBindingContext()) {
                 // Stary sposób - OData binding
@@ -143,16 +147,16 @@ sap.ui.define([
             }
 
             if (!oOrder) {
-                MessageBox.error("Nie można wczytać danych zlecenia.");
+                MessageBox.error(this._getText("cannotLoadOrderDataMessage"));
                 return;
             }
-            
+
             // Organizujemy dane w kategorie
             var oFormattedData = this._groupOrderData(oOrder);
-            
+
             // Tworzenie formatowanego dialogu o mniejszej szerokości
             var oDialog = new sap.m.Dialog({
-                title: "Szczegóły zlecenia: " + formatter.formatOrderId(oOrder.OrderId || ""),
+                title: this._getText("orderDetailsDialogTitle", [formatter.formatOrderId(oOrder.OrderId || "")]),
                 contentWidth: "500px",
                 resizable: true,
                 draggable: true,
@@ -161,31 +165,31 @@ sap.ui.define([
                 contentHeight: "auto",
                 content: this._createDetailContent(oFormattedData),
                 beginButton: new sap.m.Button({
-                    text: "Zamknij",
-                    press: function() {
+                    text: this._getText("closeButton"),
+                    press: function () {
                         oDialog.close();
                     }
                 }),
-                afterClose: function() {
+                afterClose: function () {
                     oDialog.destroy();
                 }
             });
-            
+
             // Otwórz dialog
             oDialog.open();
         },
-        
+
         /**
          * Grupuje dane zamówienia według kategorii
          * @param {Object} oOrder - Obiekt zawierający dane zamówienia
          * @returns {Object} Pogrupowane dane
          * @private
          */
-        _groupOrderData: function(oOrder) {
+        _groupOrderData: function (oOrder) {
             // Zdefiniuj grupy i przypisz do nich pola
             return {
                 orderInfo: {
-                    title: "Informacje o zamówieniu",
+                    title: this._getText("orderDataTitle"),
                     fields: [
                         { key: "OrderId", value: oOrder.OrderId, formatter: formatter.formatOrderId },
                         { key: "OrderCreationDate", value: oOrder.OrderCreationDate, formatter: formatter.formatDate },
@@ -193,7 +197,7 @@ sap.ui.define([
                     ]
                 },
                 customerInfo: {
-                    title: "Dane klienta",
+                    title: this._getText("clientDataTitle"),
                     fields: [
                         { key: "Firstname", value: oOrder.Firstname },
                         { key: "Lastname", value: oOrder.Lastname },
@@ -201,7 +205,7 @@ sap.ui.define([
                     ]
                 },
                 addressInfo: {
-                    title: "Adres",
+                    title: this._getText("addressLabel"),
                     fields: [
                         { key: "Addressfirstline", value: oOrder.Addressfirstline },
                         { key: "Addresssecondline", value: oOrder.Addresssecondline },
@@ -210,7 +214,7 @@ sap.ui.define([
                     ]
                 },
                 deviceInfo: {
-                    title: "Urządzenie",
+                    title: this._getText("deviceDataTitle"),
                     fields: [
                         { key: "Devicetype", value: oOrder.Devicetype },
                         { key: "Devicemodel", value: oOrder.Devicemodel },
@@ -219,7 +223,7 @@ sap.ui.define([
                     ]
                 },
                 visitInfo: {
-                    title: "Wizyta serwisowa",
+                    title: this._getText("visitDataTitle"),
                     fields: [
                         { key: "Visitdate", value: oOrder.Visitdate, formatter: formatter.formatDate },
                         { key: "Visittime", value: oOrder.Visittime, formatter: formatter.formatTime }
@@ -227,44 +231,44 @@ sap.ui.define([
                 }
             };
         },
-        
+
         /**
          * Tworzy zawartość dialogu szczegółów
          * @param {Object} oFormattedData - Pogrupowane dane zamówienia
          * @returns {sap.m.VBox} Kontener z zawartością
          * @private
          */
-        _createDetailContent: function(oFormattedData) {
+        _createDetailContent: function (oFormattedData) {
             var aContent = [];
-            
+
             // Iteracja po grupach
             for (var sGroupKey in oFormattedData) {
                 if (oFormattedData.hasOwnProperty(sGroupKey)) {
                     var oGroup = oFormattedData[sGroupKey];
-                    
+
                     // Dodaj nagłówek sekcji bez ikony (mniejsze marginesy)
                     var oSectionHeader = new sap.m.Title({
                         text: oGroup.title,
                         level: "H3",
                         wrapping: true
                     }).addStyleClass("sapUiTinyMarginBottom sapUiTinyMarginTop sapUiTinyMarginBegin");
-                    
+
                     aContent.push(oSectionHeader);
-                    
+
                     // Dodaj listę pól w formacie "Etykieta: Wartość" (z marginesem od lewej strony)
                     var oList = new sap.m.List({
                         showSeparators: sap.m.ListSeparators.None,
                         backgroundDesign: sap.m.BackgroundDesign.Transparent
                     }).addStyleClass("sapUiNoMarginBottom sapUiTinyMarginBegin");
-                    
+
                     // Dodaj pola do listy
-                    oGroup.fields.forEach(function(oField) {
+                    oGroup.fields.forEach(function (oField) {
                         if (oField.value) {
                             var sDisplayValue = oField.value;
                             if (oField.formatter) {
                                 sDisplayValue = oField.formatter(sDisplayValue);
                             }
-                            
+
                             // Tworzenie obiektu z etykietą i wartością w jednej linii (z lepszymi marginesami)
                             var oListItem = new sap.m.CustomListItem({
                                 content: [
@@ -283,35 +287,34 @@ sap.ui.define([
                                 ],
                                 class: "sapUiNoMarginTop sapUiNoMarginBottom"
                             });
-                            
+
                             oList.addItem(oListItem);
                         }
                     }.bind(this));
-                    
+
                     aContent.push(oList);
-                    
+
                     // Dodaj separator po każdej sekcji (z marginesem)
                     if (Object.keys(oFormattedData).indexOf(sGroupKey) < Object.keys(oFormattedData).length - 1) {
                         // Separator dla sekcji, które nie są ostatnie
-                        var oSeparator = new sap.m.HBox({height: "1px"})
+                        var oSeparator = new sap.m.HBox({ height: "1px" })
                             .addStyleClass("sapUiTinyMarginTop sapUiTinyMarginBottom sapUiSharedBorderColor");
                         aContent.push(oSeparator);
                     } else {
                         // Dodaj pusty element z marginesem dolnym dla ostatniej sekcji
-                        var oBottomMargin = new sap.m.HBox({height: "8px"})
+                        var oBottomMargin = new sap.m.HBox({ height: "8px" })
                             .addStyleClass("sapUiTinyMarginTop");
                         aContent.push(oBottomMargin);
                     }
                 }
             }
-            
+
             return new sap.m.VBox({
                 items: aContent,
                 width: "100%"
             }).addStyleClass("sapUiContentPadding sapUiTinyMarginBegin");
         },
 
-        // Funkcja _formatFieldName została przeniesiona do formattera jako formatFieldName
 
         /**
          * Obsługuje żądanie usunięcia zlecenia używając metody z serviceOrderModel
@@ -322,7 +325,7 @@ sap.ui.define([
             var oSource = oEvent.getSource();
             var oContext;
             var oOrder;
-            
+
             // Sprawdź, czy mamy kontekst OData czy JSONModel
             if (oSource.getBindingContext()) {
                 // Stary sposób - OData binding
@@ -333,52 +336,52 @@ sap.ui.define([
                 oContext = oSource.getBindingContext("orders");
                 oOrder = oContext.getObject();
             }
-            
+
             if (!oOrder || !oOrder.OrderId) {
-                MessageBox.error("Nie można zidentyfikować ID zlecenia.");
+                MessageBox.error(this._getText("cannotIdentifyOrderIdMessage"));
                 return;
             }
-            
+
             var sOrderId = oOrder.OrderId;
             var oODataModel = this.getView().getModel();
             var oViewModel = this.getView().getModel("viewModel");
-            
+
             // Wyświetlamy dialog potwierdzenia
             MessageBox.confirm(
-                "Czy na pewno chcesz usunąć zlecenie nr " + sOrderId + "?", {
-                    title: "Potwierdzenie usunięcia",
-                    actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                    emphasizedAction: MessageBox.Action.NO,
-                    onClose: function(sAction) {
-                        if (sAction === MessageBox.Action.YES) {
-                            // Pokazujemy wskaźnik ładowania
-                            oViewModel.setProperty("/statusMessage", "Usuwanie zlecenia nr " + sOrderId + "...");
-                            oViewModel.setProperty("/messageType", "Warning");
-                            
-                            // Użyj metody z serviceOrderModel do usunięcia
-                            serviceOrderModel.deleteServiceOrder(sOrderId, oODataModel)
-                                .then(function(oResult) {
-                                    MessageToast.show("Usunięto zlecenie nr " + sOrderId);
-                                    oViewModel.setProperty("/statusMessage", "Usunięto zlecenie nr " + sOrderId);
-                                    oViewModel.setProperty("/messageType", "Success");
-                                    
-                                    // Odśwież dane po usunięciu
-                                    this._loadAllOrders();
-                                }.bind(this))
-                                .catch(function(oError) {
-                                    var sErrorMessage = "Nie udało się usunąć zlecenia nr " + sOrderId;
-                                    if (oError.message) {
-                                        sErrorMessage += ": " + oError.message;
-                                    }
-                                    MessageBox.error(sErrorMessage, {
-                                        title: "Błąd usuwania"
-                                    });
-                                    oViewModel.setProperty("/statusMessage", sErrorMessage);
-                                    oViewModel.setProperty("/messageType", "Error");
+                this._getText("orderDeleteConfirmationMessage", sOrderId), {
+                title: this._getText("orderDeleteConfirmationTitle"),
+                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                emphasizedAction: MessageBox.Action.NO,
+                onClose: function (sAction) {
+                    if (sAction === MessageBox.Action.YES) {
+                        // Pokazujemy wskaźnik ładowania
+                        oViewModel.setProperty("/statusMessage", this._getText("orderDeleteInProgressMessage", [sOrderId]));
+                        oViewModel.setProperty("/messageType", "Warning");
+
+                        // Użyj metody z serviceOrderModel do usunięcia
+                        serviceOrderModel.deleteServiceOrder(sOrderId, oODataModel)
+                            .then(() => {
+                                MessageToast.show(this._getText("orderDeleteSuccessMessage", [sOrderId]));
+                                oViewModel.setProperty("/statusMessage", this._getText("orderDeleteSuccessMessage", [sOrderId]));
+                                oViewModel.setProperty("/messageType", "Success");
+
+                                // Odśwież dane po usunięciu
+                                this._loadAllOrders();
+                            })
+                            .catch(function (oError) {
+                                var sErrorMessage = this._getText("orderDeleteErrorMessage", [sOrderId]);
+                                if (oError.message) {
+                                    sErrorMessage += ": " + oError.message;
+                                }
+                                MessageBox.error(sErrorMessage, {
+                                    title: this._getText("deletionError")
                                 });
-                        }
-                    }.bind(this)
-                }
+                                oViewModel.setProperty("/statusMessage", sErrorMessage);
+                                oViewModel.setProperty("/messageType", "Error");
+                            });
+                    }
+                }.bind(this)
+            }
             );
         },
 

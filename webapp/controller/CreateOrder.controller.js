@@ -73,56 +73,58 @@ sap.ui.define([
             this.getView().setModel(oModel, "orderModel");
         },
 
+        _getText: function (sKey, aArgs) {
+            return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
+        },
+
         /**
          * Ładuje typy urządzeń z serwera OData
          * @private
          */
         _loadDeviceTypes: function () {
             serviceOrderModel.fetchDeviceTypes()
-                .then(function(aDeviceTypes) {
+                .then(function (aDeviceTypes) {
                     // Utwórz model JSON z typami urządzeń
                     var oDeviceTypesModel = new sap.ui.model.json.JSONModel(aDeviceTypes);
                     this.getView().setModel(oDeviceTypesModel, "deviceTypes");
                 }.bind(this))
-                .catch(function(oError) {
-                    console.error(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypesLoadError"), oError);
-                    sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypesLoadError"));
+                .catch(function (oError) {
+                    console.error(this._getText("deviceTypesLoadError"));
+                    sap.m.MessageBox.error(this._getText("deviceTypesLoadError"));
                 }.bind(this));
         },
 
-        _loadDeviceModels: function(deviceTypeId) {
-            console.log("Loading device models for type ID:", deviceTypeId);
+        _loadDeviceModels: function (deviceTypeId) {
             var oView = this.getView();
             var oDeviceModelComboBox = oView.byId("deviceModelInput");
-            
+
             // Pokaż loading indicator
             oDeviceModelComboBox.setBusy(true);
-            
+
             serviceOrderModel.fetchDeviceModelsByType(deviceTypeId)
-                .then(function(aDeviceModels) {
-                    console.log(this.getView().getModel("i18n").getResourceBundle().getText("deviceModelsLoaded"), aDeviceModels);
-                    
+                .then(function (aDeviceModels) {
+
                     // Utwórz model JSON z modelami urządzeń
                     var oDeviceModelsModel = new sap.ui.model.json.JSONModel(aDeviceModels);
                     oView.setModel(oDeviceModelsModel, "deviceModels");
-                    
+
                     // Usuń loading indicator
                     oDeviceModelComboBox.setBusy(false);
-                    
+
                     // Dodaj items do ComboBox
                     oDeviceModelComboBox.removeAllItems();
-                    aDeviceModels.forEach(function(oModel) {
+                    aDeviceModels.forEach(function (oModel) {
                         oDeviceModelComboBox.addItem(new sap.ui.core.Item({
                             key: oModel.Id,
                             text: oModel.ModelName
                         }));
                     });
-                    
+
                 }.bind(this))
-                .catch(function(oError) {
+                .catch(function (oError) {
                     console.error("Error loading device models:", oError);
                     oDeviceModelComboBox.setBusy(false);
-                    
+
                 });
         },
 
@@ -134,7 +136,7 @@ sap.ui.define([
 
             if (!oFirstNameInput.getValue().trim() || oFirstNameInput.getValue().trim().length < 3) {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
-                oFirstNameInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("firstNameValidationError"));
+                oFirstNameInput.setValueStateText(this._getText("firstNameValidationError"));
                 bValid = false;
             } else {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Success);
@@ -150,7 +152,7 @@ sap.ui.define([
 
             if (!oLastNameInput.getValue().trim() || oLastNameInput.getValue().trim().length < 2) {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
-                oLastNameInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("lastNameValidationError"));
+                oLastNameInput.setValueStateText(this._getText("lastNameValidationError"));
                 bValid = false;
             } else {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Success);
@@ -168,7 +170,7 @@ sap.ui.define([
 
             if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Error);
-                oPhoneNumberInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("phoneNumberValidationError"));
+                oPhoneNumberInput.setValueStateText(this._getText("phoneNumberValidationError"));
                 bValid = false;
             } else {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Success);
@@ -187,7 +189,7 @@ sap.ui.define([
 
             if (!sZipCode || !oZipCodeRegex.test(sZipCode)) {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Error);
-                oZipCodeInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("zipCodeValidationError"));
+                oZipCodeInput.setValueStateText(this._getText("zipCodeValidationError"));
                 bValid = false;
             } else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
@@ -203,7 +205,7 @@ sap.ui.define([
 
             if (!oCityInput.getValue().trim() || !oCityRegex.test(oCityInput.getValue().trim())) {
                 oCityInput.setValueState(sap.ui.core.ValueState.Error);
-                oCityInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("cityValidationError"));
+                oCityInput.setValueStateText(this._getText("cityValidationError"));
                 bValid = false;
             } else {
                 oCityInput.setValueState(sap.ui.core.ValueState.Success);
@@ -225,7 +227,7 @@ sap.ui.define([
                 || this.byId("addressCityInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
                 if (!bSilent) {
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("validationErrorMessage"));
+                    sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
@@ -235,7 +237,7 @@ sap.ui.define([
             if (bValid) {
                 oWizard.validateStep(oStep);
                 if (!bSilent) {
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("personalDataValidationSuccess"));
+                    sap.m.MessageToast.show(this._getText("personalDataValidationSuccess"));
                 }
 
 
@@ -253,12 +255,12 @@ sap.ui.define([
             var oView = this.getView();
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
             var oDeviceModelComboBox = oView.byId("deviceModelInput");
-            
+
             // Pobierz ID wybranego typu urządzenia
-            var sSelectedDeviceTypeId = oEvent.getParameter("selectedKey") || 
-                                        oDeviceTypeComboBox.getSelectedKey() ||
-                                        oEvent.getSource().getSelectedKey();
-            
+            var sSelectedDeviceTypeId = oEvent.getParameter("selectedKey") ||
+                oDeviceTypeComboBox.getSelectedKey() ||
+                oEvent.getSource().getSelectedKey();
+
             // Wyczyść wszystkie opcje modeli tylko jeśli wybrano typ z listy
             oDeviceModelComboBox.setValue("");
             oDeviceModelComboBox.removeAllItems();
@@ -284,7 +286,7 @@ sap.ui.define([
             // Akceptuj jeśli jest wybrana opcja z listy lub wpisana niepusta wartość
             if (!oDeviceTypeComboBox.getSelectedKey() && (!sValue || sValue.trim() === "")) {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceTypeComboBox.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypeValidationError"));
+                oDeviceTypeComboBox.setValueStateText(this._getText("deviceTypeValidationError"));
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
@@ -309,7 +311,7 @@ sap.ui.define([
             // Akceptuj jeśli jest wybrana opcja z listy lub wpisana niepusta wartość
             if (!oDeviceModelInput.getSelectedKey() && (!sValue || sValue.trim() === "")) {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Error);
-                oDeviceModelInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("deviceModelValidationError"));
+                oDeviceModelInput.setValueStateText(this._getText("deviceModelValidationError"));
                 bValid = false;
             } else {
                 oDeviceModelInput.setValueState(sap.ui.core.ValueState.Success);
@@ -333,7 +335,7 @@ sap.ui.define([
                 || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
                 if (!bSilent) {
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("validationErrorMessage"));
+                    sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
@@ -365,7 +367,7 @@ sap.ui.define([
             // Walidacja daty wizyty
             if (!oVisitDate) {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
-                oVisitDateInput.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("visitDateValidationError"));
+                oVisitDateInput.setValueStateText(this._getText("visitDateValidationError"));
                 bValid = false;
             } else {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
@@ -385,7 +387,7 @@ sap.ui.define([
             if (!oVisitHourSelect.getSelectedKey()) {
                 bValid = false;
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Error);
-                oVisitHourSelect.setValueStateText(this.getView().getModel("i18n").getResourceBundle().getText("visitTimeValidationError"));
+                oVisitHourSelect.setValueStateText(this._getText("visitTimeValidationError"));
                 bValid = false;
             } else {
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
@@ -409,7 +411,7 @@ sap.ui.define([
                 || this.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
             ) {
                 if (!bSilent) {
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("validationErrorMessage"));
+                    sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
@@ -418,7 +420,7 @@ sap.ui.define([
             if (bValid) {
                 oWizard.validateStep(oStep);
                 if (!bSilent) {
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("visitDateValidationSuccess"));
+                    sap.m.MessageToast.show(this._getText("visitDateValidationSuccess"));
                 }
                 var oValidateButton = oView.byId("validateVisitButton");
                 if (oValidateButton) {
@@ -438,8 +440,8 @@ sap.ui.define([
                 this.wizardCompletedHandler();
             } else {
                 // któryś z kroków jest nieprawidłowy, pokaż komunikat
-                sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("dataValidationError"), {
-                    title: this.getView().getModel("i18n").getResourceBundle().getText("dataValidationErrorTitle")
+                sap.m.MessageBox.error(this._getText("dataValidationError"), {
+                    title: this._getText("dataValidationErrorTitle")
                 });
             }
         },
@@ -449,15 +451,15 @@ sap.ui.define([
          * @returns {boolean} true jeśli wszystkie kroki są prawidłowe, false w przeciwnym razie
          * @private
          */
-        _validateAllSteps: function() {
+        _validateAllSteps: function () {
             // Najpierw uruchom walidację wszystkich poszczególnych pól
             // this._validateAllFields();
-            
+
             // Następnie sprawdź ogólną walidację każdego kroku (silent = true, aby nie pokazywać MessageToast)
             var bStep1Valid = this.validatePersonalData(true);
             var bStep2Valid = this.validateFaultDesc(true);
             var bStep3Valid = this.validateVisitDate(true);
-            
+
             // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
             return bStep1Valid && bStep2Valid && bStep3Valid;
         },
@@ -469,8 +471,8 @@ sap.ui.define([
 
         handleWizardSubmit: function () {
             var that = this;
-            MessageBox.confirm(this.getView().getModel("i18n").getResourceBundle().getText("orderConfirmationMessage"), {
-                title: this.getView().getModel("i18n").getResourceBundle().getText("orderConfirmationTitle"),
+            MessageBox.confirm(this._getText("orderConfirmationMessage"), {
+                title: this._getText("orderConfirmationTitle"),
                 actions: [MessageBox.Action.YES, MessageBox.Action.NO],
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.YES) {
@@ -505,9 +507,9 @@ sap.ui.define([
 
         handleWizardCancel: function () {
             var that = this;
-            MessageBox.confirm(this.getView().getModel("i18n").getResourceBundle().getText("orderCancelConfirmationMessage"), {
+            MessageBox.confirm(this._getText("orderCancelConfirmationMessage"), {
                 actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                title: this.getView().getModel("i18n").getResourceBundle().getText("orderCancelConfirmationTitle"),
+                title: this._getText("orderCancelConfirmationTitle"),
                 onClose: function (oAction) {
                     if (oAction === MessageBox.Action.YES) {
                         that._resetWizard();
@@ -549,14 +551,14 @@ sap.ui.define([
 
             // Use service order model layer to create service order
             serviceOrderModel.createServiceOrder(oPayload, oModel)
-                .then(function () {
-                    sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("orderSubmitSuccess"));
+                .then(() => {
+                    sap.m.MessageToast.show(this._getText("orderSubmitSuccess"));
                     // Optionally navigate back to home or reset wizard
                     var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
                     oRouter.navTo("RouteOrders");
-                }.bind(this))
-                .catch(function (oError) {
-                    var sErrorMsg = this.getView().getModel("i18n").getResourceBundle().getText("orderCreationError");
+                })
+                .catch((oError) => {
+                    var sErrorMsg = this._getText("orderCreationError");
                     if (oError.message) {
                         sErrorMsg += ": " + oError.message;
                     } else if (oError.responseText) {
@@ -564,7 +566,7 @@ sap.ui.define([
                     }
                     sap.m.MessageBox.error(sErrorMsg);
                     console.error("Order creation error:", oError);
-                }.bind(this));
+                });
         },
 
         // Funkcje edycji kroków
@@ -589,38 +591,38 @@ sap.ui.define([
             this._oNavContainer.attachAfterNavigate(fnAfterNavigate);
             this.backToWizardContent();
         },
-        
+
         /**
          * Pobiera listę kontrolek z przywiązaniem do modelu orderData
          * @param {sap.ui.core.mvc.View} oView - Widok zawierający kontrolki
          * @returns {Array} Lista kontrolek z przywiązaniem
          * @private
          */
-        _getBindedControls: function(oView) {
+        _getBindedControls: function (oView) {
             var aControls = [];
-            
+
             // Funkcja rekurencyjna do przeszukiwania kontrolek
             function findBindings(oControl) {
                 if (!oControl) {
                     return;
                 }
-                
+
                 // Sprawdź czy kontrolka ma przywiązania do modelu orderData
                 var aBindingInfos = oControl.getBindingInfo ? Object.keys(oControl.getBindingInfo() || {}) : [];
                 if (aBindingInfos.length > 0) {
                     var bHasOrderDataBinding = false;
-                    
-                    aBindingInfos.forEach(function(sProperty) {
+
+                    aBindingInfos.forEach(function (sProperty) {
                         var oBinding = oControl.getBindingInfo(sProperty);
                         if (oBinding && oBinding.parts) {
-                            oBinding.parts.forEach(function(oPart) {
+                            oBinding.parts.forEach(function (oPart) {
                                 if (oPart.model === "orderData") {
                                     bHasOrderDataBinding = true;
                                 }
                             });
                         }
                     });
-                    
+
                     if (bHasOrderDataBinding) {
                         aControls.push({
                             control: oControl,
@@ -628,72 +630,72 @@ sap.ui.define([
                         });
                     }
                 }
-                
+
                 // Rekurencyjnie sprawdź zagnieżdżone kontrolki
                 if (oControl.getContent) {
                     var aContent = oControl.getContent() || [];
                     aContent.forEach(findBindings);
                 }
-                
+
                 if (oControl.getItems) {
                     var aItems = oControl.getItems() || [];
                     aItems.forEach(findBindings);
                 }
-                
+
                 if (oControl.getPages) {
                     var aPages = oControl.getPages() || [];
                     aPages.forEach(findBindings);
                 }
-                
+
                 if (oControl.getSections) {
                     var aSections = oControl.getSections() || [];
                     aSections.forEach(findBindings);
                 }
             }
-            
+
             findBindings(oView);
             return aControls;
         },
-        
+
         /**
          * Odwiązuje przywiązania modelu od kontrolek
          * @param {Array} aControls - Lista kontrolek do odwiązania
          * @private
          */
-        _unbindControls: function(aControls) {
-            aControls.forEach(function(oControlInfo) {
+        _unbindControls: function (aControls) {
+            aControls.forEach(function (oControlInfo) {
                 var oControl = oControlInfo.control;
                 var aBindings = oControlInfo.bindings;
-                
-                aBindings.forEach(function(sProperty) {
+
+                aBindings.forEach(function (sProperty) {
                     // Zachowaj informacje o przywiązaniu przed odwiązaniem
                     var oBindingInfo = oControl.getBindingInfo(sProperty);
                     oControl._savedBindingInfo = oControl._savedBindingInfo || {};
                     oControl._savedBindingInfo[sProperty] = oBindingInfo;
-                    
+
                     oControl.unbindProperty(sProperty);
                 });
             });
         },
-        
+
         /**
          * Ponownie przywiązuje kontrolki do modelu
          * @param {Array} aControls - Lista kontrolek do przywiązania
          * @param {sap.ui.model.json.JSONModel} oModel - Model do przywiązania
          * @private
          */
-        _rebindControls: function(aControls, oModel) {
-            aControls.forEach(function(oControlInfo) {
+        _rebindControls: function (aControls, oModel) {
+            aControls.forEach(function (oControlInfo) {
                 var oControl = oControlInfo.control;
-                
+
                 if (oControl._savedBindingInfo) {
-                    Object.keys(oControl._savedBindingInfo).forEach(function(sProperty) {
+                    Object.keys(oControl._savedBindingInfo).forEach(function (sProperty) {
                         var oBindingInfo = oControl._savedBindingInfo[sProperty];
-                        
+
                         // Odtwórz przywiązanie z zachowanych informacji
                         oControl.bindProperty(sProperty, oBindingInfo);
                     });
-                    
+
                     // Wyczyść zapisane informacje o przywiązaniach
                     delete oControl._savedBindingInfo;
                 }
@@ -711,11 +713,11 @@ sap.ui.define([
 
             // Pobierz istniejący model
             var oOrderModel = oView.getModel("orderData");
-            
+
             // Tymczasowo odbinduj model aby przyspieszyć reset i uniknąć niepotrzebnych aktualizacji UI
             var aControls = this._getBindedControls(oView);
             this._unbindControls(aControls);
-            
+
             // Utwórz nowy pusty model z taką samą strukturą jak początkowy
             var oInitModel = new sap.ui.model.json.JSONModel({
                 personalData: {},
@@ -723,13 +725,13 @@ sap.ui.define([
                 visitData: {},
                 status: "New"
             });
-            
+
             // Ustaw dane z nowego modelu na istniejący, zachowując strukturę
             oOrderModel.setData(oInitModel.getData());
-            
+
             // Odśwież model aby zmiany zostały zarejestrowane
             oOrderModel.refresh(true);
-            
+
             // Ponownie przywiąż kontrolki do modelu
             this._rebindControls(aControls, oOrderModel);
 
