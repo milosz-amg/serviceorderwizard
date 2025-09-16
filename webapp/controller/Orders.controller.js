@@ -242,81 +242,81 @@ sap.ui.define([
          * @returns {sap.m.VBox} Kontener z zawartością
          * @private
          */
-_createDetailContent: function (oFormattedData) {
-    var aContent = [];
+        _createDetailContent: function (oFormattedData) {
+            var aContent = [];
 
-    // Iteracja po grupach
-    for (var sGroupKey in oFormattedData) {
-        if (oFormattedData.hasOwnProperty(sGroupKey)) {
-            var oGroup = oFormattedData[sGroupKey];
+            // Iteracja po grupach
+            for (var sGroupKey in oFormattedData) {
+                if (oFormattedData.hasOwnProperty(sGroupKey)) {
+                    var oGroup = oFormattedData[sGroupKey];
 
-            // Dodaj nagłówek sekcji bez ikony (mniejsze marginesy)
-            var oSectionHeader = new sap.m.Title({
-                text: oGroup.title,
-                level: "H3",
-                wrapping: true
-            }).addStyleClass("sapUiTinyMarginBottom sapUiTinyMarginTop sapUiTinyMarginBegin");
+                    // Dodaj nagłówek sekcji bez ikony (mniejsze marginesy)
+                    var oSectionHeader = new sap.m.Title({
+                        text: oGroup.title,
+                        level: "H3",
+                        wrapping: true
+                    }).addStyleClass("sapUiTinyMarginBottom sapUiTinyMarginTop sapUiTinyMarginBegin");
 
-            aContent.push(oSectionHeader);
+                    aContent.push(oSectionHeader);
 
-            // Dodaj listę pól w formacie "Etykieta: Wartość" (z marginesem od lewej strony)
-            var oList = new sap.m.List({
-                showSeparators: sap.m.ListSeparators.None,
-                backgroundDesign: sap.m.BackgroundDesign.Transparent
-            }).addStyleClass("sapUiNoMarginBottom sapUiTinyMarginBegin");
+                    // Dodaj listę pól w formacie "Etykieta: Wartość" (z marginesem od lewej strony)
+                    var oList = new sap.m.List({
+                        showSeparators: sap.m.ListSeparators.None,
+                        backgroundDesign: sap.m.BackgroundDesign.Transparent
+                    }).addStyleClass("sapUiNoMarginBottom sapUiTinyMarginBegin");
 
-            // Dodaj pola do listy
-            oGroup.fields.forEach(function (oField) {
-                if (oField.value) {
-                    var sDisplayValue = oField.value;
-                    if (oField.formatter) {
-                        sDisplayValue = oField.formatter(sDisplayValue);
-                    }
+                    // Dodaj pola do listy
+                    oGroup.fields.forEach(function (oField) {
+                        if (oField.value) {
+                            var sDisplayValue = oField.value;
+                            if (oField.formatter) {
+                                sDisplayValue = oField.formatter(sDisplayValue);
+                            }
 
-                    // Tworzenie obiektu z etykietą i wartością w jednej linii (z lepszymi marginesami)
-                    var oListItem = new sap.m.CustomListItem({
-                        content: [
-                            new sap.m.HBox({
-                                wrap: sap.m.FlexWrap.Wrap,
-                                items: [
-                                    new sap.m.Text({
-                                        text: formatter.formatFieldName(oField.key) + ": ",
-                                        textAlign: "End"
-                                    }).addStyleClass("sapUiTinyMarginEnd sapMTextForceBold"),
-                                    new sap.m.Text({
-                                        text: sDisplayValue
-                                    })
+                            // Tworzenie obiektu z etykietą i wartością w jednej linii (z lepszymi marginesami)
+                            var oListItem = new sap.m.CustomListItem({
+                                content: [
+                                    new sap.m.HBox({
+                                        wrap: sap.m.FlexWrap.Wrap,
+                                        items: [
+                                            new sap.m.Text({
+                                                text: formatter.formatFieldName(oField.key) + ": ",
+                                                textAlign: "End"
+                                            }).addStyleClass("sapUiTinyMarginEnd sapMTextForceBold"),
+                                            new sap.m.Text({
+                                                text: sDisplayValue
+                                            })
+                                        ]
+                                    }).addStyleClass("sapUiTinyMarginBegin sapUiTinyMarginTop")
                                 ]
-                            }).addStyleClass("sapUiTinyMarginBegin sapUiTinyMarginTop")
-                        ]
-                    }).addStyleClass("sapUiNoMarginTop sapUiNoMarginBottom");
+                            }).addStyleClass("sapUiNoMarginTop sapUiNoMarginBottom");
 
-                    oList.addItem(oListItem);
+                            oList.addItem(oListItem);
+                        }
+                    }.bind(this));
+
+                    aContent.push(oList);
+
+                    // Dodaj separator po każdej sekcji (z marginesem)
+                    if (Object.keys(oFormattedData).indexOf(sGroupKey) < Object.keys(oFormattedData).length - 1) {
+                        // Separator dla sekcji, które nie są ostatnie
+                        var oSeparator = new sap.m.HBox({ height: "1px" })
+                            .addStyleClass("sapUiTinyMarginTop sapUiTinyMarginBottom sapUiSharedBorderColor");
+                        aContent.push(oSeparator);
+                    } else {
+                        // Dodaj pusty element z marginesem dolnym dla ostatniej sekcji
+                        var oBottomMargin = new sap.m.HBox({ height: "8px" })
+                            .addStyleClass("sapUiTinyMarginTop");
+                        aContent.push(oBottomMargin);
+                    }
                 }
-            }.bind(this));
-
-            aContent.push(oList);
-
-            // Dodaj separator po każdej sekcji (z marginesem)
-            if (Object.keys(oFormattedData).indexOf(sGroupKey) < Object.keys(oFormattedData).length - 1) {
-                // Separator dla sekcji, które nie są ostatnie
-                var oSeparator = new sap.m.HBox({ height: "1px" })
-                    .addStyleClass("sapUiTinyMarginTop sapUiTinyMarginBottom sapUiSharedBorderColor");
-                aContent.push(oSeparator);
-            } else {
-                // Dodaj pusty element z marginesem dolnym dla ostatniej sekcji
-                var oBottomMargin = new sap.m.HBox({ height: "8px" })
-                    .addStyleClass("sapUiTinyMarginTop");
-                aContent.push(oBottomMargin);
             }
-        }
-    }
 
-    return new sap.m.VBox({
-        items: aContent,
-        width: "100%"
-    }).addStyleClass("sapUiContentPadding sapUiTinyMarginBegin");
-},
+            return new sap.m.VBox({
+                items: aContent,
+                width: "100%"
+            }).addStyleClass("sapUiContentPadding sapUiTinyMarginBegin");
+        },
 
 
         /**
