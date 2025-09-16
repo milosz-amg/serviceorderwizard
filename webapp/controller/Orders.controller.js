@@ -86,9 +86,8 @@ sap.ui.define([
                     // Aktualizuj tabelę bezpośrednio z nowym modelem
                     if (oTable) {
                         oTable.setModel(oOrdersModel, "orders");
-                        oTable.bindItems({
-                            path: "orders>/",
-                            template: oTable.getBindingInfo("items").template
+                        oTable.bindRows({
+                            path: "orders>/"
                         });
                     }
                     

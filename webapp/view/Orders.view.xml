@@ -2,6 +2,7 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
+    xmlns:table="sap.ui.table"
     controllerName="com.mr.serviceorderwizard.controller.Orders"
 >
     <Page
@@ -51,16 +52,18 @@
                 />
 
                 <!-- Table view -->
-                <Table
+                <table:Table
                     id="ordersTable"
-                    items="{orders>/}"
-                    visible="true"
-                    inset="false"
-                    growing="true"
-                    growingThreshold="20"
-                    noDataText="{i18n>ordersNoDataText}"
+                    rows="{orders>/}"
+                    width="100%"
+                    selectionMode="None"
+                    enableCellFilter="true"
+                    enableColumnReordering="false"
+                    enableSelectAll="false"
+                    columnHeaderHeight="36"
+                    class="sapUiSizeCompact ordersTableHeight"
                 >
-                    <headerToolbar>
+                    <table:extension>
                         <OverflowToolbar id="tableToolbar">
                             <content>
                                 <Title
@@ -69,119 +72,114 @@
                                 />
                             </content>
                         </OverflowToolbar>
-                    </headerToolbar>
+                    </table:extension>
 
-                    <columns>
+                    <table:columns>
                         <!-- ID column (narrow) -->
-                        <Column id="col1" width="6rem">
-                            <Text
+                        <table:Column id="col1" width="10%" filterProperty="OrderId">
+                            <Label
                                 id="header1"
                                 text="{i18n>ordersColId}"
                             />
-                        </Column>
-
-                        <!-- Order creation date (narrow) -->
-                        <Column id="colCreated" width="8rem">
-                            <Text
-                                id="headerCreated"
-                                text="{i18n>ordersColCreatedDate}"
-                            />
-                        </Column>
-
-                        <!-- Visit date (narrow) -->
-                        <Column id="col7" width="8rem">
-                            <Text
-                                id="header7"
-                                text="{i18n>ordersColVisitDate}"
-                            />
-                        </Column>
-
-                        <!-- City (flexible) -->
-                        <Column id="col4" width="12rem">
-                            <Text
-                                id="header4"
-                                text="{i18n>ordersColCity}"
-                            />
-                        </Column>
-
-                        <!-- Status (narrow) -->
-                        <Column id="col8" width="7rem">
-                            <Text
-                                id="header8"
-                                text="{i18n>ordersColStatus}"
-                            />
-                        </Column>
-
-                        <Column id="colDetails" width="6rem">
-                            <Text
-                                id="headerDetails"
-                                text="{i18n>ordersColDetails}"
-                            />
-                        </Column>
-
-                        <Column id="colDelete" width="6rem">
-                            <Text
-                                id="headerDelete"
-                                text="{i18n>ordersColActions}"
-                            />
-                        </Column>
-                    </columns>
-
-                    <items>
-                        <ColumnListItem
-                            id="orderItem"
-                            press="onOrderPress"
-                        >
-                            <cells>
+                            <table:template>
                                 <Text
-                                    id="cell1"
                                     text="{
                                         path: 'orders>OrderId',
                                         formatter: '.formatter.formatOrderId'
                                     }"
                                 />
+                            </table:template>
+                        </table:Column>
+
+                        <!-- Order creation date (narrow) -->
+                        <table:Column id="colCreated" width="15%">
+                            <Label
+                                id="headerCreated"
+                                text="{i18n>ordersColCreatedDate}"
+                            />
+                            <table:template>
                                 <Text
-                                    id="cell77"
                                     text="{
                                         path: 'orders>OrderCreationDate',
                                         formatter: '.formatter.formatDate'
                                     }"
                                 />
+                            </table:template>
+                        </table:Column>
+
+                        <!-- Visit date (narrow) -->
+                        <table:Column id="col7" width="15%">
+                            <Label
+                                id="header7"
+                                text="{i18n>ordersColVisitDate}"
+                            />
+                            <table:template>
                                 <Text
-                                    id="cell7"
                                     text="{
                                         path: 'orders>Visitdate',
                                         formatter: '.formatter.formatDate'
                                     }"
                                 />
+                            </table:template>
+                        </table:Column>
 
+                        <!-- City (flexible) -->
+                        <table:Column id="col4" width="25%" filterProperty="Addresscity" defaultFilterOperator="Contains">
+                            <Label
+                                id="header4"
+                                text="{i18n>ordersColCity}"
+                            />
+                            <table:template>
                                 <Text
-                                    id="cell4"
                                     text="{orders>Addresscity}"
                                 />
+                            </table:template>
+                        </table:Column>
 
+                        <!-- Status (narrow) -->
+                        <table:Column id="col8" width="15%" filterProperty="Status" defaultFilterOperator="EQ">
+                            <Label
+                                id="header8"
+                                text="{i18n>ordersColStatus}"
+                            />
+                            <table:template>
                                 <Text
-                                    id="cell8"
                                     text="{orders>Status}"
                                 />
+                            </table:template>
+                        </table:Column>
+
+                        <table:Column id="colDetails" width="10%">
+                            <Label
+                                id="headerDetails"
+                                text="{i18n>ordersColDetails}"
+                            />
+                            <table:template>
                                 <Button
-                                    id="detailsButton"
                                     text="{i18n>detailsButton}"
                                     icon="sap-icon://detail-view"
                                     press="onShowDetails"
                                     type="Transparent"
                                 />
+                            </table:template>
+                        </table:Column>
+
+                        <table:Column id="colDelete" width="10%">
+                            <Label
+                                id="headerDelete"
+                                text="{i18n>ordersColActions}"
+                            />
+                            <table:template>
                                 <Button
-                                    id="deleteButton"
                                     text="{i18n>deleteButton}"
                                     icon="sap-icon://delete"
                                     type="Reject"
                                     press="onDeleteOrder"
                                 />
-                            </cells>
-                        </ColumnListItem>
-                    </items>
-                </Table>
+                            </table:template>
+                        </table:Column>
+                    </table:columns>
+                </table:Table>
             </VBox>
         </content>
     </Page>
