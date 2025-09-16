@@ -51,6 +51,7 @@ Walidacje:
 i18n:
 * ⏳ pozbyć się hardcoded stringów
     - przeniesienie elementów tekstowych do i18n
+    - consol logi dla mnie zostały 
 
 Ekran Orders (tabelka):
 * ✅ dodać formater na zera wiodące w ID

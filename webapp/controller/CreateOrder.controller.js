@@ -83,10 +83,9 @@ sap.ui.define([
                     // Utwórz model JSON z typami urządzeń
                     var oDeviceTypesModel = new sap.ui.model.json.JSONModel(aDeviceTypes);
                     this.getView().setModel(oDeviceTypesModel, "deviceTypes");
-                    console.log("Załadowano typy urządzeń:", aDeviceTypes);
                 }.bind(this))
                 .catch(function(oError) {
-                    console.error("Błąd podczas ładowania typów urządzeń:", oError);
+                    console.error(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypesLoadError"), oError);
                     sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("deviceTypesLoadError"));
                 }.bind(this));
         },
@@ -101,7 +100,7 @@ sap.ui.define([
             
             serviceOrderModel.fetchDeviceModelsByType(deviceTypeId)
                 .then(function(aDeviceModels) {
-                    console.log("Device models loaded:", aDeviceModels);
+                    console.log(this.getView().getModel("i18n").getResourceBundle().getText("deviceModelsLoaded"), aDeviceModels);
                     
                     // Utwórz model JSON z modelami urządzeń
                     var oDeviceModelsModel = new sap.ui.model.json.JSONModel(aDeviceModels);
@@ -129,7 +128,6 @@ sap.ui.define([
 
         validatePersonalDataName: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
             // Pola do walidacji
             var oFirstNameInput = oView.byId("firstNameInput");
@@ -146,7 +144,6 @@ sap.ui.define([
 
         validatePersonalDataLastName: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
             // Pola do walidacji
             var oLastNameInput = oView.byId("lastNameInput");
@@ -163,12 +160,10 @@ sap.ui.define([
 
         validatePersonalDataPhoneNumber: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
             var oPhoneNumberInput = oView.byId("phoneNumberInput");
             var sPhoneNumber = oPhoneNumberInput.getValue().trim();
-            //TODO: nr telefonu z myślnikami, spacjami
             var oPhoneRegex = /^(?:\+\d{2}[ -]?)?(?:\d{9}|\d{3}(?:[ -]\d{3}){2})$/;
 
             if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
@@ -184,12 +179,10 @@ sap.ui.define([
 
         validatePersonalDataZipCode: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
             var oZipCodeInput = oView.byId("addressZipCodeInput");
             var sZipCode = oZipCodeInput.getValue().trim();
-            //TODO: Regex dla formatów: 00000, 00 000, 00-000
             var oZipCodeRegex = /^\d{5}$|^\d{2} \d{3}$|^\d{2}-\d{3}$/;
 
             if (!sZipCode || !oZipCodeRegex.test(sZipCode)) {
@@ -204,10 +197,8 @@ sap.ui.define([
 
         validatePersonalDataCity: function () {
             var oView = this.getView();
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
             var oCityInput = oView.byId("addressCityInput");
-            //TODO: regex dla liter, spacji, myślników
             var oCityRegex = /^\p{L}+(?:[ \p{L}'’\.]*\p{L}+)*(?:\s*-\s*\p{L}+(?:[ \p{L}'’\.]*\p{L}+)*)*$/u;
 
             if (!oCityInput.getValue().trim() || !oCityRegex.test(oCityInput.getValue().trim())) {
@@ -224,7 +215,6 @@ sap.ui.define([
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepPersonalData");
-            var oModel = this.getView().getModel("orderData");
             var bValid = true;
 
 
@@ -277,7 +267,6 @@ sap.ui.define([
             if (sSelectedDeviceTypeId) {
                 this._loadDeviceModels(sSelectedDeviceTypeId);
             } else {
-                // Jeśli użytkownik wpisał własną wartość, nie ładuj modeli z bazy
                 console.log("Użytkownik wpisał własny typ urządzenia:", oDeviceTypeComboBox.getValue());
             }
 
@@ -299,11 +288,11 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oDeviceTypeComboBox.setValueState(sap.ui.core.ValueState.Success);
-                // Jeśli wartość została wpisana ręcznie (brak selectedKey), upewnij się że jest w modelu
+                // set property potrzebne do wartosci wpisanych z ręki
                 if (!oDeviceTypeComboBox.getSelectedKey() && sValue) {
                     var oModel = this.getView().getModel("orderData");
                     oModel.setProperty("/deviceData/deviceType", sValue.trim());
-                    oModel.setProperty("/deviceData/deviceTypeKey", ""); // Wyczyść klucz dla wartości niestandardowej
+                    oModel.setProperty("/deviceData/deviceTypeKey", ""); // klucz pusty dla wartości niestandardowej
                 }
             }
             return bValid;
@@ -339,9 +328,6 @@ sap.ui.define([
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepFaultDesc");
             var bValid = true;
-
-            var oDeviceSerialInput = oView.byId("deviceSerialNumberInput");
-            var oFaultDescInput = oView.byId("faultDescInput");
 
             if (this.byId("deviceTypeComboBox").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
@@ -383,7 +369,7 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizuj model z wybraną datą
+                // setProperty - datepicker czasami się buguje
                 oModel.setProperty("/visitData/visitDate", oVisitDate);
                 console.log("Data wizyty ustawiona:", oVisitDate);
             }
@@ -446,14 +432,12 @@ sap.ui.define([
         },
 
         onSubmitOrder: function () {
-            // Przed przejściem do podsumowania, uruchom wszystkie walidacje ponownie
-            var bAllStepsValid = this._validateAllSteps();
-            
-            if (bAllStepsValid) {
+            // Przed zatwierdzeniem ponownie zwaliduj wszystkie kroki
+            if (this._validateAllSteps()) {
                 // Wszystkie kroki są prawidłowe - przejdź do ekranu podsumowania
                 this.wizardCompletedHandler();
             } else {
-                // Jeśli któryś z kroków jest nieprawidłowy, pokaż komunikat
+                // któryś z kroków jest nieprawidłowy, pokaż komunikat
                 sap.m.MessageBox.error(this.getView().getModel("i18n").getResourceBundle().getText("dataValidationError"), {
                     title: this.getView().getModel("i18n").getResourceBundle().getText("dataValidationErrorTitle")
                 });
@@ -467,7 +451,7 @@ sap.ui.define([
          */
         _validateAllSteps: function() {
             // Najpierw uruchom walidację wszystkich poszczególnych pól
-            this._validateAllFields();
+            // this._validateAllFields();
             
             // Następnie sprawdź ogólną walidację każdego kroku (silent = true, aby nie pokazywać MessageToast)
             var bStep1Valid = this.validatePersonalData(true);
@@ -476,27 +460,6 @@ sap.ui.define([
             
             // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
             return bStep1Valid && bStep2Valid && bStep3Valid;
-        },
-
-        /**
-         * Uruchamia walidację wszystkich poszczególnych pól w formularzu
-         * @private
-         */
-        _validateAllFields: function() {
-            // Walidacja pól z kroku 1 (dane osobowe)
-            this.validatePersonalDataName();
-            this.validatePersonalDataLastName();
-            this.validatePersonalDataPhoneNumber();
-            this.validatePersonalDataZipCode();
-            this.validatePersonalDataCity();
-            
-            // Walidacja pól z kroku 2 (dane urządzenia)
-            this.validateFaultDescDeviceType();
-            this.validateFaultDescDeviceModel();
-            
-            // Walidacja pól z kroku 3 (data wizyty)
-            this.validateVisitDateDate();
-            this.validateVisitDateHour();
         },
 
         wizardCompletedHandler: function () {
@@ -562,31 +525,8 @@ sap.ui.define([
         _saveOrderData: function (oOrderData) {
             var oModel = this.getView().getModel("orderModel");
 
-            // Format date for backend (YYYYMMDD)
-            var visitDate = oOrderData.visitDate;
-            var formattedDate = "";
-            if (visitDate) {
-                if (typeof visitDate === "string") {
-                    // Konwersja z formatu "DD.MM.YYYY" na "YYYYMMDD"
-                    var parts = visitDate.split(".");
-                    if (parts.length === 3) {
-                        formattedDate = parts[2] + parts[1] + parts[0];
-                    }
-                } else {
-                    // Jeśli to obiekt Date
-                    var date = new Date(visitDate);
-                    formattedDate = date.getFullYear().toString() +
-                        ("0" + (date.getMonth() + 1)).slice(-2) +
-                        ("0" + date.getDate()).slice(-2);
-                }
-            }
-
-            // Format time (HHMM)
-            var visitTime = oOrderData.visitTime;
-            var formattedTime = "";
-            if (visitTime) {
-                formattedTime = visitTime.replace(":", "");
-            }
+            var formattedDate = this.formatter.formatDateForBackend(oOrderData.visitDate);
+            var formattedTime = this.formatter.formatTimeForBackend(oOrderData.visitTime);
 
             // Mapuj dane do formatu wymaganego przez backend
             var oPayload = {
@@ -609,7 +549,7 @@ sap.ui.define([
 
             // Use service order model layer to create service order
             serviceOrderModel.createServiceOrder(oPayload, oModel)
-                .then(function (oData) {
+                .then(function () {
                     sap.m.MessageToast.show(this.getView().getModel("i18n").getResourceBundle().getText("orderSubmitSuccess"));
                     // Optionally navigate back to home or reset wizard
                     var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -658,7 +598,6 @@ sap.ui.define([
          */
         _getBindedControls: function(oView) {
             var aControls = [];
-            var that = this;
             
             // Funkcja rekurencyjna do przeszukiwania kontrolek
             function findBindings(oControl) {

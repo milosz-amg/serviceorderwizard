@@ -1,4 +1,3 @@
-// TODO: formatery w formaterze :)
 sap.ui.define([], function () {
     "use strict";
 
