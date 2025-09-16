@@ -473,9 +473,10 @@ sap.ui.define([
             var that = this;
             MessageBox.confirm(this._getText("orderConfirmationMessage"), {
                 title: this._getText("orderConfirmationTitle"),
-                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                actions: [this._getText("yesButton"), this._getText("noButton")],
+                emphasizedAction: this._getText("yesButton"),
                 onClose: function (oAction) {
-                    if (oAction === MessageBox.Action.YES) {
+                    if (oAction === that._getText("yesButton")) {
                         var oModel = that.getView().getModel("orderData");
                         var oData = oModel.getData();
 
@@ -508,10 +509,11 @@ sap.ui.define([
         handleWizardCancel: function () {
             var that = this;
             MessageBox.confirm(this._getText("orderCancelConfirmationMessage"), {
-                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+                actions: [this._getText("yesButton"), this._getText("noButton")],
                 title: this._getText("orderCancelConfirmationTitle"),
+                emphasizedAction: this._getText("noButton"),
                 onClose: function (oAction) {
-                    if (oAction === MessageBox.Action.YES) {
+                    if (oAction === that._getText("yesButton")) {
                         that._resetWizard();
                         var oRouter = sap.ui.core.UIComponent.getRouterFor(that);
                         oRouter.navTo("RouteHome");

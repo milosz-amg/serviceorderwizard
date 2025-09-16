@@ -101,10 +101,10 @@ sap.ui.define([
                     oViewModel.setProperty("/messageType", "Success");
                 })
                 .catch(function (oError) {
-                    var sErrorMessage = oError.statusText || oError.message || "Nieznany błąd";
+                    var sErrorMessage = oError.statusText || oError.message || this._getText("unknownError");
                     oViewModel.setProperty("/statusMessage", this._getText("dataLoadErrorMessage", [sErrorMessage]));
                     oViewModel.setProperty("/messageType", "Error");
-                });
+                }.bind(this));
         },
 
         /**
@@ -350,10 +350,10 @@ sap.ui.define([
             MessageBox.confirm(
                 this._getText("orderDeleteConfirmationMessage", sOrderId), {
                 title: this._getText("orderDeleteConfirmationTitle"),
-                actions: [MessageBox.Action.YES, MessageBox.Action.NO],
-                emphasizedAction: MessageBox.Action.NO,
+                actions: [this._getText("yesButton"), this._getText("noButton")],
+                emphasizedAction: this._getText("noButton"),
                 onClose: function (sAction) {
-                    if (sAction === MessageBox.Action.YES) {
+                    if (sAction === this._getText("yesButton")) {
                         // Pokazujemy wskaźnik ładowania
                         oViewModel.setProperty("/statusMessage", this._getText("orderDeleteInProgressMessage", [sOrderId]));
                         oViewModel.setProperty("/messageType", "Warning");
@@ -378,7 +378,7 @@ sap.ui.define([
                                 });
                                 oViewModel.setProperty("/statusMessage", sErrorMessage);
                                 oViewModel.setProperty("/messageType", "Error");
-                            });
+                            }.bind(this));
                     }
                 }.bind(this)
             }
