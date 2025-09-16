@@ -72,7 +72,11 @@ sap.ui.define([
             var oModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oModel, "orderModel");
         },
-
+        
+        /**
+         * Pobiera tekst z modelu i18n
+         * @private
+         */
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
@@ -133,8 +137,10 @@ sap.ui.define([
             var bValid = true;
             // Pola do walidacji
             var oFirstNameInput = oView.byId("firstNameInput");
+            var sFirstName = oFirstNameInput.getValue().trim();
+            var oNameRegex = /^(?=.*[A-Za-z])[A-Za-z0-9 ]{3,}$/;
 
-            if (!oFirstNameInput.getValue().trim() || oFirstNameInput.getValue().trim().length < 3) {
+            if (!oNameRegex.test(sFirstName)) {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
                 oFirstNameInput.setValueStateText(this._getText("firstNameValidationError"));
                 bValid = false;
@@ -149,8 +155,10 @@ sap.ui.define([
             var bValid = true;
             // Pola do walidacji
             var oLastNameInput = oView.byId("lastNameInput");
+            var sLastName = oLastNameInput.getValue().trim();
+            var oLastNameRegex = /^(?=.*[A-Za-z])[A-Za-z0-9 ]{2,}$/;
 
-            if (!oLastNameInput.getValue().trim() || oLastNameInput.getValue().trim().length < 2) {
+            if (!oLastNameRegex.test(sLastName)) {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
                 oLastNameInput.setValueStateText(this._getText("lastNameValidationError"));
                 bValid = false;

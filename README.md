@@ -35,7 +35,7 @@ Aplikacja SAPUI5 do tworzenia zleceń serwisowych z wykorzystaniem kreatora (wiz
 
 
 ## TO DO ⏳
-Walidacje:
+#### Walidacje:
 * ✅ kod pocztowy z myślnikiem 
     - regex
 * ✅ nr telefonu z myślnikami, spacjami 
@@ -48,12 +48,11 @@ Walidacje:
 * ✅ poprawić wyświetlanie na ekranie podsumowania (spacje przy pustych adresach, przecinek hardcoded)
     - dodano formatery do wyświetlania adresu na podsumowaniu
 
-i18n:
+#### i18n:
 * ⏳ pozbyć się hardcoded stringów
     - przeniesienie elementów tekstowych do i18n
-    - consol logi dla mnie zostały 
 
-Ekran Orders (tabelka):
+#### Ekran Orders (tabelka):
 * ✅ dodać formater na zera wiodące w ID
     - formatter
 * ✅ dodać pole „Kiedy złożono zamówienie”
@@ -68,22 +67,20 @@ Ekran Orders (tabelka):
 * ✅ „Więcej” ładniejsze – nie sztywny tekst
 
 
-Refactor front:
+#### Refactor front:
 * ✅ formatery do formatera
 * ✅ oData daje model *Device* i na podstawie tego pokazać typy (konsola → \[Xbox, PlayStation, …])
 * ✅ uprościć formatowanie daty – przy wysyłaniu na backend
-    - data wywylana normalnie, dodane formatery do wyswietlania daty na podsumowaniu i w Orders.veiw
+    - data wysylana normalnie, dodane formatery do wyswietlania daty na podsumowaniu i w Orders.veiw
 * ✅ po złożeniu zamówienia przekierowanie na *orders.view*, a nie na *home.view*
     - routing na inny view
 
 Refactor backend:
 * ✅ lepiej ubrać w try/catch → rzucać wyjątek np. po nieudanym insercie
 
-Extra:
+#### Extra:
 * ✅ czy `setProperty()` jest potrzebne, czy robi się automatycznie? 
-    - chyba niekoniecznie, bylo przydatne przy live update, ale nie jest to konieczne
     - dla DatePickera lepiej zostawic bo jest zbugowany i nie zawsze działa na two-way banding
-    - wartości wpisywane z ręki były nieprawidłowe bez setProperty()
     - przy statusMessage setProperty zostało bo zmieniamy wartości na bannerach dynamicznie, bez inputu usera
 * ✅ czy czyszczenie modelu JSON można zrobić przez `unbind`?
     - niedokońca, model resetujemy i tworzymy nowy pusty jak on init, a ten stary jest unbindowany
@@ -93,7 +90,7 @@ Extra:
     - wywoływanie po prostu read na modelach
 
 
-## Dodatkowe bugfixy TODO
+### Dodatkowe bugfixy TODO
 * ✅ Edytuj -> podaj imie '3' -> można zatwierdzić (przycisk generuj wywołuje validacje wszyskiego)
 * ✅ poprawić resetowanie wizarda
 * ✅ device model nie przesyla sie do bazy danych

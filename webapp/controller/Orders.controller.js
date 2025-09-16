@@ -42,6 +42,10 @@ sap.ui.define([
             oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
         },
 
+        /**
+         * Pobiera tekst z modelu i18n
+         * @private
+         */
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
@@ -348,7 +352,7 @@ sap.ui.define([
 
             // Wyświetlamy dialog potwierdzenia
             MessageBox.confirm(
-                this._getText("orderDeleteConfirmationMessage", sOrderId), {
+                this._getText("orderDeleteConfirmationMessage", formatter.formatOrderId(sOrderId)), {
                 title: this._getText("orderDeleteConfirmationTitle"),
                 actions: [this._getText("yesButton"), this._getText("noButton")],
                 emphasizedAction: this._getText("noButton"),
