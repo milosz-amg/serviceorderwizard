@@ -220,7 +220,7 @@ sap.ui.define([
             return bValid;
         },
 
-        validatePersonalData: function () {
+        validatePersonalData: function (bSilent) {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepPersonalData");
@@ -234,7 +234,9 @@ sap.ui.define([
                 || this.byId("addressZipCodeInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("addressCityInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                if (!bSilent) {
+                    sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                }
                 bValid = false;
                 return bValid;
             }
@@ -242,7 +244,9 @@ sap.ui.define([
             // Ustaw stan kroku w zależności od wyników walidacji
             if (bValid) {
                 oWizard.validateStep(oStep);
-                sap.m.MessageToast.show("Dane osobowe zostały pomyślnie zweryfikowane!");
+                if (!bSilent) {
+                    sap.m.MessageToast.show("Dane osobowe zostały pomyślnie zweryfikowane!");
+                }
 
 
                 var oValidateButton = oView.byId("validatePersonalButton");
@@ -330,7 +334,7 @@ sap.ui.define([
             return bValid;
         },
 
-        validateFaultDesc: function () {
+        validateFaultDesc: function (bSilent) {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepFaultDesc");
@@ -342,7 +346,9 @@ sap.ui.define([
             if (this.byId("deviceTypeComboBox").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                if (!bSilent) {
+                    sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                }
                 bValid = false;
                 return bValid;
 
@@ -407,7 +413,7 @@ sap.ui.define([
             return bValid;
         },
 
-        validateVisitDate: function () {
+        validateVisitDate: function (bSilent) {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepVisitDate");
@@ -416,14 +422,18 @@ sap.ui.define([
             if (this.byId("visitDateInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                if (!bSilent) {
+                    sap.m.MessageToast.show("Uzupełnij wymagane pola lub popraw błędy w formularzu przed zatwierdzeniem danych.");
+                }
                 bValid = false;
                 return bValid;
             }
 
             if (bValid) {
                 oWizard.validateStep(oStep);
-                sap.m.MessageToast.show("Termin wizyty został pomyślnie wybrany!");
+                if (!bSilent) {
+                    sap.m.MessageToast.show("Termin wizyty został pomyślnie wybrany!");
+                }
                 var oValidateButton = oView.byId("validateVisitButton");
                 if (oValidateButton) {
                     oValidateButton.setVisible(false);
@@ -436,9 +446,57 @@ sap.ui.define([
         },
 
         onSubmitOrder: function () {
-            // Przejdź do ekranu podsumowania
+            // Przed przejściem do podsumowania, uruchom wszystkie walidacje ponownie
+            var bAllStepsValid = this._validateAllSteps();
+            
+            if (bAllStepsValid) {
+                // Wszystkie kroki są prawidłowe - przejdź do ekranu podsumowania
+                this.wizardCompletedHandler();
+            } else {
+                // Jeśli któryś z kroków jest nieprawidłowy, pokaż komunikat
+                sap.m.MessageBox.error("Niektóre dane są nieprawidłowe. Proszę sprawdzić wszystkie kroki i poprawić błędy przed przejściem do podsumowania.", {
+                    title: "Błędy walidacji"
+                });
+            }
+        },
 
-            this.wizardCompletedHandler();
+        /**
+         * Waliduje ponownie wszystkie kroki formularza
+         * @returns {boolean} true jeśli wszystkie kroki są prawidłowe, false w przeciwnym razie
+         * @private
+         */
+        _validateAllSteps: function() {
+            // Najpierw uruchom walidację wszystkich poszczególnych pól
+            this._validateAllFields();
+            
+            // Następnie sprawdź ogólną walidację każdego kroku (silent = true, aby nie pokazywać MessageToast)
+            var bStep1Valid = this.validatePersonalData(true);
+            var bStep2Valid = this.validateFaultDesc(true);
+            var bStep3Valid = this.validateVisitDate(true);
+            
+            // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
+            return bStep1Valid && bStep2Valid && bStep3Valid;
+        },
+
+        /**
+         * Uruchamia walidację wszystkich poszczególnych pól w formularzu
+         * @private
+         */
+        _validateAllFields: function() {
+            // Walidacja pól z kroku 1 (dane osobowe)
+            this.validatePersonalDataName();
+            this.validatePersonalDataLastName();
+            this.validatePersonalDataPhoneNumber();
+            this.validatePersonalDataZipCode();
+            this.validatePersonalDataCity();
+            
+            // Walidacja pól z kroku 2 (dane urządzenia)
+            this.validateFaultDescDeviceType();
+            this.validateFaultDescDeviceModel();
+            
+            // Walidacja pól z kroku 3 (data wizyty)
+            this.validateVisitDateDate();
+            this.validateVisitDateHour();
         },
 
         wizardCompletedHandler: function () {
