@@ -134,7 +134,7 @@
                             <Button
                                 id="validatePersonalButton"
                                 text="{i18n>validateDataButton}"
-                                press="validatePersonalData"
+                                press="validatePersonalData(false)"
                             />
                         </WizardStep>
 
@@ -223,7 +223,7 @@
                             <Button
                                 id="validateDeviceButton"
                                 text="{i18n>validateDataButton}"
-                                press="validateFaultDesc"
+                                press="validateFaultDesc(false)"
                             />
                         </WizardStep>
                         <WizardStep
@@ -307,7 +307,7 @@
                             <Button
                                 id="validateVisitButton"
                                 text="{i18n>validateDataButton}"
-                                press="validateVisitDate"
+                                press="validateVisitDate(false)"
                             />
                         </WizardStep>
                         <WizardStep

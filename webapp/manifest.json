@@ -51,7 +51,9 @@
       "i18n": {
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
-          "bundleName": "com.mr.serviceorderwizard.i18n.i18n"
+          "bundleName": "com.mr.serviceorderwizard.i18n.i18n",
+          "supportedLocales": ["", "pl", "en"],
+         "fallbackLocale": "pl"
         }
       }
     },
