@@ -278,6 +278,8 @@ sap.ui.define([
                 this._loadDeviceModels(sSelectedDeviceTypeId);
             } else {
                 console.log("Użytkownik wpisał własny typ urządzenia:", oDeviceTypeComboBox.getValue());
+                var oModel = this.getView().getModel("orderData");
+                oModel.setProperty("/deviceData/deviceTypeKey", ""); // klucz pusty dla wartości niestandardowej
             }
 
             this.validateFaultDescDeviceType();
@@ -327,7 +329,7 @@ sap.ui.define([
                 if (!oDeviceModelInput.getSelectedKey() && sValue) {
                     var oModel = this.getView().getModel("orderData");
                     oModel.setProperty("/deviceData/deviceModel", sValue.trim());
-                    oModel.setProperty("/deviceData/deviceModelKey", ""); // czyszczenie klucza
+                    oModel.setProperty("/deviceData/deviceModelKey", ""); // klucz pusty dla wartości niestandardowej
                 }
             }
             return bValid;

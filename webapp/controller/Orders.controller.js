@@ -351,7 +351,7 @@ sap.ui.define([
 
             // Wyświetlamy dialog potwierdzenia
             MessageBox.confirm(
-                this._getText("orderDeleteConfirmationMessage", formatter.formatOrderId(sOrderId)), {
+                this._getText("orderDeleteConfirmationMessage", [formatter.formatOrderId(sOrderId)]), {
                 title: this._getText("orderDeleteConfirmationTitle"),
                 actions: [this._getText("yesButton"), this._getText("noButton")],
                 emphasizedAction: this._getText("noButton"),
