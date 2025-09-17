@@ -96,7 +96,19 @@ Refactor backend:
 * ✅ device model nie przesyla sie do bazy danych
     - brakowało w payloadzie
 
+## TO DO v2 ⏳ ✅
+### CreateOrder:
+* Mask input (nr. tel, kod pocztowy itd.)
+* Nie dwuklik przy przejściu między stepami
+* lista wyboru modeli i typów model oData nie JSON
+* formatter na OrderCreationDate w Payload
 
+### OrdersView:
+* filtrowanie:
+    - przy filtrowaniu po statusie lista wielokrotnego wyboru
+    - filtrowanie też po datach
+* wyszukiwanie: wyszukuje "warszawa" pokazuje rekordy zawierające warszawa / szukam "nie działa" pokazuje rekordy mające w opisie tekst "nie działa..."
+* Orders.view: JSON model -> oData
 
-
-
+### Backend:
+* nie rzucać cx_root
