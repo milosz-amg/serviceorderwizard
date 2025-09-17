@@ -69,13 +69,15 @@
                                     text="{i18n>phoneNumberLabel}"
                                     labelFor="phoneNumberInput"
                                 />
-                                <Input
+                                <MaskInput
                                     id="phoneNumberInput"
                                     placeholder="{i18n>phoneNumberPlaceholder}"
                                     required="true"
                                     change="validatePersonalDataPhoneNumber"
                                     valueState="None"
                                     value="{orderData>/personalData/phoneNumber}"
+                                    mask="+99 999 999 999"
+                                    placeholderSymbol="_"
                                 />
 
                                 <Label
@@ -108,12 +110,14 @@
                                     required="true"
                                     labelFor="addressZipCodeInput"
                                 />
-                                <Input
+                                <MaskInput
                                     id="addressZipCodeInput"
                                     placeholder="{i18n>zipCodePlaceholder}"
                                     change="validatePersonalDataZipCode"
                                     valueState="None"
                                     value="{orderData>/personalData/addressZipCode}"
+                                    mask="99-999"
+                                    placeholderSymbol="_"
                                 />
 
                                 <Label

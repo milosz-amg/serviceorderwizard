@@ -98,10 +98,11 @@ Refactor backend:
 
 ## TO DO v2 ⏳ ✅
 ### CreateOrder:
-* Mask input (nr. tel, kod pocztowy itd.)
+* ✅ Mask input (nr. tel, kod pocztowy itd.)
 * Nie dwuklik przy przejściu między stepami
 * lista wyboru modeli i typów model oData nie JSON
-* formatter na OrderCreationDate w Payload
+* ✅ formatter na OrderCreationDate w Payload
+* różne komunikaty błędów (uzupełnij nr telefonu vs błędny format telefonu)
 
 ### OrdersView:
 * filtrowanie:

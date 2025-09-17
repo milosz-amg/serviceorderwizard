@@ -174,7 +174,8 @@ sap.ui.define([
 
             var oPhoneNumberInput = oView.byId("phoneNumberInput");
             var sPhoneNumber = oPhoneNumberInput.getValue().trim();
-            var oPhoneRegex = /^(?:\+\d{2}[ -]?)?(?:\d{9}|\d{3}(?:[ -]\d{3}){2})$/;
+            
+            var oPhoneRegex = /^\+\d{1,3}\s\d{3}\s\d{3}\s\d{3}$/;
 
             if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Error);
@@ -558,7 +559,7 @@ sap.ui.define([
                 Visitdate: formattedDate,
                 Visittime: formattedTime,
                 Status: oOrderData.status,
-                OrderCreationDate: new Date().toISOString().slice(0, 10).replace(/-/g, "") // Dzisiejsza data w formacie YYYYMMDD
+                OrderCreationDate: this.formatter.formatJSDateForBackend() // today YYYYMMDD
             };
 
             // Use service order model layer to create service order
