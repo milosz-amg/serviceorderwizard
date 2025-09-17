@@ -59,7 +59,7 @@ sap.ui.define([
                     // Zablokuj pierwszy krok
                     var oStep = oView.byId("stepPersonalData");
                     if (oWizard && oStep) {
-                        oWizard.invalidateStep(oStep);
+                        // oWizard.invalidateStep(oStep);
                     }
                 }.bind(this)  // Ważne: bind(this) aby mieć dostęp do metod kontrolera
             });
@@ -170,11 +170,11 @@ sap.ui.define([
             return bValid;
         },
 
-        validatePersonalData: function (bSilent) {
+        validatePersonalData: function (bLoud) {
             var oView = this.getView();
-            var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepPersonalData");
             var bValid = true;
+            console.log("Validating personal data...");
 
 
             if (this.byId("firstNameInput").getValueState() != sap.ui.core.ValueState.Success
@@ -183,31 +183,26 @@ sap.ui.define([
                 || this.byId("addressZipCodeInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("addressCityInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                if (!bSilent) {
+                if (bLoud) {
                     sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
+                console.log("dont Go");
+                oStep.setNextStep(this.byId("stepPersonalData"));
                 bValid = false;
                 return bValid;
             }
 
-            // Ustaw stan kroku w zależności od wyników walidacji
             if (bValid) {
-                oWizard.validateStep(oStep);
-                if (!bSilent) {
+                console.log("Go");
+                oStep.setNextStep(this.byId("stepFaultDesc"));
+                if (bLoud) {
                     sap.m.MessageToast.show(this._getText("personalDataValidationSuccess"));
                 }
-
-
-                var oValidateButton = oView.byId("validatePersonalButton");
-                if (oValidateButton) {
-                    oValidateButton.setVisible(false);
-                }
-            } else {
-                oWizard.invalidateStep(oStep);
             }
 
             return bValid;
         },
+
         onDeviceTypeChange: function (oEvent) {
             var oView = this.getView();
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
@@ -242,8 +237,7 @@ sap.ui.define([
         },
 
 
-        onDeviceModelChange: function (oEvent) {
-
+        onDeviceModelChange: function () {
             this.validateFaultDescDeviceModel();
         },
 
@@ -297,7 +291,7 @@ sap.ui.define([
             return bValid;
         },
 
-        validateFaultDesc: function (bSilent) {
+        validateFaultDesc: function (bLoud) {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepFaultDesc");
@@ -306,23 +300,16 @@ sap.ui.define([
             if (this.byId("deviceTypeComboBox").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                if (!bSilent) {
+                oStep.setNextStep(this.byId("stepFaultDesc"));
+                if (bLoud) {
                     sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
                 bValid = false;
                 return bValid;
 
             }
-
-            // Ustaw stan kroku w zależności od wyników walidacji
-            if (bValid) {
-                oWizard.validateStep(oStep);
-                var oValidateButton = oView.byId("validateDeviceButton");
-                if (oValidateButton) {
-                    oValidateButton.setVisible(false);
-                }
-            } else {
-                oWizard.invalidateStep(oStep);
+            else {
+                oStep.setNextStep(this.byId("stepVisitDate"));
             }
 
             return bValid;
@@ -373,43 +360,32 @@ sap.ui.define([
             return bValid;
         },
 
-        validateVisitDate: function (bSilent) {
+        validateVisitDate: function (bLoud) {
             var oView = this.getView();
-            var oWizard = oView.byId("createOrderWizard");
             var oStep = oView.byId("stepVisitDate");
             var bValid = true;
 
             if (this.byId("visitDateInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                if (!bSilent) {
+                oStep.setNextStep(this.byId("stepVisitDate"));
+                if (bLoud) {
                     sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
                 bValid = false;
-                return bValid;
             }
-
-            if (bValid) {
-                oWizard.validateStep(oStep);
-                if (!bSilent) {
-                    sap.m.MessageToast.show(this._getText("visitDateValidationSuccess"));
-                }
-                var oValidateButton = oView.byId("validateVisitButton");
-                if (oValidateButton) {
-                    oValidateButton.setVisible(false);
-                }
-            } else {
-                oWizard.invalidateStep(oStep);
-            }
-
+            
             return bValid;
         },
 
         onSubmitOrder: function () {
             // Przed zatwierdzeniem ponownie zwaliduj wszystkie kroki
-            if (this._validateAllSteps()) {
+            bFormValid = this._validateAllSteps();
+            console.log(bFormValid);
+            if (bFormValid) {
                 // Wszystkie kroki są prawidłowe - przejdź do ekranu podsumowania
                 this.wizardCompletedHandler();
+
             } else {
                 // któryś z kroków jest nieprawidłowy, pokaż komunikat
                 sap.m.MessageBox.error(this._getText("dataValidationError"), {
@@ -424,11 +400,7 @@ sap.ui.define([
          * @private
          */
         _validateAllSteps: function () {
-            // Najpierw uruchom walidację wszystkich poszczególnych pól
-            // this._validateAllFields();
-
-            // Następnie sprawdź ogólną walidację każdego kroku (silent = true, aby nie pokazywać MessageToast)
-            var bStep1Valid = this.validatePersonalData(true);
+            var bStep1Valid = this.validatePersonalData(false);
             var bStep2Valid = this.validateFaultDesc(true);
             var bStep3Valid = this.validateVisitDate(true);
 
@@ -709,23 +681,6 @@ sap.ui.define([
             // Ponownie przywiąż kontrolki do modelu
             this._rebindControls(aControls, oOrderModel);
 
-            // Przywróć widoczność przycisków walidacyjnych dla każdego kroku
-            var oValidatePersonalButton = oView.byId("validatePersonalButton");
-            var oValidateDeviceButton = oView.byId("validateDeviceButton");
-            var oValidateVisitButton = oView.byId("validateVisitButton");
-
-            if (oValidatePersonalButton) {
-                oValidatePersonalButton.setVisible(true);
-            }
-
-            if (oValidateDeviceButton) {
-                oValidateDeviceButton.setVisible(true);
-            }
-
-            if (oValidateVisitButton) {
-                oValidateVisitButton.setVisible(true);
-            }
-
             // Reset all input fields
             oView.findAggregatedObjects(true, function (oControl) {
                 if (oControl.isA("sap.m.Input")) {
@@ -756,20 +711,10 @@ sap.ui.define([
             if (oWizard && oWizard.getSteps && oWizard.getSteps().length > 0) {
                 oWizard.discardProgress(oWizard.getSteps()[0]);
 
-                // Oznacz wszystkie kroki jako nieprawidłowe
-                oWizard.getSteps().forEach(function (oStep) {
-                    oWizard.invalidateStep(oStep);
-                });
-
                 // Upewnij się, że jesteśmy na pierwszym kroku
                 oWizard.goToStep(oWizard.getSteps()[0]);
             }
 
-            // Wyczyść tekst podsumowania, jeśli istnieje
-            var oSummaryText = oView.byId("summaryText");
-            if (oSummaryText) {
-                oSummaryText.setText("");
-            }
         }
     });
 });

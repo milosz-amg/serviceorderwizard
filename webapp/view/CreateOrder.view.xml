@@ -20,7 +20,7 @@
                         <WizardStep
                             id="stepPersonalData"
                             title="{i18n>stepPersonalDataTitle}"
-                            validated="false"
+                            complete="validatePersonalData"
                         >
                             <MessageStrip
                                 id="wizardInfoMessage"
@@ -48,6 +48,7 @@
                                     change="validatePersonalDataName"
                                     valueState="None"
                                     value="{orderData>/personalData/firstName}"
+
                                 />
 
                                 <Label
@@ -62,6 +63,7 @@
                                     change="validatePersonalDataLastName"
                                     valueState="None"
                                     value="{orderData>/personalData/lastName}"
+
                                 />
 
                                 <Label
@@ -78,6 +80,7 @@
                                     value="{orderData>/personalData/phoneNumber}"
                                     mask="+99 999 999 999"
                                     placeholderSymbol="_"
+
                                 />
 
                                 <Label
@@ -90,6 +93,7 @@
                                     placeholder="{i18n>addressFirstLinePlaceholder}"
                                     valueState="None"
                                     value="{orderData>/personalData/addressFirstLine}"
+
                                 />
 
                                 <Label
@@ -102,6 +106,7 @@
                                     placeholder="{i18n>addressSecondLinePlaceholder}"
                                     valueState="None"
                                     value="{orderData>/personalData/addressSecondLine}"
+
                                 />
 
                                 <Label
@@ -114,10 +119,12 @@
                                     id="addressZipCodeInput"
                                     placeholder="{i18n>zipCodePlaceholder}"
                                     change="validatePersonalDataZipCode"
+                                    
                                     valueState="None"
                                     value="{orderData>/personalData/addressZipCode}"
                                     mask="99-999"
                                     placeholderSymbol="_"
+
                                 />
 
                                 <Label
@@ -130,22 +137,19 @@
                                     id="addressCityInput"
                                     placeholder="{i18n>cityPlaceholder}"
                                     required="true"
-                                    change="validatePersonalDataCity"
                                     valueState="None"
                                     value="{orderData>/personalData/addressCity}"
+                                    change="validatePersonalDataCity"
                                 />
                             </form:SimpleForm>
-                            <Button
-                                id="validatePersonalButton"
-                                text="{i18n>validateDataButton}"
-                                press="validatePersonalData(false)"
-                            />
+
                         </WizardStep>
 
                         <WizardStep
                             id="stepFaultDesc"
                             title="{i18n>stepFaultDescTitle}"
-                            validated="false"
+                            complete="validateFaultDesc"
+
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
@@ -234,16 +238,12 @@
                                     value="{orderData>/deviceData/faultDescription}"
                                 />
                             </form:SimpleForm>
-                            <Button
-                                id="validateDeviceButton"
-                                text="{i18n>validateDataButton}"
-                                press="validateFaultDesc(false)"
-                            />
+
                         </WizardStep>
                         <WizardStep
                             id="stepVisitDate"
                             title="{i18n>stepVisitDateTitle}"
-                            validated="false"
+                            complete="validateVisitDate"
                         >
                             <form:SimpleForm
                                 editable="true"
@@ -318,27 +318,18 @@
                                     />
                                 </Select>
                             </form:SimpleForm>
-                            <Button
-                                id="validateVisitButton"
-                                text="{i18n>validateDataButton}"
-                                press="validateVisitDate(false)"
-                            />
+
                         </WizardStep>
                         <WizardStep
                             id="stepSummary"
                             title="{i18n>stepSummaryTitle}"
-                            validated="true"
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
                                 text="{i18n>summaryHelpMessage}"
                                 showIcon="true"
                             />
-                            <Button
-                                id="submitOrderButton"
-                                text="{i18n>generateOrderButton}"
-                                press="onSubmitOrder"
-                            />
+
                         </WizardStep>
                     </Wizard>
                 </content>

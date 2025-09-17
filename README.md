@@ -99,7 +99,7 @@ Refactor backend:
 ## TO DO v2 ⏳ ✅
 ### CreateOrder:
 * ✅ Mask input (nr. tel, kod pocztowy itd.)
-* Nie dwuklik przy przejściu między stepami
+* ✅ Nie dwuklik przy przejściu między stepami
 * ✅ lista wyboru modeli i typów model oData nie JSON
 * ✅ formatter na OrderCreationDate w Payload
 * różne komunikaty błędów (uzupełnij nr telefonu vs błędny format telefonu)
@@ -113,3 +113,7 @@ Refactor backend:
 
 ### Backend:
 * nie rzucać cx_root
+
+
+### bugfix:
+reviev -> edit -> błędne dane -> wyślij
