@@ -108,7 +108,7 @@
                         </table:Column>
 
                         <!-- Visit date (narrow) -->
-                        <table:Column id="col7" width="15%">
+                        <table:Column id="col7" width="15%" >
                             <Label
                                 id="header7"
                                 text="{i18n>ordersColVisitDate}"
