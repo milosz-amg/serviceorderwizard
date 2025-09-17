@@ -100,7 +100,7 @@ Refactor backend:
 ### CreateOrder:
 * ✅ Mask input (nr. tel, kod pocztowy itd.)
 * Nie dwuklik przy przejściu między stepami
-* lista wyboru modeli i typów model oData nie JSON
+* ✅ lista wyboru modeli i typów model oData nie JSON
 * ✅ formatter na OrderCreationDate w Payload
 * różne komunikaty błędów (uzupełnij nr telefonu vs błędny format telefonu)
 

@@ -163,40 +163,50 @@
                                     required="true"
                                     labelFor="deviceTypeComboBox"
                                 />
-                                <ComboBox
-                                    width="100%"
+                                                                                            <ComboBox
                                     id="deviceTypeComboBox"
                                     required="true"
+                                    valueState="None"
                                     placeholder="{i18n>deviceTypePlaceholder}"
                                     change="onDeviceTypeChange"
-                                    valueState="None"
                                     selectedKey="{orderData>/deviceData/deviceTypeKey}"
                                     value="{orderData>/deviceData/deviceType}"
-                                    showSecondaryValues="true"
-                                    filterSecondaryValues="true"
-                                    items="{deviceTypes>/}"
+                                    items="{
+                                        path: '/deviceTypesSet'
+                                    }"
                                 >
                                     <core:Item
-                                        key="{deviceTypes>Id}"
-                                        text="{deviceTypes>Name}"
+                                        key="{Id}"
+                                        text="{Name}"
                                     />
                                 </ComboBox>
 
-                                <Label
+                                                                <Label
                                     text="{i18n>deviceModelLabel}"
                                     required="true"
                                 />
-                                <ComboBox
+
+
+                                                                <ComboBox
                                     id="deviceModelInput"
-                                    placeholder="{i18n>deviceModelPlaceholder}"
                                     required="true"
-                                    change="validateFaultDescDeviceModel"
+                                    placeholder="{i18n>deviceModelPlaceholder}"
+                                    change="onDeviceModelChange"
                                     selectedKey="{orderData>/deviceData/deviceModelKey}"
                                     value="{orderData>/deviceData/deviceModel}"
-                                    showSecondaryValues="true"
-                                    filterSecondaryValues="true"
-                                    valueState="None"
-                                />
+                                    items="{
+                                                path: '/deviceModelsSet'
+                                            }"
+                                >
+                                    <core:Item
+                                        key="{Id}"
+                                        text="{ModelName}"
+                                    />
+                                </ComboBox>
+
+
+
+
 
                                 <Label
                                     id="deviceSerialNumberLabel"

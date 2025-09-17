@@ -42,7 +42,6 @@ sap.ui.define([
             this.getView().setModel(oOrderModel, "orderData");
 
             // Załaduj typy urządzeń z serwera
-            this._loadDeviceTypes();
 
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
@@ -72,64 +71,13 @@ sap.ui.define([
             var oModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oModel, "orderModel");
         },
-        
+
         /**
          * Pobiera tekst z modelu i18n
          * @private
          */
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
-        },
-
-        /**
-         * Ładuje typy urządzeń z serwera OData
-         * @private
-         */
-        _loadDeviceTypes: function () {
-            serviceOrderModel.fetchDeviceTypes()
-                .then(function (aDeviceTypes) {
-                    // Utwórz model JSON z typami urządzeń
-                    var oDeviceTypesModel = new sap.ui.model.json.JSONModel(aDeviceTypes);
-                    this.getView().setModel(oDeviceTypesModel, "deviceTypes");
-                }.bind(this))
-                .catch(function (oError) {
-                    console.error(this._getText("deviceTypesLoadError"));
-                    sap.m.MessageBox.error(this._getText("deviceTypesLoadError"));
-                }.bind(this));
-        },
-
-        _loadDeviceModels: function (deviceTypeId) {
-            var oView = this.getView();
-            var oDeviceModelComboBox = oView.byId("deviceModelInput");
-
-            // Pokaż loading indicator
-            oDeviceModelComboBox.setBusy(true);
-
-            serviceOrderModel.fetchDeviceModelsByType(deviceTypeId)
-                .then(function (aDeviceModels) {
-
-                    // Utwórz model JSON z modelami urządzeń
-                    var oDeviceModelsModel = new sap.ui.model.json.JSONModel(aDeviceModels);
-                    oView.setModel(oDeviceModelsModel, "deviceModels");
-
-                    // Usuń loading indicator
-                    oDeviceModelComboBox.setBusy(false);
-
-                    // Dodaj items do ComboBox
-                    oDeviceModelComboBox.removeAllItems();
-                    aDeviceModels.forEach(function (oModel) {
-                        oDeviceModelComboBox.addItem(new sap.ui.core.Item({
-                            key: oModel.Id,
-                            text: oModel.ModelName
-                        }));
-                    });
-
-                }.bind(this))
-                .catch(function (oError) {
-                    console.error("Error loading device models:", oError);
-                    oDeviceModelComboBox.setBusy(false);
-
-                });
         },
 
         validatePersonalDataName: function () {
@@ -174,7 +122,7 @@ sap.ui.define([
 
             var oPhoneNumberInput = oView.byId("phoneNumberInput");
             var sPhoneNumber = oPhoneNumberInput.getValue().trim();
-            
+
             var oPhoneRegex = /^\+\d{1,3}\s\d{3}\s\d{3}\s\d{3}$/;
 
             if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
@@ -264,26 +212,39 @@ sap.ui.define([
             var oView = this.getView();
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
             var oDeviceModelComboBox = oView.byId("deviceModelInput");
+            var oBinding = oDeviceModelComboBox.getBinding("items");
 
-            // Pobierz ID wybranego typu urządzenia
-            var sSelectedDeviceTypeId = oEvent.getParameter("selectedKey") ||
-                oDeviceTypeComboBox.getSelectedKey() ||
-                oEvent.getSource().getSelectedKey();
-
-            // Wyczyść wszystkie opcje modeli tylko jeśli wybrano typ z listy
             oDeviceModelComboBox.setValue("");
-            oDeviceModelComboBox.removeAllItems();
+            oDeviceModelComboBox.setSelectedKey("");
+            oDeviceModelComboBox.setValueState(sap.ui.core.ValueState.None);
 
-            // Dynamicznie załaduj modele urządzeń tylko dla wybranego typu z bazy danych
+            // ID wybranego typu urządzenia
+            var sSelectedDeviceTypeId = oDeviceTypeComboBox.getSelectedKey();
+
             if (sSelectedDeviceTypeId) {
-                this._loadDeviceModels(sSelectedDeviceTypeId);
+                // ustaw filtr po DeviceTypeId
+                var oFilter = new sap.ui.model.Filter("DeviceTypeId", sap.ui.model.FilterOperator.EQ, sSelectedDeviceTypeId);
+                oBinding.filter([oFilter]);
+
+                // busy indicator na czas ładowania
+                oDeviceModelComboBox.setBusy(true);
+                oBinding.attachEventOnce("dataReceived", function () {
+                    oDeviceModelComboBox.setBusy(false);
+                });
+
             } else {
                 console.log("Użytkownik wpisał własny typ urządzenia:", oDeviceTypeComboBox.getValue());
                 var oModel = this.getView().getModel("orderData");
-                oModel.setProperty("/deviceData/deviceTypeKey", ""); // klucz pusty dla wartości niestandardowej
+                oModel.setProperty("/deviceData/deviceTypeKey", ""); // klucz pusty dla wartości urzytkownika
             }
 
             this.validateFaultDescDeviceType();
+        },
+
+
+        onDeviceModelChange: function (oEvent) {
+
+            this.validateFaultDescDeviceModel();
         },
 
         validateFaultDescDeviceType: function () {
