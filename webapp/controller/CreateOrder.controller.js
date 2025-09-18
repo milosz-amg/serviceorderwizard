@@ -86,7 +86,7 @@ sap.ui.define([
             // Pola do walidacji
             var oFirstNameInput = oView.byId("firstNameInput");
             var sFirstName = oFirstNameInput.getValue().trim();
-            
+
             // Sprawdź czy pole jest puste
             if (!sFirstName) {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
@@ -108,7 +108,7 @@ sap.ui.define([
             else {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Success);
             }
-            
+
             return bValid;
         },
 
@@ -118,7 +118,7 @@ sap.ui.define([
             // Pola do walidacji
             var oLastNameInput = oView.byId("lastNameInput");
             var sLastName = oLastNameInput.getValue().trim();
-            
+
             // Sprawdź czy pole jest puste
             if (!sLastName) {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
@@ -140,7 +140,7 @@ sap.ui.define([
             else {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Success);
             }
-            
+
             return bValid;
         },
 
@@ -194,7 +194,7 @@ sap.ui.define([
             else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
             }
-            
+
             return bValid;
         },
 
@@ -224,9 +224,9 @@ sap.ui.define([
             else {
                 oCityInput.setValueState(sap.ui.core.ValueState.Success);
             }
-            
+
             return bValid;
-        },            
+        },
 
         validatePersonalData: function (bLoud) {
             var oView = this.getView();
@@ -431,42 +431,42 @@ sap.ui.define([
                 bValid = false;
                 return bValid;
             }
-            
+
             return bValid;
         },
 
-        onSubmitOrder: function () {
-            // Przed zatwierdzeniem ponownie zwaliduj wszystkie kroki
+        // onSubmitOrder: function () {
+        //     // Przed zatwierdzeniem ponownie zwaliduj wszystkie kroki
 
-            bFormValid = this._validateAllSteps();
-            console.log(bFormValid);
-            if (bFormValid) {
-                // Wszystkie kroki są prawidłowe - przejdź do ekranu podsumowania
-                this.wizardCompletedHandler();
+        //     bFormValid = this._validateAllSteps();
+        //     console.log(bFormValid);
+        //     if (bFormValid) {
+        //         // Wszystkie kroki są prawidłowe - przejdź do ekranu podsumowania
+        //         this.wizardCompletedHandler();
 
-            } else {
-                // któryś z kroków jest nieprawidłowy, pokaż komunikat
-                sap.m.MessageBox.error(this._getText("dataValidationError"), {
-                    title: this._getText("dataValidationErrorTitle")
+        //     } else {
+        //         // któryś z kroków jest nieprawidłowy, pokaż komunikat
+        //         sap.m.MessageBox.error(this._getText("dataValidationError"), {
+        //             title: this._getText("dataValidationErrorTitle")
 
-                });
-            }
-        },
+        //         });
+        //     }
+        // },
 
-        /**
-         * Waliduje ponownie wszystkie kroki formularza
-         * @returns {boolean} true jeśli wszystkie kroki są prawidłowe, false w przeciwnym razie
-         * @private
-         */
-        _validateAllSteps: function () {
-            var bStep1Valid = this.validatePersonalData(false);
-            var bStep2Valid = this.validateFaultDesc(false);
-            var bStep3Valid = this.validateVisitDate(false);
+        // /**
+        //  * Waliduje ponownie wszystkie kroki formularza
+        //  * @returns {boolean} true jeśli wszystkie kroki są prawidłowe, false w przeciwnym razie
+        //  * @private
+        //  */
+        // _validateAllSteps: function () {
+        //     var bStep1Valid = this.validatePersonalData(false);
+        //     var bStep2Valid = this.validateFaultDesc(false);
+        //     var bStep3Valid = this.validateVisitDate(false);
 
-            // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
-            return [bStep1Valid, bStep2Valid, bStep3Valid];
-            // return false; // tymczasowo wyłączone do testów
-        },
+        //     // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
+        //     return [bStep1Valid, bStep2Valid, bStep3Valid];
+        //     // return false; // tymczasowo wyłączone do testów
+        // },
 
         wizardCompletedHandler: function () {
             // Przejdź do ekranu podsumowania
@@ -481,32 +481,49 @@ sap.ui.define([
                 emphasizedAction: this._getText("yesButton"),
                 onClose: function (oAction) {
                     if (oAction === that._getText("yesButton")) {
+                        console.log("User confirmed order submission.");
+                        console.log("all fields validation");
 
+                        // validate all fields one more time
+                        if (that.byId("visitDateInput").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("deviceTypeComboBox").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("firstNameInput").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("lastNameInput").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("phoneNumberInput").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("addressZipCodeInput").getValueState() != sap.ui.core.ValueState.Success
+                            || that.byId("addressCityInput").getValueState() != sap.ui.core.ValueState.Success
+                        ) {
+                            console.log("Validation failed");
+                            sap.m.MessageToast.show(that._getText("validationErrorMessage"));
+                        } else {
+                            console.log("Validation succeeded");
+                            var oModel = that.getView().getModel("orderData");
+                            var oData = oModel.getData();
 
-                        var oModel = that.getView().getModel("orderData");
-                        var oData = oModel.getData();
+                            // Pobranie danych z modelu
+                            var oOrderData = {
+                                firstName: oData.personalData.firstName,
+                                lastName: oData.personalData.lastName,
+                                phoneNumber: oData.personalData.phoneNumber,
+                                addressFirstLine: oData.personalData.addressFirstLine,
+                                addressSecondLine: oData.personalData.addressSecondLine || "",
+                                addressZipCode: oData.personalData.addressZipCode,
+                                addressCity: oData.personalData.addressCity,
+                                deviceType: oData.deviceData.deviceType,
+                                deviceModel: oData.deviceData.deviceModel,
+                                deviceSerialNumber: oData.deviceData.deviceSerialNumber || "",
+                                faultDescription: oData.deviceData.faultDescription,
+                                visitDate: oData.visitData.visitDate ?
+                                    oData.visitData.visitDate.toLocaleDateString() : "",
+                                visitTime: oData.visitData.visitTime,
+                                status: oData.status
+                            };
 
-                        // Pobranie danych z modelu
-                        var oOrderData = {
-                            firstName: oData.personalData.firstName,
-                            lastName: oData.personalData.lastName,
-                            phoneNumber: oData.personalData.phoneNumber,
-                            addressFirstLine: oData.personalData.addressFirstLine,
-                            addressSecondLine: oData.personalData.addressSecondLine || "",
-                            addressZipCode: oData.personalData.addressZipCode,
-                            addressCity: oData.personalData.addressCity,
-                            deviceType: oData.deviceData.deviceType,
-                            deviceModel: oData.deviceData.deviceModel,
-                            deviceSerialNumber: oData.deviceData.deviceSerialNumber || "",
-                            faultDescription: oData.deviceData.faultDescription,
-                            visitDate: oData.visitData.visitDate ?
-                                oData.visitData.visitDate.toLocaleDateString() : "",
-                            visitTime: oData.visitData.visitTime,
-                            status: oData.status
-                        };
-
-                        // Zapis z użyciem OData V2 model
-                        that._saveOrderData(oOrderData);
+                            // Zapis z użyciem OData V2 model
+                            that._saveOrderData(oOrderData);
+                        }
                     }
                 }
             });
@@ -763,6 +780,10 @@ sap.ui.define([
                     oControl.setValueState(sap.ui.core.ValueState.None);
                     oControl.setValueStateText("");
                 } else if (oControl.isA("sap.m.TextArea")) {
+                    oControl.setValue("");
+                    oControl.setValueState(sap.ui.core.ValueState.None);
+                    oControl.setValueStateText("");
+                } else if (oControl.isA("sap.m.MaskInput")) {
                     oControl.setValue("");
                     oControl.setValueState(sap.ui.core.ValueState.None);
                     oControl.setValueStateText("");
