@@ -55,22 +55,7 @@
                     <!-- Custom Toolbar with Status Filter -->
                     <smartTable:customToolbar>
                         <OverflowToolbar design="Transparent">
-                            <Label 
-                                text="Status:" 
-                                design="Bold" 
-                                class="sapUiTinyMarginEnd"
-                            />
-                            <Select
-                                id="statusFilter"
-                                width="200px"
-                                forceSelection="false"
-                                change="onStatusFilterChange"
-                            >
-                                <core:Item key="" text="All Statuses" />
-                                <core:Item key="New" text="New" />
-                                <core:Item key="In progress" text="In Progress" />
-                                <core:Item key="Completed" text="Completed" />
-                            </Select>
+                            
                             <ToolbarSpacer />
                             <OverflowToolbarButton
                                 icon="sap-icon://filter"

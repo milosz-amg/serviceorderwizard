@@ -45,7 +45,7 @@ sap.ui.define([
          * Odświeża dane w tabeli, czekając na inicjalizację jeśli to konieczne
          * @private
          */
-        _refreshTableData: function() {
+        _refreshTableData: function () {
             var oSmartTable = this.byId("ordersSmartTable");
             if (oSmartTable) {
                 // Sprawdź czy SmartTable jest zainicjalizowana
@@ -56,11 +56,30 @@ sap.ui.define([
                 } else {
                     // Tabela nie jest jeszcze gotowa, poczekaj na inicjalizację
                     console.log("SmartTable nie jest jeszcze gotowa, czekamy na inicjalizację");
-                    oSmartTable.attachInitialised(function() {
+                    oSmartTable.attachInitialised(function () {
                         console.log("SmartTable została zainicjalizowana, odświeżanie danych");
                         oSmartTable.rebindTable();
                     });
                 }
+            }
+        },
+
+        /**
+ * Refreshes the table data
+ * @public
+ */
+        onRefreshTable: function () {
+            var oSmartTable = this.byId("ordersSmartTable");
+            if (oSmartTable) {
+                // Reset status filter
+                var oStatusFilter = this.byId("statusFilter");
+                if (oStatusFilter) {
+                    oStatusFilter.setSelectedKey("");
+                }
+
+                // Refresh table data
+                oSmartTable.rebindTable();
+                MessageToast.show(this._getText("tableRefreshed"));
             }
         },
 
@@ -73,65 +92,13 @@ sap.ui.define([
         },
 
         onFilter: function () {
-    var oSmartTable = this.byId("ordersSmartTable");
-    if (oSmartTable) {
-        oSmartTable.openPersonalisationDialog("Filter");
-    }
-},
-
-/**
- * Handles the change event of the status filter dropdown
- * @param {sap.ui.base.Event} oEvent - The event object
- * @public
- */
-onStatusFilterChange: function(oEvent) {
-    var sSelectedKey = oEvent.getParameter("selectedItem").getKey();
-    var oSmartTable = this.byId("ordersSmartTable");
-    
-    if (oSmartTable) {
-        var oTable = oSmartTable.getTable();
-        var aFilters = [];
-        
-        // Only add filter if a specific status is selected
-        if (sSelectedKey) {
-            aFilters.push(new Filter("Status", FilterOperator.EQ, sSelectedKey));
-        }
-        
-        // Apply the filters
-        if (oTable) {
-            var oBinding = oTable.getBinding("rows");
-            if (oBinding) {
-                oBinding.filter(aFilters);
+            var oSmartTable = this.byId("ordersSmartTable");
+            if (oSmartTable) {
+                oSmartTable.openPersonalisationDialog("Filter");
             }
-        }
-        
-        // Display message about current filter
-        if (sSelectedKey) {
-            MessageToast.show(this._getText("statusFilterApplied", [sSelectedKey]));
-        } else {
-            MessageToast.show(this._getText("statusFilterCleared"));
-        }
-    }
-},
+        },
 
-/**
- * Refreshes the table data
- * @public
- */
-onRefreshTable: function() {
-    var oSmartTable = this.byId("ordersSmartTable");
-    if (oSmartTable) {
-        // Reset status filter
-        var oStatusFilter = this.byId("statusFilter");
-        if (oStatusFilter) {
-            oStatusFilter.setSelectedKey("");
-        }
-        
-        // Refresh table data
-        oSmartTable.rebindTable();
-        MessageToast.show(this._getText("tableRefreshed"));
-    }
-},
+
 
 
         /**
@@ -150,8 +117,8 @@ onRefreshTable: function() {
                 oContext = oSource.getBindingContext();
                 var oOrder = oContext.getObject();
                 sOrderId = oOrder.OrderId;
-            } 
-            
+            }
+
             if (!sOrderId) {
                 MessageBox.error(this._getText("cannotLoadOrderDataMessage"));
                 return;
@@ -160,7 +127,7 @@ onRefreshTable: function() {
             // Pobierz pełne dane z backendu
             var oODataModel = this.getView().getModel();
             serviceOrderModel.fetchSingleOrder(sOrderId, oODataModel)
-                .then(function(oOrderData) {
+                .then(function (oOrderData) {
                     // Organizujemy dane w kategorie
                     var oFormattedData = this._groupOrderData(oOrderData);
 
@@ -187,9 +154,9 @@ onRefreshTable: function() {
 
                     // Otwórz dialog
                     oDialog.open();
-                    
+
                 }.bind(this))
-                .catch(function(oError) {
+                .catch(function (oError) {
                     var sErrorMessage = this._getText("orderDetailsLoadError", [sOrderId]);
                     if (oError.message) {
                         sErrorMessage += ": " + oError.message;
