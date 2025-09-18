@@ -33,10 +33,10 @@
                         tableType="Table" 
                         enableExport="true" 
                         useVariantManagement="true" 
-                        useTablePersonalisation="false"
                         header="Service Orders" 
                         showRowCount="true" 
                         persistencyKey="SmartTable_Orders" 
+                        useTablePersonalisation="true"
                         enableAutoBinding="true" 
                         class="sapUiResponsiveContentPadding" 
                         enableAutoColumnWidth="true">
@@ -47,7 +47,7 @@
                         
                         <table:Table>
                             <!-- Order ID Column with leading zeros removed -->
-                            <table:Column>
+                            <table:Column sortProperty="OrderId">
                                 <table:customData>
                                     <core:CustomData key="p13nData" value='{"columnKey": "OrderId", "leadingProperty": "OrderId", "columnIndex": 0}'/>
                                 </table:customData>
@@ -58,7 +58,7 @@
                             </table:Column>
 
                             <!-- Order Creation Date Column with DD.MM.YYYY format -->
-                            <table:Column>
+                            <table:Column sortProperty="OrderCreationDate" sorted="true" sortOrder="Descending">
                                 <table:customData>
                                     <core:CustomData key="p13nData" value='{"columnKey": "OrderCreationDate", "leadingProperty": "OrderCreationDate", "columnIndex": 1}'/>
                                 </table:customData>
@@ -69,7 +69,7 @@
                             </table:Column>
 
                             <!-- Visit Date Column with DD.MM.YYYY format -->
-                            <table:Column>
+                            <table:Column sortProperty="Visitdate" sorted="true" sortOrder="Ascending">
                                 <table:customData>
                                     <core:CustomData key="p13nData" value='{"columnKey": "Visitdate", "leadingProperty": "Visitdate", "columnIndex": 2}'/>
                                 </table:customData>
@@ -91,7 +91,8 @@
                             </table:Column>
 
                             <!-- Status Column -->
-                            <table:Column>
+                            <table:Column
+                            filterProperty="Status">
                                 <table:customData>
                                     <core:CustomData key="p13nData" value='{"columnKey": "Status", "leadingProperty": "Status", "columnIndex": 4}'/>
                                 </table:customData>

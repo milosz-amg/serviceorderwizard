@@ -23,6 +23,7 @@ sap.ui.define([
             // Create OData model and set it as default model (still needed for some operations)
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
+            
         },
 
         /**

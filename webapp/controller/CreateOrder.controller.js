@@ -203,8 +203,8 @@ sap.ui.define([
             var bValid = true;
             var oCityInput = oView.byId("addressCityInput");
             var sCity = oCityInput.getValue().trim();
-            // Regex: co najmniej 2 litery, może zawierać spacje i myślniki
-            var oCityRegex = /^[A-Za-z]{2,}(?:[\s-]?[A-Za-z]+)*$/;
+            // Regex: co najmniej 2 litery, może zawierać spacje i myślniki (obsługuje polskie znaki)
+            var oCityRegex = /^[\p{L}]{2,}(?:[\s-]?[\p{L}]+)*$/u;
 
             if (!sCity) {
                 oCityInput.setValueState(sap.ui.core.ValueState.Error);
