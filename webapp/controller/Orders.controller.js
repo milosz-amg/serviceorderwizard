@@ -23,7 +23,6 @@ sap.ui.define([
             // Create OData model and set it as default model (still needed for some operations)
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
-
         },
 
         /**
@@ -33,10 +32,6 @@ sap.ui.define([
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
-
-
-
-
 
         /**
          * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
@@ -49,19 +44,13 @@ sap.ui.define([
             var oContext;
             var sOrderId;
 
-            // Pobierz OrderId z kontekstu
             if (oSource.getBindingContext()) {
                 // OData binding
                 oContext = oSource.getBindingContext();
                 var oOrder = oContext.getObject();
                 sOrderId = oOrder.OrderId;
-            } else if (oSource.getBindingContext("orders")) {
-                // JSONModel binding
-                oContext = oSource.getBindingContext("orders");
-                var oOrder = oContext.getObject();
-                sOrderId = oOrder.OrderId;
-            }
-
+            } 
+            
             if (!sOrderId) {
                 MessageBox.error(this._getText("cannotLoadOrderDataMessage"));
                 return;
@@ -69,8 +58,6 @@ sap.ui.define([
 
             // Pobierz pełne dane z backendu
             var oODataModel = this.getView().getModel();
-
-
             serviceOrderModel.fetchSingleOrder(sOrderId, oODataModel)
                 .then(function(oOrderData) {
                     // Organizujemy dane w kategorie
@@ -99,8 +86,6 @@ sap.ui.define([
 
                     // Otwórz dialog
                     oDialog.open();
-                    
-                    // Aktualizuj status
                     
                 }.bind(this))
                 .catch(function(oError) {
