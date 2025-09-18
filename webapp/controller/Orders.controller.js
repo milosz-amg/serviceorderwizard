@@ -24,6 +24,9 @@ sap.ui.define([
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
 
+            var oSmartTable = this.byId("ordersSmartTable");
+            oSmartTable.rebindTable();
+
             // Podłącz się do zdarzenia routingu
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
@@ -68,6 +71,68 @@ sap.ui.define([
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
+
+        onFilter: function () {
+    var oSmartTable = this.byId("ordersSmartTable");
+    if (oSmartTable) {
+        oSmartTable.openPersonalisationDialog("Filter");
+    }
+},
+
+/**
+ * Handles the change event of the status filter dropdown
+ * @param {sap.ui.base.Event} oEvent - The event object
+ * @public
+ */
+onStatusFilterChange: function(oEvent) {
+    var sSelectedKey = oEvent.getParameter("selectedItem").getKey();
+    var oSmartTable = this.byId("ordersSmartTable");
+    
+    if (oSmartTable) {
+        var oTable = oSmartTable.getTable();
+        var aFilters = [];
+        
+        // Only add filter if a specific status is selected
+        if (sSelectedKey) {
+            aFilters.push(new Filter("Status", FilterOperator.EQ, sSelectedKey));
+        }
+        
+        // Apply the filters
+        if (oTable) {
+            var oBinding = oTable.getBinding("rows");
+            if (oBinding) {
+                oBinding.filter(aFilters);
+            }
+        }
+        
+        // Display message about current filter
+        if (sSelectedKey) {
+            MessageToast.show(this._getText("statusFilterApplied", [sSelectedKey]));
+        } else {
+            MessageToast.show(this._getText("statusFilterCleared"));
+        }
+    }
+},
+
+/**
+ * Refreshes the table data
+ * @public
+ */
+onRefreshTable: function() {
+    var oSmartTable = this.byId("ordersSmartTable");
+    if (oSmartTable) {
+        // Reset status filter
+        var oStatusFilter = this.byId("statusFilter");
+        if (oStatusFilter) {
+            oStatusFilter.setSelectedKey("");
+        }
+        
+        // Refresh table data
+        oSmartTable.rebindTable();
+        MessageToast.show(this._getText("tableRefreshed"));
+    }
+},
+
 
         /**
          * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
