@@ -105,7 +105,7 @@ Refactor backend:
 * ✅ różne komunikaty błędów (uzupełnij nr telefonu vs błędny format telefonu)
 
 ### OrdersView:
-* Orders.view: JSON model -> oData
+* ✅ Orders.view: JSON model -> oData
 * filtrowanie:
     - przy filtrowaniu po statusie lista wielokrotnego wyboru
     - filtrowanie też po datach

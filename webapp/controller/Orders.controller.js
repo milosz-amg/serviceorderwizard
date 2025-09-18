@@ -23,7 +23,42 @@ sap.ui.define([
             // Create OData model and set it as default model (still needed for some operations)
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
-            
+
+            // Podłącz się do zdarzenia routingu
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
+        },
+
+        /**
+         * Obsługuje zdarzenie dopasowania trasy - odświeża dane w tabeli
+         * @private
+         */
+        _onRouteMatched: function () {
+            console.log("Odświeżanie danych w tabeli Orders");
+            this._refreshTableData();
+        },
+
+        /**
+         * Odświeża dane w tabeli, czekając na inicjalizację jeśli to konieczne
+         * @private
+         */
+        _refreshTableData: function() {
+            var oSmartTable = this.byId("ordersSmartTable");
+            if (oSmartTable) {
+                // Sprawdź czy SmartTable jest zainicjalizowana
+                if (oSmartTable.getTable()) {
+                    // Tabela jest gotowa, można odświeżyć
+                    console.log("SmartTable jest gotowa, odświeżanie danych");
+                    oSmartTable.rebindTable();
+                } else {
+                    // Tabela nie jest jeszcze gotowa, poczekaj na inicjalizację
+                    console.log("SmartTable nie jest jeszcze gotowa, czekamy na inicjalizację");
+                    oSmartTable.attachInitialised(function() {
+                        console.log("SmartTable została zainicjalizowana, odświeżanie danych");
+                        oSmartTable.rebindTable();
+                    });
+                }
+            }
         },
 
         /**

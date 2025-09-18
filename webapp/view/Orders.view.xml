@@ -14,6 +14,7 @@
         <content>
                 <!-- Table view -->
                 <VBox fitContainer="true">
+                
                     <smartFilterBar:SmartFilterBar 
                         id="smartFilterBar" 
                         entitySet="orderSet" 
@@ -79,7 +80,7 @@
                                 </table:template>
                             </table:Column>
 
-                            <!-- Address City Column -->
+                            <!-- Address City Column
                             <table:Column>
                                 <table:customData>
                                     <core:CustomData key="p13nData" value='{"columnKey": "Addresscity", "leadingProperty": "Addresscity", "columnIndex": 3}'/>
@@ -88,7 +89,7 @@
                                 <table:template>
                                     <Text text="{Addresscity}"/>
                                 </table:template>
-                            </table:Column>
+                            </table:Column> -->
 
                             <!-- Status Column -->
                             <table:Column
