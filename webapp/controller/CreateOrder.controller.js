@@ -86,15 +86,29 @@ sap.ui.define([
             // Pola do walidacji
             var oFirstNameInput = oView.byId("firstNameInput");
             var sFirstName = oFirstNameInput.getValue().trim();
-            var oNameRegex = /^(?=.*[A-Za-z])[A-Za-z0-9 ]{3,}$/;
-
-            if (!oNameRegex.test(sFirstName)) {
+            
+            // Sprawdź czy pole jest puste
+            if (!sFirstName) {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
-                oFirstNameInput.setValueStateText(this._getText("firstNameValidationError"));
+                oFirstNameInput.setValueStateText(this._getText("firstNameEmptyError"));
                 bValid = false;
-            } else {
+            }
+            // Sprawdź czy imię jest za krótkie
+            else if (sFirstName.length < 3) {
+                oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
+                oFirstNameInput.setValueStateText(this._getText("firstNameTooShortError"));
+                bValid = false;
+            }
+            // Sprawdź format - tylko litery, spacje, apostrofy i kropki
+            else if (!/^[\p{L}\s''.]+$/u.test(sFirstName)) {
+                oFirstNameInput.setValueState(sap.ui.core.ValueState.Error);
+                oFirstNameInput.setValueStateText(this._getText("firstNameInvalidFormatError"));
+                bValid = false;
+            }
+            else {
                 oFirstNameInput.setValueState(sap.ui.core.ValueState.Success);
             }
+            
             return bValid;
         },
 
@@ -104,15 +118,29 @@ sap.ui.define([
             // Pola do walidacji
             var oLastNameInput = oView.byId("lastNameInput");
             var sLastName = oLastNameInput.getValue().trim();
-            var oLastNameRegex = /^(?=.*[A-Za-z])[A-Za-z0-9 ]{2,}$/;
-
-            if (!oLastNameRegex.test(sLastName)) {
+            
+            // Sprawdź czy pole jest puste
+            if (!sLastName) {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
-                oLastNameInput.setValueStateText(this._getText("lastNameValidationError"));
+                oLastNameInput.setValueStateText(this._getText("lastNameEmptyError"));
                 bValid = false;
-            } else {
+            }
+            // Sprawdź czy nazwisko jest za krótkie
+            else if (sLastName.length < 2) {
+                oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
+                oLastNameInput.setValueStateText(this._getText("lastNameTooShortError"));
+                bValid = false;
+            }
+            // Sprawdź format - tylko litery, spacje, apostrofy, kropki i myślniki
+            else if (!/^[\p{L}\s''.'-]+$/u.test(sLastName)) {
+                oLastNameInput.setValueState(sap.ui.core.ValueState.Error);
+                oLastNameInput.setValueStateText(this._getText("lastNameInvalidFormatError"));
+                bValid = false;
+            }
+            else {
                 oLastNameInput.setValueState(sap.ui.core.ValueState.Success);
             }
+            
             return bValid;
         },
 
@@ -122,14 +150,21 @@ sap.ui.define([
 
             var oPhoneNumberInput = oView.byId("phoneNumberInput");
             var sPhoneNumber = oPhoneNumberInput.getValue().trim();
-
             var oPhoneRegex = /^\+\d{1,3}\s\d{3}\s\d{3}\s\d{3}$/;
 
-            if (!sPhoneNumber || !oPhoneRegex.test(sPhoneNumber)) {
+            // Sprawdź czy pole jest puste
+            if (!sPhoneNumber) {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Error);
-                oPhoneNumberInput.setValueStateText(this._getText("phoneNumberValidationError"));
+                oPhoneNumberInput.setValueStateText(this._getText("phoneNumberEmptyError"));
                 bValid = false;
-            } else {
+            }
+            // Sprawdź format numeru telefonu
+            else if (!oPhoneRegex.test(sPhoneNumber)) {
+                oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Error);
+                oPhoneNumberInput.setValueStateText(this._getText("phoneNumberInvalidFormatError"));
+                bValid = false;
+            }
+            else {
                 oPhoneNumberInput.setValueState(sap.ui.core.ValueState.Success);
             }
 
@@ -144,13 +179,22 @@ sap.ui.define([
             var sZipCode = oZipCodeInput.getValue().trim();
             var oZipCodeRegex = /^\d{5}$|^\d{2} \d{3}$|^\d{2}-\d{3}$/;
 
-            if (!sZipCode || !oZipCodeRegex.test(sZipCode)) {
+            // Sprawdź czy pole jest puste
+            if (!sZipCode) {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Error);
-                oZipCodeInput.setValueStateText(this._getText("zipCodeValidationError"));
+                oZipCodeInput.setValueStateText(this._getText("zipCodeEmptyError"));
                 bValid = false;
-            } else {
+            }
+            // Sprawdź format kodu pocztowego
+            else if (!oZipCodeRegex.test(sZipCode)) {
+                oZipCodeInput.setValueState(sap.ui.core.ValueState.Error);
+                oZipCodeInput.setValueStateText(this._getText("zipCodeInvalidFormatError"));
+                bValid = false;
+            }
+            else {
                 oZipCodeInput.setValueState(sap.ui.core.ValueState.Success);
             }
+            
             return bValid;
         },
 
@@ -158,17 +202,31 @@ sap.ui.define([
             var oView = this.getView();
             var bValid = true;
             var oCityInput = oView.byId("addressCityInput");
-            var oCityRegex = /^\p{L}+(?:[ \p{L}'’\.]*\p{L}+)*(?:\s*-\s*\p{L}+(?:[ \p{L}'’\.]*\p{L}+)*)*$/u;
+            var sCity = oCityInput.getValue().trim();
+            // Regex: co najmniej 2 litery, może zawierać spacje i myślniki
+            var oCityRegex = /^[A-Za-z]{2,}(?:[\s-]?[A-Za-z]+)*$/;
 
-            if (!oCityInput.getValue().trim() || !oCityRegex.test(oCityInput.getValue().trim())) {
+            if (!sCity) {
                 oCityInput.setValueState(sap.ui.core.ValueState.Error);
-                oCityInput.setValueStateText(this._getText("cityValidationError"));
+                oCityInput.setValueStateText(this._getText("cityEmptyError"));
                 bValid = false;
-            } else {
+            }
+            else if (sCity.length < 2) {
+                oCityInput.setValueState(sap.ui.core.ValueState.Error);
+                oCityInput.setValueStateText(this._getText("cityTooShortError"));
+                bValid = false;
+            }
+            else if (!oCityRegex.test(sCity)) {
+                oCityInput.setValueState(sap.ui.core.ValueState.Error);
+                oCityInput.setValueStateText(this._getText("cityInvalidFormatError"));
+                bValid = false;
+            }
+            else {
                 oCityInput.setValueState(sap.ui.core.ValueState.Success);
             }
+            
             return bValid;
-        },
+        },            
 
         validatePersonalData: function (bLoud) {
             var oView = this.getView();
@@ -186,14 +244,12 @@ sap.ui.define([
                 if (bLoud) {
                     sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
-                console.log("dont Go");
                 oStep.setNextStep(this.byId("stepPersonalData"));
                 bValid = false;
                 return bValid;
             }
 
             if (bValid) {
-                console.log("Go");
                 oStep.setNextStep(this.byId("stepFaultDesc"));
                 if (bLoud) {
                     sap.m.MessageToast.show(this._getText("personalDataValidationSuccess"));
@@ -300,10 +356,10 @@ sap.ui.define([
             if (this.byId("deviceTypeComboBox").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("deviceModelInput").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                oStep.setNextStep(this.byId("stepFaultDesc"));
                 if (bLoud) {
-                    sap.m.MessageToast.show(this._getText("validationErrorMessage"));
+                    sap.m.MessageToast.show(this._getText("validationFaultDescErrorMessage"));
                 }
+                oStep.setNextStep(this.byId("stepFaultDesc"));
                 bValid = false;
                 return bValid;
 
@@ -368,11 +424,12 @@ sap.ui.define([
             if (this.byId("visitDateInput").getValueState() != sap.ui.core.ValueState.Success
                 || this.byId("visitHourSelect").getValueState() != sap.ui.core.ValueState.Success
             ) {
-                oStep.setNextStep(this.byId("stepVisitDate"));
                 if (bLoud) {
                     sap.m.MessageToast.show(this._getText("validationErrorMessage"));
                 }
+                oStep.setNextStep(this.byId("stepVisitDate"));
                 bValid = false;
+                return bValid;
             }
             
             return bValid;
@@ -380,6 +437,7 @@ sap.ui.define([
 
         onSubmitOrder: function () {
             // Przed zatwierdzeniem ponownie zwaliduj wszystkie kroki
+
             bFormValid = this._validateAllSteps();
             console.log(bFormValid);
             if (bFormValid) {
@@ -390,6 +448,7 @@ sap.ui.define([
                 // któryś z kroków jest nieprawidłowy, pokaż komunikat
                 sap.m.MessageBox.error(this._getText("dataValidationError"), {
                     title: this._getText("dataValidationErrorTitle")
+
                 });
             }
         },
@@ -401,11 +460,12 @@ sap.ui.define([
          */
         _validateAllSteps: function () {
             var bStep1Valid = this.validatePersonalData(false);
-            var bStep2Valid = this.validateFaultDesc(true);
-            var bStep3Valid = this.validateVisitDate(true);
+            var bStep2Valid = this.validateFaultDesc(false);
+            var bStep3Valid = this.validateVisitDate(false);
 
             // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
-            return bStep1Valid && bStep2Valid && bStep3Valid;
+            return [bStep1Valid, bStep2Valid, bStep3Valid];
+            // return false; // tymczasowo wyłączone do testów
         },
 
         wizardCompletedHandler: function () {
@@ -421,6 +481,8 @@ sap.ui.define([
                 emphasizedAction: this._getText("yesButton"),
                 onClose: function (oAction) {
                     if (oAction === that._getText("yesButton")) {
+
+
                         var oModel = that.getView().getModel("orderData");
                         var oData = oModel.getData();
 
