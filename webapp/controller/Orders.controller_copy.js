@@ -24,6 +24,22 @@ sap.ui.define([
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
 
+            // Create a view model for UI state (messages, counters, etc.)
+            var oViewModel = new JSONModel({
+                statusMessage: "Gotowy do pobierania danych",
+                messageType: "Information",
+                showMessage: true,
+                ordersCount: 0
+            });
+            this.getView().setModel(oViewModel, "viewModel");
+
+            // Przygotuj pusty model dla zleceń
+            var oOrdersModel = new JSONModel([]);
+            this.getView().setModel(oOrdersModel, "orders");
+
+            // Rejestruj zdarzenie routingu, aby odświeżać dane przy każdym wejściu na tę stronę
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
         },
 
         /**
@@ -34,82 +50,137 @@ sap.ui.define([
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
 
+        /**
+         * Obsługuje dopasowanie wzorca trasy - używane do odświeżania danych przy nawigacji
+         * @private
+         */
+        _onRouteMatched: function () {
+            // Odśwież dane za każdym razem, gdy użytkownik wchodzi na tę stronę
+            this._loadAllOrders();
+        },
 
+        /**
+         * Wykonuje się przed renderowaniem widoku
+         * @public 
+         */
+        onBeforeRendering: function () {
+            // Załaduj dane podczas pierwszego renderowania widoku
+            if (!this._initialDataLoaded) {
+                this._loadAllOrders();
+                this._initialDataLoaded = true;
+            }
+        },
+
+        // Metoda _bindOrdersCount została usunięta, ponieważ korzystamy teraz z bezpośredniego ustawiania licznika
+        // w metodzie _loadAllOrders
+
+        /**
+         * Ładuje wszystkie zamówienia z serwera używając metody fetchOrderData z serviceOrderModel
+         * @private
+         */
+        _loadAllOrders: function () {
+            var oViewModel = this.getView().getModel("viewModel");
+            var oTable = this.byId("ordersTable");
+
+            oViewModel.setProperty("/statusMessage", this._getText("loadingDataMessage"));
+            oViewModel.setProperty("/messageType", "Information");
+
+            // Użyj metody fetchOrderData z serviceOrderModel, która zawiera już parametry sortowania
+            serviceOrderModel.fetchOrderData()
+                .then((aOrders) => {
+                    // Utwórz model JSON z danymi i przypisz go do tabeli
+                    var oOrdersModel = new JSONModel(aOrders);
+
+                    // Aktualizuj tabelę bezpośrednio z nowym modelem
+                    if (oTable) {
+                        oTable.setModel(oOrdersModel, "orders");
+                        oTable.bindRows({
+                            path: "orders>/"
+                        });
+                    }
+
+                    // Aktualizuj licznik i status
+                    oViewModel.setProperty("/ordersCount", aOrders.length);
+                    oViewModel.setProperty("/statusMessage", this._getText("dataLoadedMessage", [aOrders.length]));
+                    oViewModel.setProperty("/messageType", "Success");
+                })
+                .catch(function (oError) {
+                    var sErrorMessage = oError.statusText || oError.message || this._getText("unknownError");
+                    oViewModel.setProperty("/statusMessage", this._getText("dataLoadErrorMessage", [sErrorMessage]));
+                    oViewModel.setProperty("/messageType", "Error");
+                }.bind(this));
+        },
+
+        /**
+         * Odświeża dane poprzez odświeżenie modelu OData
+         * @public
+         */
+        onRefresh: function () {
+            var oViewModel = this.getView().getModel("viewModel");
+
+            oViewModel.setProperty("/statusMessage", this._getText("refreshingDataMessage"));
+            oViewModel.setProperty("/messageType", "Information");
+
+            MessageToast.show(this._getText("refreshingDataMessage"));
+
+            // Użyj wspólnej metody do ładowania danych
+            this._loadAllOrders();
+        },
 
 
 
         /**
          * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
-         * Pobiera dane z backendu używając OrderId
          * @param {sap.ui.base.Event} oEvent - Zdarzenie zawierające informacje o klikniętym elemencie
          * @public
          */
         onShowDetails: function (oEvent) {
             var oSource = oEvent.getSource();
             var oContext;
-            var sOrderId;
+            var oOrder;
 
-            // Pobierz OrderId z kontekstu
+            // Sprawdź, czy mamy kontekst OData czy JSONModel
             if (oSource.getBindingContext()) {
-                // OData binding
+                // Stary sposób - OData binding
                 oContext = oSource.getBindingContext();
-                var oOrder = oContext.getObject();
-                sOrderId = oOrder.OrderId;
+                oOrder = oContext.getObject();
             } else if (oSource.getBindingContext("orders")) {
-                // JSONModel binding
+                // Nowy sposób - JSONModel binding
                 oContext = oSource.getBindingContext("orders");
-                var oOrder = oContext.getObject();
-                sOrderId = oOrder.OrderId;
+                oOrder = oContext.getObject();
             }
 
-            if (!sOrderId) {
+            if (!oOrder) {
                 MessageBox.error(this._getText("cannotLoadOrderDataMessage"));
                 return;
             }
 
-            // Pobierz pełne dane z backendu
-            var oODataModel = this.getView().getModel();
+            // Organizujemy dane w kategorie
+            var oFormattedData = this._groupOrderData(oOrder);
 
-
-            serviceOrderModel.fetchSingleOrder(sOrderId, oODataModel)
-                .then(function(oOrderData) {
-                    // Organizujemy dane w kategorie
-                    var oFormattedData = this._groupOrderData(oOrderData);
-
-                    // Tworzenie formatowanego dialogu o mniejszej szerokości
-                    var oDialog = new sap.m.Dialog({
-                        title: this._getText("orderDetailsDialogTitle", [formatter.formatOrderId(oOrderData.OrderId || "")]),
-                        contentWidth: "500px",
-                        resizable: true,
-                        draggable: true,
-                        type: sap.m.DialogType.Standard,
-                        state: sap.ui.core.ValueState.None,
-                        contentHeight: "auto",
-                        content: this._createDetailContent(oFormattedData),
-                        beginButton: new sap.m.Button({
-                            text: this._getText("closeButton"),
-                            press: function () {
-                                oDialog.close();
-                            }
-                        }),
-                        afterClose: function () {
-                            oDialog.destroy();
-                        }
-                    });
-
-                    // Otwórz dialog
-                    oDialog.open();
-                    
-                    // Aktualizuj status
-                    
-                }.bind(this))
-                .catch(function(oError) {
-                    var sErrorMessage = this._getText("orderDetailsLoadError", [sOrderId]);
-                    if (oError.message) {
-                        sErrorMessage += ": " + oError.message;
+            // Tworzenie formatowanego dialogu o mniejszej szerokości
+            var oDialog = new sap.m.Dialog({
+                title: this._getText("orderDetailsDialogTitle", [formatter.formatOrderId(oOrder.OrderId || "")]),
+                contentWidth: "500px",
+                resizable: true,
+                draggable: true,
+                type: sap.m.DialogType.Standard,
+                state: sap.ui.core.ValueState.None,
+                contentHeight: "auto",
+                content: this._createDetailContent(oFormattedData),
+                beginButton: new sap.m.Button({
+                    text: this._getText("closeButton"),
+                    press: function () {
+                        oDialog.close();
                     }
-                    MessageBox.error(sErrorMessage);
-                }.bind(this));
+                }),
+                afterClose: function () {
+                    oDialog.destroy();
+                }
+            });
+
+            // Otwórz dialog
+            oDialog.open();
         },
 
         /**
@@ -276,6 +347,7 @@ sap.ui.define([
 
             var sOrderId = oOrder.OrderId;
             var oODataModel = this.getView().getModel();
+            var oViewModel = this.getView().getModel("viewModel");
 
             // Wyświetlamy dialog potwierdzenia
             MessageBox.confirm(
@@ -286,18 +358,18 @@ sap.ui.define([
                 onClose: function (sAction) {
                     if (sAction === this._getText("yesButton")) {
                         // Pokazujemy wskaźnik ładowania
+                        oViewModel.setProperty("/statusMessage", this._getText("orderDeleteInProgressMessage", [sOrderId]));
+                        oViewModel.setProperty("/messageType", "Warning");
 
                         // Użyj metody z serviceOrderModel do usunięcia
                         serviceOrderModel.deleteServiceOrder(sOrderId, oODataModel)
                             .then(() => {
                                 MessageToast.show(this._getText("orderDeleteSuccessMessage", [sOrderId]));
+                                oViewModel.setProperty("/statusMessage", this._getText("orderDeleteSuccessMessage", [sOrderId]));
+                                oViewModel.setProperty("/messageType", "Success");
 
-                                // Odśwież SmartTable po pomyślnym usunięciu
-                                var oSmartTable = this.byId("ordersSmartTable");
-                                if (oSmartTable) {
-                                    oSmartTable.rebindTable();
-                                }
-
+                                // Odśwież dane po usunięciu
+                                this._loadAllOrders();
                             })
                             .catch(function (oError) {
                                 var sErrorMessage = this._getText("orderDeleteErrorMessage", [sOrderId]);
@@ -307,6 +379,8 @@ sap.ui.define([
                                 MessageBox.error(sErrorMessage, {
                                     title: this._getText("deletionError")
                                 });
+                                oViewModel.setProperty("/statusMessage", sErrorMessage);
+                                oViewModel.setProperty("/messageType", "Error");
                             }.bind(this));
                     }
                 }.bind(this)

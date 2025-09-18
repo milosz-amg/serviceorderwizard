@@ -176,5 +176,36 @@ sap.ui.define([
                 });
             }.bind(this));
         },
+
+        /**
+         * Fetches a single service order by ID using OData V2
+         * @param {string} sOrderId - The ID of the order to fetch
+         * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
+         * @returns {Promise} Promise that resolves with order data
+         */
+        fetchSingleOrder: function (sOrderId, oModel) {
+            return new Promise(function (resolve, reject) {
+                if (!sOrderId) {
+                    reject(new Error("Order ID is required"));
+                    return;
+                }
+                
+                console.log("Pobieranie pojedynczego zlecenia o ID:", sOrderId);
+                
+                // Construct the path for the single order
+                var sPath = "/orderSet(OrderId='" + sOrderId + "')";
+                
+                oModel.read(sPath, {
+                    success: function(oData, oResponse) {
+                        console.log("Pomyślnie pobrano dane zlecenia:", oData);
+                        resolve(oData);
+                    },
+                    error: function(oError) {
+                        console.error("Błąd podczas pobierania zlecenia:", oError);
+                        reject(oError);
+                    }
+                });
+            });
+        },
     };
 });

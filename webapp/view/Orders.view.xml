@@ -3,6 +3,8 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:table="sap.ui.table"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+    xmlns:smartTable="sap.ui.comp.smarttable"
     controllerName="com.mr.serviceorderwizard.controller.Orders"
 >
     <Page
@@ -10,177 +12,121 @@
         title="{i18n>ordersPageTitle}"
     >
         <content>
-            <VBox
-                id="mainBox"
-                width="100%"
-                class="sapUiMediumMargin"
-            >
-                <!-- Header with buttons -->
-                <HBox
-                    id="headerBox"
-                    justifyContent="SpaceBetween"
-                    alignItems="Center"
-                    class="sapUiSmallMarginBottom"
-                >
-                    <Title
-                        id="ordersTitle"
-                        text="{i18n>ordersListTitle}"
-                        level="H2"
-                    />
-                    <HBox
-                        id="buttonBox"
-                        class="sapUiMediumMarginEnd"
-                    >
-                        <Button
-                            id="refreshButton"
-                            text="{i18n>refreshButton}"
-                            press="onRefresh"
-                            icon="sap-icon://refresh"
-                            type="Emphasized"
-                            class="sapUiTinyMarginEnd"
-                        />
-                    </HBox>
-                </HBox>
-
-                <!-- Status message -->
-                <MessageStrip
-                    id="statusMessage"
-                    text="{viewModel>/statusMessage}"
-                    type="{viewModel>/messageType}"
-                    visible="{viewModel>/showMessage}"
-                    class="sapUiSmallMarginBottom"
-                />
-
                 <!-- Table view -->
-                <table:Table
-                    id="ordersTable"
-                    rows="{orders>/}"
-                    width="100%"
-                    selectionMode="None"
-                    enableCellFilter="true"
-                    enableColumnReordering="false"
-                    enableSelectAll="false"
-                    columnHeaderHeight="36"
-                    class="sapUiSizeCompact ordersTableHeight"
-                >
-                    <table:extension>
-                        <OverflowToolbar id="tableToolbar">
-                            <content>
-                                <Title
-                                    id="tableTitle"
-                                    text="{= ${i18n>ordersTableTitle} + ' (' + ${viewModel>/ordersCount} + ')' }"
-                                />
-                            </content>
-                        </OverflowToolbar>
-                    </table:extension>
+                <VBox fitContainer="true">
+                    <smartFilterBar:SmartFilterBar 
+                        id="smartFilterBar" 
+                        entitySet="orderSet" 
+                        persistencyKey="SmartFilter_Orders" 
+                        enableBasicSearch="true"
+                        basicSearchFieldName="Addresscity">
+                        <!-- layout data used to make the table growing but the filter bar fixed -->
+                        <smartFilterBar:layoutData>
+                            <FlexItemData shrinkFactor="0"/>
+                        </smartFilterBar:layoutData>
+                    </smartFilterBar:SmartFilterBar>
+                    
+                    <smartTable:SmartTable 
+                        id="ordersSmartTable" 
+                        entitySet="orderSet" 
+                        smartFilterId="smartFilterBar" 
+                        tableType="Table" 
+                        enableExport="true" 
+                        useVariantManagement="true" 
+                        useTablePersonalisation="false"
+                        header="Service Orders" 
+                        showRowCount="true" 
+                        persistencyKey="SmartTable_Orders" 
+                        enableAutoBinding="true" 
+                        class="sapUiResponsiveContentPadding" 
+                        enableAutoColumnWidth="true">
+                        <!-- layout data used to make the table growing but the filter bar fixed -->
+                        <smartTable:layoutData>
+                            <FlexItemData growFactor="1" baseSize="0%"/>
+                        </smartTable:layoutData>
+                        
+                        <table:Table>
+                            <!-- Order ID Column with leading zeros removed -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "OrderId", "leadingProperty": "OrderId", "columnIndex": 0}'/>
+                                </table:customData>
+                                <Label text="Order ID"/>
+                                <table:template>
+                                    <Text text="{path: 'OrderId', formatter: '.formatter.formatOrderId'}"/>
+                                </table:template>
+                            </table:Column>
 
-                    <table:columns>
-                        <!-- ID column (narrow) -->
-                        <table:Column id="col1" width="10%" filterProperty="OrderId">
-                            <Label
-                                id="header1"
-                                text="{i18n>ordersColId}"
-                            />
-                            <table:template>
-                                <Text
-                                    text="{
-                                        path: 'orders>OrderId',
-                                        formatter: '.formatter.formatOrderId'
-                                    }"
-                                />
-                            </table:template>
-                        </table:Column>
+                            <!-- Order Creation Date Column with DD.MM.YYYY format -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "OrderCreationDate", "leadingProperty": "OrderCreationDate", "columnIndex": 1}'/>
+                                </table:customData>
+                                <Label text="Order Creation Date"/>
+                                <table:template>
+                                    <Text text="{path: 'OrderCreationDate', formatter: '.formatter.formatDate'}"/>
+                                </table:template>
+                            </table:Column>
 
-                        <!-- Order creation date (narrow) -->
-                        <table:Column id="colCreated" width="15%">
-                            <Label
-                                id="headerCreated"
-                                text="{i18n>ordersColCreatedDate}"
-                            />
-                            <table:template>
-                                <Text
-                                    text="{
-                                        path: 'orders>OrderCreationDate',
-                                        formatter: '.formatter.formatDate'
-                                    }"
-                                />
-                            </table:template>
-                        </table:Column>
+                            <!-- Visit Date Column with DD.MM.YYYY format -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "Visitdate", "leadingProperty": "Visitdate", "columnIndex": 2}'/>
+                                </table:customData>
+                                <Label text="Visit Date"/>
+                                <table:template>
+                                    <Text text="{path: 'Visitdate', formatter: '.formatter.formatDate'}"/>
+                                </table:template>
+                            </table:Column>
 
-                        <!-- Visit date (narrow) -->
-                        <table:Column id="col7" width="15%" >
-                            <Label
-                                id="header7"
-                                text="{i18n>ordersColVisitDate}"
-                            />
-                            <table:template>
-                                <Text
-                                    text="{
-                                        path: 'orders>Visitdate',
-                                        formatter: '.formatter.formatDate'
-                                    }"
-                                />
-                            </table:template>
-                        </table:Column>
+                            <!-- Address City Column -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "Addresscity", "leadingProperty": "Addresscity", "columnIndex": 3}'/>
+                                </table:customData>
+                                <Label text="City"/>
+                                <table:template>
+                                    <Text text="{Addresscity}"/>
+                                </table:template>
+                            </table:Column>
 
-                        <!-- City (flexible) -->
-                        <table:Column id="col4" width="25%" filterProperty="Addresscity" defaultFilterOperator="Contains">
-                            <Label
-                                id="header4"
-                                text="{i18n>ordersColCity}"
-                            />
-                            <table:template>
-                                <Text
-                                    text="{orders>Addresscity}"
-                                />
-                            </table:template>
-                        </table:Column>
+                            <!-- Status Column -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "Status", "leadingProperty": "Status", "columnIndex": 4}'/>
+                                </table:customData>
+                                <Label text="Status"/>
+                                <table:template>
+                                    <Text text="{Status}"/>
+                                </table:template>
+                            </table:Column>
 
-                        <!-- Status (narrow) -->
-                        <table:Column id="col8" width="15%" filterProperty="Status" defaultFilterOperator="EQ">
-                            <Label
-                                id="header8"
-                                text="{i18n>ordersColStatus}"
-                            />
-                            <table:template>
-                                <Text
-                                    text="{orders>Status}"
-                                />
-                            </table:template>
-                        </table:Column>
+                        <!-- Details Column -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "Details", "columnIndex": 5}'/>
+                                </table:customData>
+                                <Label text="Details"/>
+                                <table:template>
+                                    <Button text="Details" press="onShowDetails"/>
+                                </table:template>
+                            </table:Column>
 
-                        <table:Column id="colDetails" width="10%">
-                            <Label
-                                id="headerDetails"
-                                text="{i18n>ordersColDetails}"
-                            />
-                            <table:template>
-                                <Button
-                                    text="{i18n>detailsButton}"
-                                    icon="sap-icon://detail-view"
-                                    press="onShowDetails"
-                                    type="Transparent"
-                                />
-                            </table:template>
-                        </table:Column>
+                            <!-- Delete Column -->
+                            <table:Column>
+                                <table:customData>
+                                    <core:CustomData key="p13nData" value='{"columnKey": "Delete", "columnIndex": 6}'/>
+                                </table:customData>
+                                <Label text="Delete"/>
+                                <table:template>
+                                    <Button text="Delete" press="onDeleteOrder"/>
+                                </table:template>
+                            </table:Column>
 
-                        <table:Column id="colDelete" width="10%">
-                            <Label
-                                id="headerDelete"
-                                text="{i18n>ordersColActions}"
-                            />
-                            <table:template>
-                                <Button
-                                    text="{i18n>deleteButton}"
-                                    icon="sap-icon://delete"
-                                    type="Reject"
-                                    press="onDeleteOrder"
-                                />
-                            </table:template>
-                        </table:Column>
-                    </table:columns>
-                </table:Table>
-            </VBox>
+                        </table:Table>
+                        
+                    </smartTable:SmartTable>
+                </VBox>
         </content>
     </Page>
 </mvc:View>
