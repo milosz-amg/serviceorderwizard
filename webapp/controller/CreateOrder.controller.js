@@ -251,9 +251,6 @@ sap.ui.define([
 
             if (bValid) {
                 oStep.setNextStep(this.byId("stepFaultDesc"));
-                if (bLoud) {
-                    sap.m.MessageToast.show(this._getText("personalDataValidationSuccess"));
-                }
             }
 
             return bValid;
@@ -434,39 +431,6 @@ sap.ui.define([
 
             return bValid;
         },
-
-        // onSubmitOrder: function () {
-        //     // Przed zatwierdzeniem ponownie zwaliduj wszystkie kroki
-
-        //     bFormValid = this._validateAllSteps();
-        //     console.log(bFormValid);
-        //     if (bFormValid) {
-        //         // Wszystkie kroki są prawidłowe - przejdź do ekranu podsumowania
-        //         this.wizardCompletedHandler();
-
-        //     } else {
-        //         // któryś z kroków jest nieprawidłowy, pokaż komunikat
-        //         sap.m.MessageBox.error(this._getText("dataValidationError"), {
-        //             title: this._getText("dataValidationErrorTitle")
-
-        //         });
-        //     }
-        // },
-
-        // /**
-        //  * Waliduje ponownie wszystkie kroki formularza
-        //  * @returns {boolean} true jeśli wszystkie kroki są prawidłowe, false w przeciwnym razie
-        //  * @private
-        //  */
-        // _validateAllSteps: function () {
-        //     var bStep1Valid = this.validatePersonalData(false);
-        //     var bStep2Valid = this.validateFaultDesc(false);
-        //     var bStep3Valid = this.validateVisitDate(false);
-
-        //     // Zwróć true tylko jeśli wszystkie kroki są prawidłowe
-        //     return [bStep1Valid, bStep2Valid, bStep3Valid];
-        //     // return false; // tymczasowo wyłączone do testów
-        // },
 
         wizardCompletedHandler: function () {
             // Przejdź do ekranu podsumowania

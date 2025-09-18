@@ -102,18 +102,18 @@ Refactor backend:
 * ✅ Nie dwuklik przy przejściu między stepami
 * ✅ lista wyboru modeli i typów model oData nie JSON
 * ✅ formatter na OrderCreationDate w Payload
-* różne komunikaty błędów (uzupełnij nr telefonu vs błędny format telefonu)
+* ✅ różne komunikaty błędów (uzupełnij nr telefonu vs błędny format telefonu)
 
 ### OrdersView:
+* Orders.view: JSON model -> oData
 * filtrowanie:
     - przy filtrowaniu po statusie lista wielokrotnego wyboru
     - filtrowanie też po datach
 * wyszukiwanie: wyszukuje "warszawa" pokazuje rekordy zawierające warszawa / szukam "nie działa" pokazuje rekordy mające w opisie tekst "nie działa..."
-* Orders.view: JSON model -> oData
 
 ### Backend:
 * nie rzucać cx_root
 
 
 ### bugfix:
-reviev -> edit -> błędne dane -> wyślij
+* ✅ reviev -> edit -> błędne dane -> wyślij
