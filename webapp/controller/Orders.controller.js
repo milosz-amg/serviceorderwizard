@@ -24,8 +24,8 @@ sap.ui.define([
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
 
-            var oSmartTable = this.byId("ordersSmartTable");
-            oSmartTable.rebindTable();
+            // var oSmartTable = this.byId("ordersSmartTable");
+            // oSmartTable.rebindTable();
 
             // Podłącz się do zdarzenia routingu
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -37,7 +37,7 @@ sap.ui.define([
          * @private
          */
         _onRouteMatched: function () {
-            console.log("Odświeżanie danych w tabeli Orders");
+            console.log("Route Mched Odświeżanie danych w tabeli Orders");
             this._refreshTableData();
         },
 
