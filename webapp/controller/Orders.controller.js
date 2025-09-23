@@ -198,16 +198,6 @@ sap.ui.define([
             }
         },
 
-        // onFilter: function () {
-        //     var oSmartTable = this.byId("ordersSmartTable");
-        //     if (oSmartTable) {
-        //         oSmartTable.openPersonalisationDialog("Filter");
-        //     }
-        // },
-
-
-
-
         /**
          * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
          * Pobiera dane z backendu używając OrderId

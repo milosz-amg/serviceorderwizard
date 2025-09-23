@@ -106,10 +106,10 @@ Refactor backend:
 
 ### OrdersView:
 * ✅ Orders.view: JSON model -> oData
-* filtrowanie:
+* ✅ filtrowanie:
     - przy filtrowaniu po statusie lista wielokrotnego wyboru
     - filtrowanie też po datach
-* wyszukiwanie: wyszukuje "warszawa" pokazuje rekordy zawierające warszawa / szukam "nie działa" pokazuje rekordy mające w opisie tekst "nie działa..."
+* ✅ wyszukiwanie: wyszukuje "warszawa" pokazuje rekordy zawierające warszawa / szukam "nie działa" pokazuje rekordy mające w opisie tekst "nie działa..."
 
 ### Backend:
 * nie rzucać cx_root

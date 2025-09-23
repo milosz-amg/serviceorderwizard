@@ -135,7 +135,9 @@
                         </OverflowToolbar>
                     </smartTable:customToolbar>
 
-                    <table:Table>
+                    <table:Table
+                        visibleRowCount="15"
+                    >
                         <!-- Order ID Column with leading zeros removed -->
                         <table:Column sortProperty="OrderId">
                             <table:customData>
