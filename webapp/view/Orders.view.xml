@@ -82,6 +82,11 @@
                                 press="onFilter"
                             /> -->
                             <OverflowToolbarButton
+                                icon="sap-icon://accidental-leave"
+                                text="Change Busy"
+                            ></OverflowToolbarButton>
+
+                            <OverflowToolbarButton
                                 icon="sap-icon://refresh"
                                 text="Refresh"
                                 press="onRefreshTable"
@@ -151,7 +156,7 @@
                             <table:customData>
                                 <core:CustomData
                                     key="p13nData"
-                                    value='{"columnKey": "Status", "leadingProperty": "Status", "columnIndex": 4, "filterProperty": "Status"}'
+                                    value='{"columnKey": "Status", "leadingProperty": "Status", "columnIndex": 4}'
                                 />
                             </table:customData>
                             <Label text="Status" />

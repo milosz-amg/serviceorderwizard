@@ -111,17 +111,18 @@ sap.ui.define([
         },
 
         onStatusFilterChange: function () {
-            this.byId("ordersSmartTable").rebindTable();
-        },
-
-
-
-        onFilter: function () {
-            var oSmartTable = this.byId("ordersSmartTable");
-            if (oSmartTable) {
-                oSmartTable.openPersonalisationDialog("Filter");
+            var oSmartFilterBar = this.byId("smartFilterBar");
+            if (oSmartFilterBar) {
+                oSmartFilterBar.triggerSearch();
             }
         },
+
+        // onFilter: function () {
+        //     var oSmartTable = this.byId("ordersSmartTable");
+        //     if (oSmartTable) {
+        //         oSmartTable.openPersonalisationDialog("Filter");
+        //     }
+        // },
 
 
 
