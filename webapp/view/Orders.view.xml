@@ -24,13 +24,13 @@
                     <smartFilterBar:controlConfiguration>
                         <smartFilterBar:ControlConfiguration
                             key="OrderCreationDate"
-                            label="Order Creation Date"
+                            label="{i18n>orderCreationDateFilterLabel}"
                             visibleInAdvancedArea="true"
                         >
                             <smartFilterBar:customControl>
                                 <DateRangeSelection
                                     id="orderDateFilter"
-                                    placeholder="Data utworzenia"
+                                    placeholder="{i18n>orderCreationDatePlaceholder}"
                                     width="250px"
                                     change="onFilterChange"
 
@@ -40,13 +40,13 @@
 
                         <smartFilterBar:ControlConfiguration
                             key="OrderVisitDate"
-                            label="Order Visit Date"
+                            label="{i18n>orderVisitDateFilterLabel}"
                             visibleInAdvancedArea="true"
                         >
                             <smartFilterBar:customControl>
                                 <DateRangeSelection
                                     id="orderVisitDateFilter"
-                                    placeholder="Data wizyty"
+                                    placeholder="{i18n>visitDatePlaceholder}"
                                     width="250px"
                                     change="onFilterChange"
 
@@ -56,7 +56,7 @@
 
                         <smartFilterBar:ControlConfiguration
                             key="Status"
-                            label="Status"
+                            label="{i18n>statusFilterLabel}"
                             visibleInAdvancedArea="true"
                         >
                             <smartFilterBar:customControl>
@@ -64,19 +64,19 @@
                                     id="statusFilter"
                                     selectionChange="onFilterChange"
                                     width="200px"
-                                    placeholder="Status"
+                                    placeholder="{i18n>statusFilterPlaceholder}"
                                 >
                                     <core:Item
                                         key="New"
-                                        text="New"
+                                        text="{i18n>statusNew}"
                                     />
                                     <core:Item
                                         key="In progress"
-                                        text="In progress"
+                                        text="{i18n>statusInProgress}"
                                     />
                                     <core:Item
                                         key="Completed"
-                                        text="Completed"
+                                        text="{i18n>statusCompleted}"
                                     />
                                 </MultiComboBox>
                             </smartFilterBar:customControl>
@@ -96,7 +96,7 @@
                     tableType="Table"
                     enableExport="true"
                     useVariantManagement="true"
-                    header="Service Orders"
+                    header="{i18n>smartTableHeader}"
                     showRowCount="true"
                     persistencyKey="SmartTable_Orders"
                     useTablePersonalisation="true"
@@ -124,12 +124,12 @@
                             /> -->
                             <OverflowToolbarButton
                                 icon="sap-icon://accidental-leave"
-                                text="Change Busy"
+                                text="{i18n>changeBusyButton}"
                             />
 
                             <OverflowToolbarButton
                                 icon="sap-icon://refresh"
-                                text="Refresh"
+                                text="{i18n>refreshTableButton}"
                                 press="onRefreshTable"
                             />
                         </OverflowToolbar>
@@ -146,7 +146,7 @@
                                     value='{"columnKey": "OrderId", "leadingProperty": "OrderId", "columnIndex": 0}'
                                 />
                             </table:customData>
-                            <Label text="Order ID" />
+                            <Label text="{i18n>tableHeaderOrderId}" />
                             <table:template>
                                 <Text
                                     text="{path: 'OrderId', formatter: '.formatter.formatOrderId'}"
@@ -166,7 +166,7 @@
                                     value='{"columnKey": "OrderCreationDate", "leadingProperty": "OrderCreationDate", "columnIndex": 1}'
                                 />
                             </table:customData>
-                            <Label text="Order Creation Date" />
+                            <Label text="{i18n>tableHeaderOrderCreationDate}" />
                             <table:template>
                                 <Text
                                     text="{path: 'OrderCreationDate', formatter: '.formatter.formatDate'}"
@@ -186,7 +186,7 @@
                                     value='{"columnKey": "Visitdate", "leadingProperty": "Visitdate", "columnIndex": 2}'
                                 />
                             </table:customData>
-                            <Label text="Visit Date" />
+                            <Label text="{i18n>tableHeaderVisitDate}" />
                             <table:template>
                                 <Text
                                     text="{path: 'Visitdate', formatter: '.formatter.formatDate'}"
@@ -202,7 +202,7 @@
                                     value='{"columnKey": "Status", "leadingProperty": "Status", "columnIndex": 4}'
                                 />
                             </table:customData>
-                            <Label text="Status" />
+                            <Label text="{i18n>tableHeaderStatus}" />
                             <table:template>
                                 <Text text="{Status}" />
                             </table:template>
@@ -216,10 +216,10 @@
                                     value='{"columnKey": "Details", "columnIndex": 5}'
                                 />
                             </table:customData>
-                            <Label text="Details" />
+                            <Label text="{i18n>tableHeaderDetails}" />
                             <table:template>
                                 <Button
-                                    text="Details"
+                                    text="{i18n>detailsButtonText}"
                                     press="onShowDetails"
                                 />
                             </table:template>
@@ -233,10 +233,10 @@
                                     value='{"columnKey": "Delete", "columnIndex": 6}'
                                 />
                             </table:customData>
-                            <Label text="Delete" />
+                            <Label text="{i18n>tableHeaderDelete}" />
                             <table:template>
                                 <Button
-                                    text="Delete"
+                                    text="{i18n>deleteButtonText}"
                                     press="onDeleteOrder"
                                 />
                             </table:template>

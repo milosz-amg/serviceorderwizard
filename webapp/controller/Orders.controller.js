@@ -158,6 +158,8 @@ sap.ui.define([
          */
         onRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
+            var oSmartFilterBar = this.byId("smartFilterBar");
+            
             if (oSmartTable) {
                 // Reset status filter
                 var oStatusFilter = this.byId("statusFilter");
@@ -175,6 +177,11 @@ sap.ui.define([
                 var oVisitDateFilter = this.byId("orderVisitDateFilter");
                 if (oVisitDateFilter) {
                     oVisitDateFilter.setValue("");
+                }
+
+                // Reset search bar
+                if (oSmartFilterBar) {
+                    oSmartFilterBar.clear();
                 }
 
                 // Refresh table data
