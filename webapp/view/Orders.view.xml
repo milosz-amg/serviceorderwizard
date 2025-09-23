@@ -22,13 +22,43 @@
                     basicSearchFieldName="Addresscity"
                 >
                     <smartFilterBar:controlConfiguration>
-                        <!-- Predefiniowany filtr Status -->
+                        <smartFilterBar:ControlConfiguration
+                            key="OrderCreationDate"
+                            label="Order Creation Date"
+                            visibleInAdvancedArea="true"
+                        >
+                            <smartFilterBar:customControl>
+                                <DateRangeSelection
+                                    id="orderDateFilter"
+                                    placeholder="Data utworzenia"
+                                    width="250px"
+                                    change="onFilterChange"
+
+                                />
+                            </smartFilterBar:customControl>
+                        </smartFilterBar:ControlConfiguration>
+
+                        <smartFilterBar:ControlConfiguration
+                            key="OrderVisitDate"
+                            label="Order Visit Date"
+                            visibleInAdvancedArea="true"
+                        >
+                            <smartFilterBar:customControl>
+                                <DateRangeSelection
+                                    id="orderVisitDateFilter"
+                                    placeholder="Data wizyty"
+                                    width="250px"
+                                    change="onFilterChange"
+
+                                />
+                            </smartFilterBar:customControl>
+                        </smartFilterBar:ControlConfiguration>
+
                         <smartFilterBar:ControlConfiguration
                             key="Status"
                             label="Status"
                             visibleInAdvancedArea="true"
                         >
-                            <!-- WAŻNE: używamy customControl -->
                             <smartFilterBar:customControl>
                                 <MultiComboBox
                                     id="statusFilter"
@@ -49,22 +79,6 @@
                                         text="Completed"
                                     />
                                 </MultiComboBox>
-                            </smartFilterBar:customControl>
-                        </smartFilterBar:ControlConfiguration>
-
-                        <smartFilterBar:ControlConfiguration
-                            key="OrderCreationDate"
-                            label="Order Creation Date"
-                            visibleInAdvancedArea="true"
-                        >
-                            <smartFilterBar:customControl>
-                                <DateRangeSelection
-                                    id="orderDateFilter"
-                                    placeholder="Data utworzenia"
-                                    width="250px"
-                                    change="onFilterChange"
-
-                                />
                             </smartFilterBar:customControl>
                         </smartFilterBar:ControlConfiguration>
                     </smartFilterBar:controlConfiguration>

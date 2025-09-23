@@ -81,32 +81,70 @@ sap.ui.define([
                 }));
             }
 
-            // === DATE RANGE FILTER ===
-            var oDateRange = this.byId("orderDateFilter");
-            if (oDateRange) {
-                var oDateValue = oDateRange.getDateValue();
-                var oSecondDateValue = oDateRange.getSecondDateValue();
+            // === ORDER CREATION DATE RANGE FILTER ===
+            var oOrderDateRange = this.byId("orderDateFilter");
+            if (oOrderDateRange) {
+                var oOrderDateValue = oOrderDateRange.getDateValue();
+                var oOrderSecondDateValue = oOrderDateRange.getSecondDateValue();
 
-                if (oDateValue && oSecondDateValue) {
+                // Zamień Date na string DD.MM.YYYY, potem na YYYYMMDD
+                var sOrderDateFrom = oOrderDateValue ? formatter.formatDateForBackend(oOrderDateValue instanceof Date ? oOrderDateValue.toLocaleDateString("pl-PL") : oOrderDateValue) : null;
+                var sOrderDateTo = oOrderSecondDateValue ? formatter.formatDateForBackend(oOrderSecondDateValue instanceof Date ? oOrderSecondDateValue.toLocaleDateString("pl-PL") : oOrderSecondDateValue) : null;
+
+                if (sOrderDateFrom && sOrderDateTo) {
                     oBindingParams.filters.push(new sap.ui.model.Filter(
                         "OrderCreationDate",
                         sap.ui.model.FilterOperator.BT, // Between
-                        oDateValue,
-                        oSecondDateValue
+                        sOrderDateFrom,
+                        sOrderDateTo
                     ));
-                } else if (oDateValue) {
+                } else if (sOrderDateFrom) {
                     // tylko data od
                     oBindingParams.filters.push(new sap.ui.model.Filter(
                         "OrderCreationDate",
                         sap.ui.model.FilterOperator.GE,
-                        oDateValue
+                        sOrderDateFrom
                     ));
-                } else if (oSecondDateValue) {
+                } else if (sOrderDateTo) {
                     // tylko data do
                     oBindingParams.filters.push(new sap.ui.model.Filter(
                         "OrderCreationDate",
                         sap.ui.model.FilterOperator.LE,
-                        oSecondDateValue
+                        sOrderDateTo
+                    ));
+                }
+            }
+
+            // === VISIT DATE RANGE FILTER ===
+            var oVisitDateRange = this.byId("orderVisitDateFilter");
+            if (oVisitDateRange) {
+                var oVisitDateValue = oVisitDateRange.getDateValue();
+                var oVisitSecondDateValue = oVisitDateRange.getSecondDateValue();
+
+                // Zamień Date na string DD.MM.YYYY, potem na YYYYMMDD
+                var sVisitDateFrom = oVisitDateValue ? formatter.formatDateForBackend(oVisitDateValue instanceof Date ? oVisitDateValue.toLocaleDateString("pl-PL") : oVisitDateValue) : null;
+                var sVisitDateTo = oVisitSecondDateValue ? formatter.formatDateForBackend(oVisitSecondDateValue instanceof Date ? oVisitSecondDateValue.toLocaleDateString("pl-PL") : oVisitSecondDateValue) : null;
+
+                if (sVisitDateFrom && sVisitDateTo) {
+                    oBindingParams.filters.push(new sap.ui.model.Filter(
+                        "Visitdate",
+                        sap.ui.model.FilterOperator.BT, // Between
+                        sVisitDateFrom,
+                        sVisitDateTo
+                    ));
+                } else if (sVisitDateFrom) {
+                    // tylko data od
+                    oBindingParams.filters.push(new sap.ui.model.Filter(
+                        "Visitdate",
+                        sap.ui.model.FilterOperator.GE,
+                        sVisitDateFrom
+                    ));
+                } else if (sVisitDateTo) {
+                    // tylko data do
+                    oBindingParams.filters.push(new sap.ui.model.Filter(
+                        "Visitdate",
+                        sap.ui.model.FilterOperator.LE,
+                        sVisitDateTo
                     ));
                 }
             }
@@ -124,8 +162,19 @@ sap.ui.define([
                 // Reset status filter
                 var oStatusFilter = this.byId("statusFilter");
                 if (oStatusFilter) {
-                    // oStatusFilter.setSelectedKey("");
                     oStatusFilter.setSelectedKeys([]);
+                }
+
+                // Reset order creation date filter
+                var oOrderDateFilter = this.byId("orderDateFilter");
+                if (oOrderDateFilter) {
+                    oOrderDateFilter.setValue("");
+                }
+
+                // Reset visit date filter
+                var oVisitDateFilter = this.byId("orderVisitDateFilter");
+                if (oVisitDateFilter) {
+                    oVisitDateFilter.setValue("");
                 }
 
                 // Refresh table data
