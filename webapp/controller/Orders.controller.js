@@ -156,8 +156,25 @@ sap.ui.define([
          * Refreshes the table data
          * @public
          */
-        onRefreshTable: function () {
+        onRefreshTable: function (oEvent) {
+            var oButton = oEvent.getSource();
+
+            // Wyłącz przycisk
+            oButton.setEnabled(false);
+
+            // Twoja logika refresh
+            this._doRefreshTable();
+
+            // Włącz z powrotem po 2 sekundach
+            setTimeout(function () {
+                oButton.setEnabled(true);
+            }, 500);
+        },
+
+        _doRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
+            var oSmartFilterBar = this.byId("smartFilterBar");
+
             if (oSmartTable) {
                 // Reset status filter
                 var oStatusFilter = this.byId("statusFilter");
@@ -168,18 +185,34 @@ sap.ui.define([
                 // Reset order creation date filter
                 var oOrderDateFilter = this.byId("orderDateFilter");
                 if (oOrderDateFilter) {
+                    oOrderDateFilter.setDateValue(null);
+                    oOrderDateFilter.setSecondDateValue(null);
                     oOrderDateFilter.setValue("");
                 }
 
                 // Reset visit date filter
                 var oVisitDateFilter = this.byId("orderVisitDateFilter");
                 if (oVisitDateFilter) {
+                    oVisitDateFilter.setDateValue(null);
+                    oVisitDateFilter.setSecondDateValue(null);
                     oVisitDateFilter.setValue("");
                 }
 
-                // Refresh table data
+                // Reset search bar and clear all filters in SmartFilterBar
+                if (oSmartFilterBar) {
+                    oSmartFilterBar.clear();
+                }
+
+                // Get the inner table and clear its binding filters
+                var oTable = oSmartTable.getTable();
+                if (oTable) {
+                    var oBinding = oTable.getBinding("items") || oTable.getBinding("rows");
+                    if (oBinding) {
+                        oBinding.filter([]);
+                    }
+                }
+
                 oSmartTable.rebindTable();
-                MessageToast.show(this._getText("tableRefreshed"));
             }
         },
 
@@ -197,16 +230,6 @@ sap.ui.define([
                 oSmartFilterBar.triggerSearch();
             }
         },
-
-        // onFilter: function () {
-        //     var oSmartTable = this.byId("ordersSmartTable");
-        //     if (oSmartTable) {
-        //         oSmartTable.openPersonalisationDialog("Filter");
-        //     }
-        // },
-
-
-
 
         /**
          * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi

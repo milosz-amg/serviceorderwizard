@@ -1,10 +1,14 @@
 METHOD orderset_get_entityset.
 
   " ==== 1. Deklaracje tabel zakresów dla filtrowania ====
-  DATA: lra_status TYPE RANGE OF zmr_orders-status, " tabela zakresów dla Status
-        wa_status  LIKE LINE OF lra_status,
-        lv_order_by TYPE string,
-        lo_mc       TYPE REF TO /iwbep/if_message_container.
+  DATA: lra_status              TYPE RANGE OF zmr_orders-status,
+        wa_status               LIKE LINE OF lra_status,
+        lra_order_creation_date TYPE RANGE OF zmr_orders-ordercreationdate,
+        wa_order_creation_date  LIKE LINE OF lra_order_creation_date,
+        lra_visitdate           TYPE RANGE OF zmr_orders-visitdate,
+        wa_visitdate            LIKE LINE OF lra_visitdate,
+        lv_order_by             TYPE string,
+        lo_mc                   TYPE REF TO /iwbep/if_message_container.
 
   " ==== 2. Pobranie parametrów filtrowania i sortowania z requestu ====
   DATA(lr_filter) = io_tech_request_context->get_filter( ).
@@ -13,6 +17,8 @@ METHOD orderset_get_entityset.
 
   " ==== 3. Wypełnienie tabel zakresów dla każdej kolumny ====
   LOOP AT lt_filter_select_options INTO DATA(ls_filter_select_options).
+
+    " --- filtr Status ---
     IF ls_filter_select_options-property EQ 'STATUS'.
       LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option).
         wa_status-sign   = ls_select_option-sign.
@@ -22,6 +28,29 @@ METHOD orderset_get_entityset.
         APPEND wa_status TO lra_status.
       ENDLOOP.
     ENDIF.
+
+    " --- filtr OrderCreationDate ---
+    IF ls_filter_select_options-property EQ 'ORDERCREATIONDATE'.
+      LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option_date).
+        wa_order_creation_date-sign   = ls_select_option_date-sign.
+        wa_order_creation_date-option = ls_select_option_date-option.
+        wa_order_creation_date-low    = ls_select_option_date-low.
+        wa_order_creation_date-high   = ls_select_option_date-high.
+        APPEND wa_order_creation_date TO lra_order_creation_date.
+      ENDLOOP.
+    ENDIF.
+
+    " --- filtr Visitdate ---
+    IF ls_filter_select_options-property EQ 'VISITDATE'.
+      LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option_visit).
+        wa_visitdate-sign   = ls_select_option_visit-sign.
+        wa_visitdate-option = ls_select_option_visit-option.
+        wa_visitdate-low    = ls_select_option_visit-low.
+        wa_visitdate-high   = ls_select_option_visit-high.
+        APPEND wa_visitdate TO lra_visitdate.
+      ENDLOOP.
+    ENDIF.
+
   ENDLOOP.
 
   " ==== 4. Obsługa sortowania ====
@@ -45,6 +74,8 @@ METHOD orderset_get_entityset.
         FROM zmr_orders
         INTO TABLE @et_entityset
         WHERE status IN @lra_status
+          AND ordercreationdate IN @lra_order_creation_date
+          AND visitdate IN @lra_visitdate
         ORDER BY (lv_order_by).
 
       IF sy-subrc <> 0.

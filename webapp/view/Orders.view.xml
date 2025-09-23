@@ -131,6 +131,7 @@
                                 icon="sap-icon://refresh"
                                 text="Refresh"
                                 press="onRefreshTable"
+                                
                             />
                         </OverflowToolbar>
                     </smartTable:customToolbar>
