@@ -112,8 +112,4 @@ Refactor backend:
 * ✅ wyszukiwanie: wyszukuje "warszawa" pokazuje rekordy zawierające warszawa / szukam "nie działa" pokazuje rekordy mające w opisie tekst "nie działa..."
 
 ### Backend:
-* nie rzucać cx_root
-
-
-### bugfix:
-* ✅ reviev -> edit -> błędne dane -> wyślij
+* ✅ nie rzucać cx_root

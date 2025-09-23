@@ -38,7 +38,8 @@ sap.ui.define([
          */
         _onRouteMatched: function () {
             console.log("Route Mched Odświeżanie danych w tabeli Orders");
-            this._refreshTableData();
+            // this._refreshTableData();    
+            this._doRefreshTable();
         },
 
         /**

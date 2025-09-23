@@ -19,7 +19,7 @@
                     entitySet="orderSet"
                     persistencyKey="SmartFilter_Orders"
                     enableBasicSearch="true"
-                    basicSearchFieldName="Addresscity"
+                    
                 >
                     <smartFilterBar:controlConfiguration>
                         <smartFilterBar:ControlConfiguration
@@ -83,7 +83,6 @@
                         </smartFilterBar:ControlConfiguration>
                     </smartFilterBar:controlConfiguration>
 
-                    <!-- layout data used to make the table growing but the filter bar fixed -->
                     <smartFilterBar:layoutData>
                         <FlexItemData shrinkFactor="0" />
                     </smartFilterBar:layoutData>
@@ -117,16 +116,6 @@
                     <smartTable:customToolbar>
                         <OverflowToolbar design="Transparent">
                             <ToolbarSpacer />
-                            <!-- <OverflowToolbarButton
-                                icon="sap-icon://filter"
-                                text="Advanced Filter"
-                                press="onFilter"
-                            /> -->
-                            <OverflowToolbarButton
-                                icon="sap-icon://accidental-leave"
-                                text="{i18n>changeBusyButton}"
-                            />
-
                             <OverflowToolbarButton
                                 icon="sap-icon://refresh"
                                 text="{i18n>refreshTableButton}"
@@ -221,6 +210,8 @@
                             <table:template>
                                 <Button
                                     text="{i18n>detailsButtonText}"
+                                    icon="sap-icon://detail-view"
+                                    type="Neutral"
                                     press="onShowDetails"
                                 />
                             </table:template>
@@ -238,9 +229,12 @@
                             <table:template>
                                 <Button
                                     text="{i18n>deleteButtonText}"
+                                    icon="sap-icon://delete"
+                                    type="Reject"
                                     press="onDeleteOrder"
                                 />
                             </table:template>
+                            
                         </table:Column>
                     </table:Table>
                 </smartTable:SmartTable>
