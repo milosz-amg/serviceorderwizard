@@ -74,7 +74,8 @@ sap.ui.define([
                 // Reset status filter
                 var oStatusFilter = this.byId("statusFilter");
                 if (oStatusFilter) {
-                    oStatusFilter.setSelectedKey("");
+                    // oStatusFilter.setSelectedKey("");
+                    oStatusFilter.setSelectedKeys([]);
                 }
 
                 // Refresh table data
@@ -90,6 +91,34 @@ sap.ui.define([
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
+
+        onStatusFilterChange: function (oEvent) {
+            var aSelectedKeys = oEvent.getSource().getSelectedKeys();
+            var oSmartTable = this.byId("ordersSmartTable");
+            var oTable = oSmartTable.getTable();
+
+            if (oTable) {
+                var oBinding = oTable.getBinding("rows");
+                if (oBinding) {
+                    var aFilters = [];
+
+                    if (aSelectedKeys.length > 0) {
+                        // Tworzymy OR pomiędzy wybranymi statusami
+                        var aStatusFilters = aSelectedKeys.map(function (sKey) {
+                            return new sap.ui.model.Filter("Status", sap.ui.model.FilterOperator.EQ, sKey);
+                        });
+                        aFilters.push(new sap.ui.model.Filter({
+                            filters: aStatusFilters,
+                            and: false
+                        }));
+                    }
+
+                    // Ustawiamy filtr na bindingu
+                    oBinding.filter(aFilters, "Application");
+                }
+            }
+        },
+
 
         onFilter: function () {
             var oSmartTable = this.byId("ordersSmartTable");

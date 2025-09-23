@@ -14,7 +14,6 @@
         <content>
             <!-- Table view -->
             <VBox fitContainer="true">
-            
                 <smartFilterBar:SmartFilterBar
                     id="smartFilterBar"
                     entitySet="orderSet"
@@ -22,6 +21,26 @@
                     enableBasicSearch="true"
                     basicSearchFieldName="Addresscity"
                 >
+                    <smartFilterBar:controlConfiguration>
+        <!-- Predefiniowany filtr Status -->
+        <smartFilterBar:ControlConfiguration
+            key="Status"
+            label="Status"
+            visibleInAdvancedArea="true">
+            
+            <!-- WAŻNE: używamy customControl -->
+            <smartFilterBar:customControl>
+                <MultiComboBox
+                    id="statusFilter"
+                    selectionChange="onStatusFilterChange"
+                    width="200px">
+                    <core:Item key="New" text="New"/>
+                    <core:Item key="In progress" text="In progress"/>
+                    <core:Item key="Completed" text="Completed"/>
+                </MultiComboBox>
+            </smartFilterBar:customControl>
+        </smartFilterBar:ControlConfiguration>
+    </smartFilterBar:controlConfiguration>
 
                     <!-- layout data used to make the table growing but the filter bar fixed -->
                     <smartFilterBar:layoutData>
@@ -55,7 +74,6 @@
                     <!-- Custom Toolbar with Status Filter -->
                     <smartTable:customToolbar>
                         <OverflowToolbar design="Transparent">
-                            
                             <ToolbarSpacer />
                             <OverflowToolbarButton
                                 icon="sap-icon://filter"
