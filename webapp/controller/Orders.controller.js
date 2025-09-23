@@ -148,6 +148,17 @@ sap.ui.define([
                     ));
                 }
             }
+
+            // === SEARCH BAR FILTER ===
+            var oSmartFilterBar = this.byId("smartFilterBar");
+            var sSearchQuery = oSmartFilterBar ? oSmartFilterBar.getBasicSearchValue() : "";
+
+            if (sSearchQuery) {
+                console.log("Wartość wpisana w pasek wyszukiwania:", sSearchQuery);
+
+                // Przekazujemy wartość wyszukiwania jako filtr 'extra' dla backendu
+                oBindingParams.filters.push(new sap.ui.model.Filter("Addresscity", sap.ui.model.FilterOperator.Contains, sSearchQuery));
+            }
         },
 
 
@@ -158,6 +169,8 @@ sap.ui.define([
          */
         onRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
+            var oSmartFilterBar = this.byId("smartFilterBar");
+
             if (oSmartTable) {
                 // Reset status filter
                 var oStatusFilter = this.byId("statusFilter");
@@ -175,6 +188,11 @@ sap.ui.define([
                 var oVisitDateFilter = this.byId("orderVisitDateFilter");
                 if (oVisitDateFilter) {
                     oVisitDateFilter.setValue("");
+                }
+
+                // Reset search bar
+                if (oSmartFilterBar) {
+                    oSmartFilterBar.setBasicSearchValue("");
                 }
 
                 // Refresh table data
@@ -205,8 +223,15 @@ sap.ui.define([
         //     }
         // },
 
-
-
+        onAfterRendering: function () {
+            var oSmartFilterBar = this.byId("smartFilterBar");
+            if (oSmartFilterBar) {
+                oSmartFilterBar.attachSearch(function (oEvent) {
+                    // var sQuery = oSmartFilterBar.getBasicSearchValue();
+                    // console.log("Wartość wpisana w pasek wyszukiwania:", sQuery);
+                });
+            }
+        },
 
         /**
          * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
