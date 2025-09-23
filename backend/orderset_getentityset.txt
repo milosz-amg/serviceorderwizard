@@ -1,17 +1,31 @@
 METHOD orderset_get_entityset.
 
-  DATA: lv_order_by TYPE string,
+  " ==== 1. Deklaracje tabel zakresów dla filtrowania ====
+  DATA: lra_status TYPE RANGE OF zmr_orders-status, " tabela zakresów dla Status
+        wa_status  LIKE LINE OF lra_status,
+        lv_order_by TYPE string,
         lo_mc       TYPE REF TO /iwbep/if_message_container.
 
-  TRY.
-      DATA(lt_order_by) = io_tech_request_context->get_orderby( ).
-    CATCH cx_root INTO DATA(lx_filter).
-      " błądu OData
-      RAISE EXCEPTION TYPE /iwbep/cx_mgw_busi_exception.
-  ENDTRY.
+  " ==== 2. Pobranie parametrów filtrowania i sortowania z requestu ====
+  DATA(lr_filter) = io_tech_request_context->get_filter( ).
+  DATA(lt_filter_select_options) = lr_filter->get_filter_select_options( ).
+  DATA(lt_order_by) = io_tech_request_context->get_orderby( ).
 
+  " ==== 3. Wypełnienie tabel zakresów dla każdej kolumny ====
+  LOOP AT lt_filter_select_options INTO DATA(ls_filter_select_options).
+    IF ls_filter_select_options-property EQ 'STATUS'.
+      LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option).
+        wa_status-sign   = ls_select_option-sign.
+        wa_status-option = ls_select_option-option.
+        wa_status-low    = ls_select_option-low.
+        wa_status-high   = ls_select_option-high.
+        APPEND wa_status TO lra_status.
+      ENDLOOP.
+    ENDIF.
+  ENDLOOP.
+
+  " ==== 4. Obsługa sortowania ====
   LOOP AT lt_order_by INTO DATA(ls_order_by).
-    " Dodaj kolejne pole do ORDER BY
     IF lv_order_by IS INITIAL.
       lv_order_by = |{ ls_order_by-property }|.
     ELSE.
@@ -25,12 +39,14 @@ METHOD orderset_get_entityset.
     ENDIF.
   ENDLOOP.
 
-
+  " ==== 5. Zapytanie do bazy z filtrowaniem i sortowaniem ====
   TRY.
       SELECT *
         FROM zmr_orders
         INTO TABLE @et_entityset
+        WHERE status IN @lra_status
         ORDER BY (lv_order_by).
+
       IF sy-subrc <> 0.
         lo_mc = me->/iwbep/if_mgw_conv_srv_runtime~get_message_container( ).
         lo_mc->add_message_text_only(
@@ -38,6 +54,7 @@ METHOD orderset_get_entityset.
           iv_msg_text = |EntitySet not found or empty| ).
         RAISE EXCEPTION NEW /iwbep/cx_mgw_busi_exception( message_container = lo_mc ).
       ENDIF.
+
     CATCH cx_sy_open_sql_db INTO DATA(lx_sql).
       lo_mc = me->/iwbep/if_mgw_conv_srv_runtime~get_message_container( ).
       lo_mc->add_message_text_only(

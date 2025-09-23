@@ -66,6 +66,8 @@ sap.ui.define([
 
         onBeforeRebindTable: function (oEvent) {
             var oBindingParams = oEvent.getParameter("bindingParams");
+
+            // === STATUS FILTER ===
             var oStatusFilter = this.byId("statusFilter");
             var aSelectedKeys = oStatusFilter ? oStatusFilter.getSelectedKeys() : [];
 
@@ -73,13 +75,43 @@ sap.ui.define([
                 var aStatusFilters = aSelectedKeys.map(function (sKey) {
                     return new sap.ui.model.Filter("Status", sap.ui.model.FilterOperator.EQ, sKey);
                 });
-
                 oBindingParams.filters.push(new sap.ui.model.Filter({
                     filters: aStatusFilters,
                     and: false
                 }));
             }
+
+            // === DATE RANGE FILTER ===
+            var oDateRange = this.byId("orderDateFilter");
+            if (oDateRange) {
+                var oDateValue = oDateRange.getDateValue();
+                var oSecondDateValue = oDateRange.getSecondDateValue();
+
+                if (oDateValue && oSecondDateValue) {
+                    oBindingParams.filters.push(new sap.ui.model.Filter(
+                        "OrderCreationDate",
+                        sap.ui.model.FilterOperator.BT, // Between
+                        oDateValue,
+                        oSecondDateValue
+                    ));
+                } else if (oDateValue) {
+                    // tylko data od
+                    oBindingParams.filters.push(new sap.ui.model.Filter(
+                        "OrderCreationDate",
+                        sap.ui.model.FilterOperator.GE,
+                        oDateValue
+                    ));
+                } else if (oSecondDateValue) {
+                    // tylko data do
+                    oBindingParams.filters.push(new sap.ui.model.Filter(
+                        "OrderCreationDate",
+                        sap.ui.model.FilterOperator.LE,
+                        oSecondDateValue
+                    ));
+                }
+            }
         },
+
 
 
         /**
@@ -110,7 +142,7 @@ sap.ui.define([
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
 
-        onStatusFilterChange: function () {
+        onFilterChange: function () {
             var oSmartFilterBar = this.byId("smartFilterBar");
             if (oSmartFilterBar) {
                 oSmartFilterBar.triggerSearch();
