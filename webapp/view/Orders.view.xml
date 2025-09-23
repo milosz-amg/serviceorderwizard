@@ -62,6 +62,7 @@
                     enableAutoBinding="true"
                     class="sapUiResponsiveContentPadding"
                     enableAutoColumnWidth="true"
+                    beforeRebindTable="onBeforeRebindTable"
                 >
                     <!-- layout data used to make the table growing but the filter bar fixed -->
                     <smartTable:layoutData>
@@ -75,11 +76,11 @@
                     <smartTable:customToolbar>
                         <OverflowToolbar design="Transparent">
                             <ToolbarSpacer />
-                            <OverflowToolbarButton
+                            <!-- <OverflowToolbarButton
                                 icon="sap-icon://filter"
                                 text="Advanced Filter"
                                 press="onFilter"
-                            />
+                            /> -->
                             <OverflowToolbarButton
                                 icon="sap-icon://refresh"
                                 text="Refresh"
