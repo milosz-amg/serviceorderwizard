@@ -148,17 +148,6 @@ sap.ui.define([
                     ));
                 }
             }
-
-            // === SEARCH BAR FILTER ===
-            var oSmartFilterBar = this.byId("smartFilterBar");
-            var sSearchQuery = oSmartFilterBar ? oSmartFilterBar.getBasicSearchValue() : "";
-
-            if (sSearchQuery) {
-                console.log("Wartość wpisana w pasek wyszukiwania:", sSearchQuery);
-
-                // Przekazujemy wartość wyszukiwania jako filtr 'extra' dla backendu
-                oBindingParams.filters.push(new sap.ui.model.Filter("Addresscity", sap.ui.model.FilterOperator.Contains, sSearchQuery));
-            }
         },
 
 
@@ -167,7 +156,22 @@ sap.ui.define([
          * Refreshes the table data
          * @public
          */
-        onRefreshTable: function () {
+        onRefreshTable: function (oEvent) {
+            var oButton = oEvent.getSource();
+
+            // Wyłącz przycisk
+            oButton.setEnabled(false);
+
+            // Twoja logika refresh
+            this._doRefreshTable();
+
+            // Włącz z powrotem po 2 sekundach
+            setTimeout(function () {
+                oButton.setEnabled(true);
+            }, 500);
+        },
+
+        _doRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
             var oSmartFilterBar = this.byId("smartFilterBar");
 
@@ -181,23 +185,34 @@ sap.ui.define([
                 // Reset order creation date filter
                 var oOrderDateFilter = this.byId("orderDateFilter");
                 if (oOrderDateFilter) {
+                    oOrderDateFilter.setDateValue(null);
+                    oOrderDateFilter.setSecondDateValue(null);
                     oOrderDateFilter.setValue("");
                 }
 
                 // Reset visit date filter
                 var oVisitDateFilter = this.byId("orderVisitDateFilter");
                 if (oVisitDateFilter) {
+                    oVisitDateFilter.setDateValue(null);
+                    oVisitDateFilter.setSecondDateValue(null);
                     oVisitDateFilter.setValue("");
                 }
 
-                // Reset search bar
+                // Reset search bar and clear all filters in SmartFilterBar
                 if (oSmartFilterBar) {
-                    oSmartFilterBar.setBasicSearchValue("");
+                    oSmartFilterBar.clear();
                 }
 
-                // Refresh table data
+                // Get the inner table and clear its binding filters
+                var oTable = oSmartTable.getTable();
+                if (oTable) {
+                    var oBinding = oTable.getBinding("items") || oTable.getBinding("rows");
+                    if (oBinding) {
+                        oBinding.filter([]);
+                    }
+                }
+
                 oSmartTable.rebindTable();
-                MessageToast.show(this._getText("tableRefreshed"));
             }
         },
 
@@ -213,23 +228,6 @@ sap.ui.define([
             var oSmartFilterBar = this.byId("smartFilterBar");
             if (oSmartFilterBar) {
                 oSmartFilterBar.triggerSearch();
-            }
-        },
-
-        // onFilter: function () {
-        //     var oSmartTable = this.byId("ordersSmartTable");
-        //     if (oSmartTable) {
-        //         oSmartTable.openPersonalisationDialog("Filter");
-        //     }
-        // },
-
-        onAfterRendering: function () {
-            var oSmartFilterBar = this.byId("smartFilterBar");
-            if (oSmartFilterBar) {
-                oSmartFilterBar.attachSearch(function (oEvent) {
-                    // var sQuery = oSmartFilterBar.getBasicSearchValue();
-                    // console.log("Wartość wpisana w pasek wyszukiwania:", sQuery);
-                });
             }
         },
 
