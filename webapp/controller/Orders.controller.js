@@ -156,7 +156,22 @@ sap.ui.define([
          * Refreshes the table data
          * @public
          */
-        onRefreshTable: function () {
+        onRefreshTable: function (oEvent) {
+            var oButton = oEvent.getSource();
+
+            // Wyłącz przycisk
+            oButton.setEnabled(false);
+
+            // Twoja logika refresh
+            this._doRefreshTable();
+
+            // Włącz z powrotem po 2 sekundach
+            setTimeout(function () {
+                oButton.setEnabled(true);
+            }, 500);
+        },
+
+        _doRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
             var oSmartFilterBar = this.byId("smartFilterBar");
             
@@ -170,12 +185,16 @@ sap.ui.define([
                 // Reset order creation date filter
                 var oOrderDateFilter = this.byId("orderDateFilter");
                 if (oOrderDateFilter) {
+                    oOrderDateFilter.setDateValue(null);
+                    oOrderDateFilter.setSecondDateValue(null);
                     oOrderDateFilter.setValue("");
                 }
 
                 // Reset visit date filter
                 var oVisitDateFilter = this.byId("orderVisitDateFilter");
                 if (oVisitDateFilter) {
+                    oVisitDateFilter.setDateValue(null);
+                    oVisitDateFilter.setSecondDateValue(null);
                     oVisitDateFilter.setValue("");
                 }
 
@@ -186,7 +205,6 @@ sap.ui.define([
 
                 // Refresh table data
                 oSmartTable.rebindTable();
-                MessageToast.show(this._getText("tableRefreshed"));
             }
         },
 
