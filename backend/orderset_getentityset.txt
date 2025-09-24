@@ -1,0 +1,97 @@
+METHOD orderset_get_entityset.
+
+  " ==== 1. Deklaracje tabel zakresów dla filtrowania ====
+  DATA: lra_status              TYPE RANGE OF zmr_orders-status,
+        wa_status               LIKE LINE OF lra_status,
+        lra_order_creation_date TYPE RANGE OF zmr_orders-ordercreationdate,
+        wa_order_creation_date  LIKE LINE OF lra_order_creation_date,
+        lra_visitdate           TYPE RANGE OF zmr_orders-visitdate,
+        wa_visitdate            LIKE LINE OF lra_visitdate,
+        lv_order_by             TYPE string,
+        lo_mc                   TYPE REF TO /iwbep/if_message_container.
+
+  " ==== 2. Pobranie parametrów filtrowania i sortowania z requestu ====
+  DATA(lr_filter) = io_tech_request_context->get_filter( ).
+  DATA(lt_filter_select_options) = lr_filter->get_filter_select_options( ).
+  DATA(lt_order_by) = io_tech_request_context->get_orderby( ).
+
+  " ==== 3. Wypełnienie tabel zakresów dla każdej kolumny ====
+  LOOP AT lt_filter_select_options INTO DATA(ls_filter_select_options).
+
+    " --- filtr Status ---
+    IF ls_filter_select_options-property EQ 'STATUS'.
+      LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option).
+        wa_status-sign   = ls_select_option-sign.
+        wa_status-option = ls_select_option-option.
+        wa_status-low    = ls_select_option-low.
+        wa_status-high   = ls_select_option-high.
+        APPEND wa_status TO lra_status.
+      ENDLOOP.
+    ENDIF.
+
+    " --- filtr OrderCreationDate ---
+    IF ls_filter_select_options-property EQ 'ORDERCREATIONDATE'.
+      LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option_date).
+        wa_order_creation_date-sign   = ls_select_option_date-sign.
+        wa_order_creation_date-option = ls_select_option_date-option.
+        wa_order_creation_date-low    = ls_select_option_date-low.
+        wa_order_creation_date-high   = ls_select_option_date-high.
+        APPEND wa_order_creation_date TO lra_order_creation_date.
+      ENDLOOP.
+    ENDIF.
+
+    " --- filtr Visitdate ---
+    IF ls_filter_select_options-property EQ 'VISITDATE'.
+      LOOP AT ls_filter_select_options-select_options INTO DATA(ls_select_option_visit).
+        wa_visitdate-sign   = ls_select_option_visit-sign.
+        wa_visitdate-option = ls_select_option_visit-option.
+        wa_visitdate-low    = ls_select_option_visit-low.
+        wa_visitdate-high   = ls_select_option_visit-high.
+        APPEND wa_visitdate TO lra_visitdate.
+      ENDLOOP.
+    ENDIF.
+
+  ENDLOOP.
+
+  " ==== 4. Obsługa sortowania ====
+  LOOP AT lt_order_by INTO DATA(ls_order_by).
+    IF lv_order_by IS INITIAL.
+      lv_order_by = |{ ls_order_by-property }|.
+    ELSE.
+      lv_order_by = |{ lv_order_by }, { ls_order_by-property }|.
+    ENDIF.
+
+    IF ls_order_by-order = 'asc'.
+      lv_order_by = |{ lv_order_by } ASCENDING|.
+    ELSE.
+      lv_order_by = |{ lv_order_by } DESCENDING|.
+    ENDIF.
+  ENDLOOP.
+
+  " ==== 5. Zapytanie do bazy z filtrowaniem i sortowaniem ====
+  TRY.
+      SELECT *
+        FROM zmr_orders
+        INTO TABLE @et_entityset
+        WHERE status IN @lra_status
+          AND ordercreationdate IN @lra_order_creation_date
+          AND visitdate IN @lra_visitdate
+        ORDER BY (lv_order_by).
+
+      IF sy-subrc <> 0.
+        lo_mc = me->/iwbep/if_mgw_conv_srv_runtime~get_message_container( ).
+        lo_mc->add_message_text_only(
+          iv_msg_type = /iwbep/if_message_container=>gcs_message_type-error
+          iv_msg_text = |EntitySet not found or empty| ).
+        RAISE EXCEPTION NEW /iwbep/cx_mgw_busi_exception( message_container = lo_mc ).
+      ENDIF.
+
+    CATCH cx_sy_open_sql_db INTO DATA(lx_sql).
+      lo_mc = me->/iwbep/if_mgw_conv_srv_runtime~get_message_container( ).
+      lo_mc->add_message_text_only(
+        iv_msg_type = /iwbep/if_message_container=>gcs_message_type-error
+        iv_msg_text = |Database connection error| ).
+      RAISE EXCEPTION NEW /iwbep/cx_mgw_tech_exception( message_container = lo_mc ).
+  ENDTRY.
+
+ENDMETHOD.

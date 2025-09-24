@@ -224,6 +224,22 @@ sap.ui.define([], function () {
             };
 
             return oFieldNameMap[sFieldName] || sFieldName;
+        },
+
+        /**
+         * Formatuje bieżącą datę do formatu YYYYMMDD dla backend
+         * @public
+         * @param {Date} [oDate] - Opcjonalna data do sformatowania, jeśli nie podana używa bieżącej daty
+         * @returns {string} Data w formacie YYYYMMDD (np. "20240615")
+         */
+        formatJSDateForBackend: function (oDate) {
+            var date = oDate || new Date();
+            
+            var year = date.getFullYear();
+            var month = String(date.getMonth() + 1).padStart(2, "0");
+            var day = String(date.getDate()).padStart(2, "0");
+            
+            return year + month + day;
         }
     };
 

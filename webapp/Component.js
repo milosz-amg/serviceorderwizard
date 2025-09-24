@@ -21,6 +21,10 @@ sap.ui.define([
 
             // enable routing
             this.getRouter().initialize();
+
+            // globalny model dla widoków
+            var oModel = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/ZMR_ORDER_SRV_SRV/");
+            this.setModel(oModel); 
         }
     });
 });

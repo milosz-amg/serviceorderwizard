@@ -39,33 +39,6 @@ sap.ui.define([
         },
 
         /**
-         * Fetches order data using OData V2 model
-         * @returns {Promise} Promise that resolves with orders array
-         */
-        fetchOrderData: function () {
-            return new Promise(function (resolve, reject) {
-                var oModel = this.createServiceOrderModel();
-                
-                console.log("Pobieranie danych przez OData V2 model...");
-                
-                oModel.read("/orderSet", {
-                    urlParameters: {
-                        "$orderby": "OrderCreationDate desc, OrderId desc"
-                    },
-                    success: function(oData, response) {
-                        console.log("Pomyślnie pobrano dane:", oData);
-                        // OData V2 zwraca dane w strukturze { results: [...] }
-                        var aOrders = oData.results || [];
-                        resolve(aOrders);
-                    },
-                    error: function(oError) {
-                        console.error("Błąd podczas pobierania danych przez OData:", oError);
-                        reject(oError);
-                    }
-                });
-            }.bind(this));
-        },
-        /**
          * Deletes a service order using OData V2
          * @param {string} sOrderId - The ID of the order to delete
          * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
@@ -81,100 +54,52 @@ sap.ui.define([
                 
                 console.log("Usuwanie zlecenia o ID:", sOrderId);
                 
-                // Construct the path for the order to delete - używamy tylko ścieżki relative do service root
+                // Construct the path for the order to delete
                 var sPath = "/orderSet(OrderId='" + sOrderId + "')";
-                
-                console.log("Ścieżka usuwania:", sPath);
                 
                 // Send DELETE request
                 oModel.remove(sPath, {
                     success: function(oData, oResponse) {
                         console.log("Usunięto pomyślnie zlecenie:", sOrderId);
-                        resolve({
-                            success: true,
-                            orderId: sOrderId,
-                            message: "Zlecenie " + sOrderId + " zostało pomyślnie usunięte"
-                        });
+                        resolve(oData);
                     },
                     error: function(oError) {
                         console.error("Błąd podczas usuwania zlecenia:", oError);
-                        reject({
-                            success: false,
-                            orderId: sOrderId,
-                            error: oError,
-                            message: "Nie udało się usunąć zlecenia " + sOrderId
-                        });
+                        reject(oError);
                     }
                 });
             });
         },
 
         /**
-         * Fetches device types from OData service
-         * @returns {Promise} Promise that resolves with device types array
+         * Fetches a single service order by ID using OData V2
+         * @param {string} sOrderId - The ID of the order to fetch
+         * @param {sap.ui.model.odata.v2.ODataModel} oModel - The OData model
+         * @returns {Promise} Promise that resolves with order data
          */
-        fetchDeviceTypes: function () {
+        fetchSingleOrder: function (sOrderId, oModel) {
             return new Promise(function (resolve, reject) {
-                var oModel = this.createServiceOrderModel();
-                
-                console.log("Pobieranie typów urządzeń przez OData V2 model...");
-                
-                oModel.read("/deviceTypesSet", {
-                    urlParameters: {
-                        "$format": "json"
-                    },
-                    success: function(oData, response) {
-                        console.log("Pomyślnie pobrano typy urządzeń:", oData);
-                        // OData V2 zwraca dane w strukturze { results: [...] }
-                        var aDeviceTypes = oData.results || [];
-                        resolve(aDeviceTypes);
-                    },
-                    error: function(oError) {
-                        console.error("Błąd podczas pobierania typów urządzeń przez OData:", oError);
-                        reject(oError);
-                    }
-                });
-            }.bind(this));
-        },
-
-        /**
-         * Fetches device models for a specific device type from OData service
-         * @param {string} sDeviceTypeId - The ID of the device type to fetch models for
-         * @returns {Promise} Promise that resolves with device models array
-         */
-        fetchDeviceModelsByType: function (sDeviceTypeId) {
-            return new Promise(function (resolve, reject) {
-                if (!sDeviceTypeId) {
-                    reject(new Error("Device Type ID is required"));
+                if (!sOrderId) {
+                    reject(new Error("Order ID is required"));
                     return;
                 }
-
-                var oModel = this.createServiceOrderModel();
                 
-                console.log("Pobieranie modeli urządzeń dla typu:", sDeviceTypeId);
+                console.log("Pobieranie pojedynczego zlecenia o ID:", sOrderId);
                 
-                // Upewnij się, że ID jest przekazane jako string w cudzysłowach
-                var sFilterValue = encodeURIComponent(sDeviceTypeId);
+                // Construct the path for the single order
+                var sPath = "/orderSet(OrderId='" + sOrderId + "')";
                 
-                oModel.read("/deviceModelsSet", {
-                    urlParameters: {
-                        "$filter": "DeviceTypeId eq '" + sFilterValue + "'",
-                        "$format": "json"
-                    },
-                    success: function(oData, response) {
-                        console.log("Pomyślnie pobrano modele urządzeń:", oData);
-                        console.log("Użyty filtr: DeviceTypeId eq '" + sFilterValue + "'");
-                        // OData V2 zwraca dane w strukturze { results: [...] }
-                        var aDeviceModels = oData.results || [];
-                        resolve(aDeviceModels);
+                oModel.read(sPath, {
+                    success: function(oData, oResponse) {
+                        console.log("Pomyślnie pobrano dane zlecenia:", oData);
+                        resolve(oData);
                     },
                     error: function(oError) {
-                        console.error("Błąd podczas pobierania modeli urządzeń przez OData:", oError);
-                        console.error("Użyty filtr: DeviceTypeId eq '" + sFilterValue + "'");
+                        console.error("Błąd podczas pobierania zlecenia:", oError);
                         reject(oError);
                     }
                 });
-            }.bind(this));
+            });
         },
     };
 });
