@@ -129,7 +129,7 @@
                         visibleRowCount="15"
                     >
                         <!-- Order ID Column with leading zeros removed -->
-                        <table:Column sortProperty="OrderId">
+                        <table:Column sortProperty="OrderId" filterProperty="OrderId">
                             <table:customData>
                                 <core:CustomData
                                     key="p13nData"
