@@ -198,12 +198,26 @@
                             </table:template>
                         </table:Column>
 
+                        <!-- Status Column -->
+                        <table:Column>
+                            <table:customData>
+                                <core:CustomData
+                                    key="p13nData"
+                                    value='{"columnKey": "Addresscity", "leadingProperty": "Addresscity", "columnIndex": 5}'
+                                />
+                            </table:customData>
+                            <Label text="{i18n>tableHeaderAddresscity}" />
+                            <table:template>
+                                <Text text="{Addresscity}" />
+                            </table:template>
+                        </table:Column>
+
                         <!-- Details Column -->
                         <table:Column>
                             <table:customData>
                                 <core:CustomData
                                     key="p13nData"
-                                    value='{"columnKey": "Details", "columnIndex": 5}'
+                                    value='{"columnKey": "Details", "columnIndex": 6}'
                                 />
                             </table:customData>
                             <Label text="{i18n>tableHeaderDetails}" />
@@ -222,7 +236,7 @@
                             <table:customData>
                                 <core:CustomData
                                     key="p13nData"
-                                    value='{"columnKey": "Delete", "columnIndex": 6}'
+                                    value='{"columnKey": "Delete", "columnIndex": 7}'
                                 />
                             </table:customData>
                             <Label text="{i18n>tableHeaderDelete}" />
