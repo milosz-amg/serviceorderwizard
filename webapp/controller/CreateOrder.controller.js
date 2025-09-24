@@ -9,6 +9,11 @@ sap.ui.define([
 
     return Controller.extend("com.mr.serviceorderwizard.controller.CreateOrder", {
         formatter: formatter,
+        
+        /**
+         * Initializes the controller and sets up the create order wizard
+         * @public
+         */
         onInit: function () {
             this._initODataModel();
 
@@ -65,7 +70,10 @@ sap.ui.define([
             });
         },
 
-
+        /**
+         * Initializes the OData model for service orders
+         * @private
+         */
         _initODataModel: function () {
             // Create OData model
             var oModel = serviceOrderModel.createServiceOrderModel();
@@ -80,6 +88,11 @@ sap.ui.define([
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
 
+        /**
+         * Validates the first name field in personal data section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validatePersonalDataName: function () {
             var oView = this.getView();
             var bValid = true;
@@ -112,6 +125,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates the last name field in personal data section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validatePersonalDataLastName: function () {
             var oView = this.getView();
             var bValid = true;
@@ -144,6 +162,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates the phone number field in personal data section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validatePersonalDataPhoneNumber: function () {
             var oView = this.getView();
             var bValid = true;
@@ -171,6 +194,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates the zip code field in personal data section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validatePersonalDataZipCode: function () {
             var oView = this.getView();
             var bValid = true;
@@ -198,6 +226,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates the city field in personal data section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validatePersonalDataCity: function () {
             var oView = this.getView();
             var bValid = true;
@@ -228,6 +261,12 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates all fields in the personal data step
+         * @param {boolean} bLoud - If true, shows error messages to the user
+         * @returns {boolean} Returns true if all validations pass, false otherwise
+         * @public
+         */
         validatePersonalData: function (bLoud) {
             var oView = this.getView();
             var oStep = oView.byId("stepPersonalData");
@@ -256,6 +295,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Handles device type selection change and updates device model options
+         * @param {sap.ui.base.Event} oEvent - The event object containing device type selection
+         * @public
+         */
         onDeviceTypeChange: function (oEvent) {
             var oView = this.getView();
             var oDeviceTypeComboBox = oView.byId("deviceTypeComboBox");
@@ -289,11 +333,19 @@ sap.ui.define([
             this.validateFaultDescDeviceType();
         },
 
-
+        /**
+         * Handles device model selection change and triggers validation
+         * @public
+         */
         onDeviceModelChange: function () {
             this.validateFaultDescDeviceModel();
         },
 
+        /**
+         * Validates the device type field in fault description section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validateFaultDescDeviceType: function () {
             var oView = this.getView();
             var bValid = true;
@@ -319,6 +371,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates the device model field in fault description section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validateFaultDescDeviceModel: function () {
             var oView = this.getView();
             var bValid = true;
@@ -344,6 +401,12 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates all fields in the fault description step
+         * @param {boolean} bLoud - If true, shows error messages to the user
+         * @returns {boolean} Returns true if all validations pass, false otherwise
+         * @public
+         */
         validateFaultDesc: function (bLoud) {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
@@ -368,7 +431,11 @@ sap.ui.define([
             return bValid;
         },
 
-
+        /**
+         * Validates the visit date field in visit date section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validateVisitDateDate: function () {
             var oView = this.getView();
             var oModel = this.getView().getModel("orderData");
@@ -390,6 +457,11 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates the visit hour field in visit date section
+         * @returns {boolean} Returns true if validation passes, false otherwise
+         * @public
+         */
         validateVisitDateHour: function () {
             var oView = this.getView();
             var oModel = this.getView().getModel("orderData");
@@ -413,6 +485,12 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Validates all fields in the visit date step
+         * @param {boolean} bLoud - If true, shows error messages to the user
+         * @returns {boolean} Returns true if all validations pass, false otherwise
+         * @public
+         */
         validateVisitDate: function (bLoud) {
             var oView = this.getView();
             var oStep = oView.byId("stepVisitDate");
@@ -432,11 +510,19 @@ sap.ui.define([
             return bValid;
         },
 
+        /**
+         * Handles wizard completion and navigates to review page
+         * @public
+         */
         wizardCompletedHandler: function () {
             // Przejdź do ekranu podsumowania
             this._oNavContainer.to(this.byId("wizardReviewPage"));
         },
 
+        /**
+         * Handles wizard submission with confirmation dialog and validates all fields
+         * @public
+         */
         handleWizardSubmit: function () {
             var that = this;
             MessageBox.confirm(this._getText("orderConfirmationMessage"), {
@@ -493,6 +579,10 @@ sap.ui.define([
             });
         },
 
+        /**
+         * Handles wizard cancellation with confirmation dialog
+         * @public
+         */
         handleWizardCancel: function () {
             var that = this;
             MessageBox.confirm(this._getText("orderCancelConfirmationMessage"), {
@@ -509,10 +599,19 @@ sap.ui.define([
             });
         },
 
+        /**
+         * Navigates back to wizard content page from review page
+         * @public
+         */
         backToWizardContent: function () {
             this._oNavContainer.backToPage(this._oWizardContentPage.getId());
         },
 
+        /**
+         * Saves order data to the backend using OData service
+         * @param {Object} oOrderData - The order data to be saved
+         * @private
+         */
         _saveOrderData: function (oOrderData) {
             var oModel = this.getView().getModel("orderModel");
 
@@ -558,19 +657,35 @@ sap.ui.define([
                 });
         },
 
-        // Funkcje edycji kroków
+        /**
+         * Navigates to step one (personal data) for editing
+         * @public
+         */
         editStepOne: function () {
             this._handleNavigationToStep(0);
         },
 
+        /**
+         * Navigates to step two (fault description) for editing
+         * @public
+         */
         editStepTwo: function () {
             this._handleNavigationToStep(1);
         },
 
+        /**
+         * Navigates to step three (visit date) for editing
+         * @public
+         */
         editStepThree: function () {
             this._handleNavigationToStep(2);
         },
 
+        /**
+         * Handles navigation to a specific wizard step
+         * @param {number} iStepNumber - The index of the step to navigate to
+         * @private
+         */
         _handleNavigationToStep: function (iStepNumber) {
             var fnAfterNavigate = function () {
                 this._oNavContainer.detachAfterNavigate(fnAfterNavigate);
@@ -647,8 +762,8 @@ sap.ui.define([
         },
 
         /**
-         * Odwiązuje przywiązania modelu od kontrolek
-         * @param {Array} aControls - Lista kontrolek do odwiązania
+         * Unbinds model bindings from controls to optimize performance during reset operations
+         * @param {Array} aControls - Array of controls to unbind
          * @private
          */
         _unbindControls: function (aControls) {
@@ -668,9 +783,9 @@ sap.ui.define([
         },
 
         /**
-         * Ponownie przywiązuje kontrolki do modelu
-         * @param {Array} aControls - Lista kontrolek do przywiązania
-         * @param {sap.ui.model.json.JSONModel} oModel - Model do przywiązania
+         * Re-binds controls to the model after reset operations
+         * @param {Array} aControls - Array of controls to bind
+         * @param {sap.ui.model.json.JSONModel} oModel - The model to bind to
          * @private
          */
         _rebindControls: function (aControls, oModel) {
@@ -691,6 +806,10 @@ sap.ui.define([
             });
         },
 
+        /**
+         * Resets the wizard to its initial state, clearing all data and validation states
+         * @private
+         */
         _resetWizard: function () {
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");

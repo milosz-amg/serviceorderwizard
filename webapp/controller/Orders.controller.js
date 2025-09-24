@@ -16,7 +16,7 @@ sap.ui.define([
     return Controller.extend("com.mr.serviceorderwizard.controller.Orders", {
         formatter: formatter,
         /**
-         * Inicjalizuje kontroler i ustawia model OData
+         * Initializes the controller and sets up the OData model
          * @public
          */
         onInit: function () {
@@ -33,7 +33,7 @@ sap.ui.define([
         },
 
         /**
-         * Obsługuje zdarzenie dopasowania trasy - odświeża dane w tabeli
+         * Handles route pattern matched event - refreshes table data
          * @private
          */
         _onRouteMatched: function () {
@@ -43,7 +43,7 @@ sap.ui.define([
         },
 
         /**
-         * Odświeża dane w tabeli, czekając na inicjalizację jeśli to konieczne
+         * Refreshes table data, waiting for initialization if necessary
          * @private
          */
         _refreshTableData: function () {
@@ -65,6 +65,11 @@ sap.ui.define([
             }
         },
 
+        /**
+         * Handles table rebind event - applies custom filters before data loading
+         * @param {sap.ui.base.Event} oEvent - Event containing binding parameters
+         * @public
+         */
         onBeforeRebindTable: function (oEvent) {
             var oBindingParams = oEvent.getParameter("bindingParams");
 
@@ -154,7 +159,8 @@ sap.ui.define([
 
 
         /**
-         * Refreshes the table data
+         * Handles refresh table button click with temporary button disabling
+         * @param {sap.ui.base.Event} oEvent - Event containing reference to the source button
          * @public
          */
         onRefreshTable: function (oEvent) {
@@ -172,6 +178,10 @@ sap.ui.define([
             }, 500);
         },
 
+        /**
+         * Performs actual table refresh - resets all filters and reloads data
+         * @private
+         */
         _doRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
             var oSmartFilterBar = this.byId("smartFilterBar");
@@ -210,13 +220,17 @@ sap.ui.define([
         },
 
         /**
-         * Pobiera tekst z modelu i18n
+         * Gets text from i18n model
          * @private
          */
         _getText: function (sKey, aArgs) {
             return this.getView().getModel("i18n").getResourceBundle().getText(sKey, aArgs);
         },
 
+        /**
+         * Handles filter value changes - triggers search in SmartFilterBar
+         * @public
+         */
         onFilterChange: function () {
             var oSmartFilterBar = this.byId("smartFilterBar");
             if (oSmartFilterBar) {
@@ -225,9 +239,9 @@ sap.ui.define([
         },
 
         /**
-         * Wyświetla szczegóły wybranego zlecenia w estetycznym oknie dialogowym z pogrupowanymi danymi
-         * Pobiera dane z backendu używając OrderId
-         * @param {sap.ui.base.Event} oEvent - Zdarzenie zawierające informacje o klikniętym elemencie
+         * Displays details of selected order in an aesthetic dialog with grouped data
+         * Retrieves data from backend using OrderId
+         * @param {sap.ui.base.Event} oEvent - Event containing information about clicked element
          * @public
          */
         onShowDetails: function (oEvent) {
@@ -289,9 +303,9 @@ sap.ui.define([
         },
 
         /**
-         * Grupuje dane zamówienia według kategorii
-         * @param {Object} oOrder - Obiekt zawierający dane zamówienia
-         * @returns {Object} Pogrupowane dane
+         * Groups order data by categories
+         * @param {Object} oOrder - Object containing order data
+         * @returns {Object} Grouped data
          * @private
          */
         _groupOrderData: function (oOrder) {
@@ -342,9 +356,9 @@ sap.ui.define([
         },
 
         /**
-         * Tworzy zawartość dialogu szczegółów
-         * @param {Object} oFormattedData - Pogrupowane dane zamówienia
-         * @returns {sap.m.VBox} Kontener z zawartością
+         * Creates content for details dialog
+         * @param {Object} oFormattedData - Grouped order data
+         * @returns {sap.m.VBox} Container with content
          * @private
          */
         _createDetailContent: function (oFormattedData) {
@@ -425,8 +439,8 @@ sap.ui.define([
 
 
         /**
-         * Obsługuje żądanie usunięcia zlecenia używając metody z serviceOrderModel
-         * @param {sap.ui.base.Event} oEvent - Zdarzenie kliknięcia przycisku usunięcia
+         * Handles order deletion request using method from serviceOrderModel
+         * @param {sap.ui.base.Event} oEvent - Delete button click event
          * @public
          */
         onDeleteOrder: function (oEvent) {
