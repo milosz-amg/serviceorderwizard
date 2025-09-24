@@ -38,31 +38,7 @@ sap.ui.define([
          */
         _onRouteMatched: function () {
             console.log("Route Mched Odświeżanie danych w tabeli Orders");
-            // this._refreshTableData();    
             this._doRefreshTable();
-        },
-
-        /**
-         * Refreshes table data, waiting for initialization if necessary
-         * @private
-         */
-        _refreshTableData: function () {
-            var oSmartTable = this.byId("ordersSmartTable");
-            if (oSmartTable) {
-                // Sprawdź czy SmartTable jest zainicjalizowana
-                if (oSmartTable.getTable()) {
-                    // Tabela jest gotowa, można odświeżyć
-                    console.log("SmartTable jest gotowa, odświeżanie danych");
-                    oSmartTable.rebindTable();
-                } else {
-                    // Tabela nie jest jeszcze gotowa, poczekaj na inicjalizację
-                    console.log("SmartTable nie jest jeszcze gotowa, czekamy na inicjalizację");
-                    oSmartTable.attachInitialised(function () {
-                        console.log("SmartTable została zainicjalizowana, odświeżanie danych");
-                        oSmartTable.rebindTable();
-                    });
-                }
-            }
         },
 
         /**
