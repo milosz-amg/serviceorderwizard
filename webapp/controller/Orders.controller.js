@@ -24,12 +24,34 @@ sap.ui.define([
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
 
-            // var oSmartTable = this.byId("ordersSmartTable");
-            // oSmartTable.rebindTable();
-
             // Podłącz się do zdarzenia routingu
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
+            
+            // Sortowanie zostanie zastosowane po załadowaniu danych w _onRouteMatched
+        },
+
+        _sortTable: function () {
+            var oSmartTable = this.byId("ordersSmartTable");
+            var oTable = oSmartTable.getTable();
+
+            // Binding do modelu - dla sap.ui.table.Table używamy "rows"
+            var oBinding = oTable.getBinding("rows");
+            
+            // Sprawdź czy binding istnieje
+            if (!oBinding) {
+                console.warn("Table binding not found - table may not be initialized yet");
+                return;
+            }
+
+            // Definicja wielu sortowań
+            var aSorters = [
+                new sap.ui.model.Sorter("OrderCreationDate", true), // true = malejąco (najnowsze pierwsze)
+                new sap.ui.model.Sorter("Visitdate", false)         // true = malejąco (najbliższe pierwsze)
+            ];
+
+            // Ustawienie sortowania
+            oBinding.sort(aSorters);
         },
 
         /**
@@ -39,6 +61,11 @@ sap.ui.define([
         _onRouteMatched: function () {
             console.log("Route Mched Odświeżanie danych w tabeli Orders");
             this._doRefreshTable();
+            
+            // Zastosuj sortowanie po odświeżeniu danych (z opóźnieniem)
+            setTimeout(function() {
+                this._sortTable();
+            }.bind(this), 500);
         },
 
         /**
@@ -48,6 +75,15 @@ sap.ui.define([
          */
         onBeforeRebindTable: function (oEvent) {
             var oBindingParams = oEvent.getParameter("bindingParams");
+
+            // === DOMYŚLNE SORTOWANIE ===
+            // Dodaj domyślne sortowanie jeśli nie ma żadnych sorterów
+            if (!oBindingParams.sorter || oBindingParams.sorter.length === 0) {
+                oBindingParams.sorter = [
+                    new sap.ui.model.Sorter("OrderCreationDate", true), // najnowsze pierwsze
+                    new sap.ui.model.Sorter("Visitdate", false)         // najbliższe pierwsze
+                ];
+            }
 
             // === STATUS FILTER ===
             var oStatusFilter = this.byId("statusFilter");
@@ -152,6 +188,8 @@ sap.ui.define([
             setTimeout(function () {
                 oButton.setEnabled(true);
             }, 500);
+
+            this._sortTable();
         },
 
         /**
@@ -161,7 +199,7 @@ sap.ui.define([
         _doRefreshTable: function () {
             var oSmartTable = this.byId("ordersSmartTable");
             var oSmartFilterBar = this.byId("smartFilterBar");
-            
+
             if (oSmartTable) {
                 // Reset status filter
                 var oStatusFilter = this.byId("statusFilter");
@@ -189,7 +227,6 @@ sap.ui.define([
                 if (oSmartFilterBar) {
                     oSmartFilterBar.clear();
                 }
-
                 // Refresh table data
                 oSmartTable.rebindTable();
             }
