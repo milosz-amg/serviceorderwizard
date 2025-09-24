@@ -444,15 +444,26 @@ sap.ui.define([
             var oVisitDate = oVisitDateInput.getDateValue();
 
             // Walidacja daty wizyty
-            if (!oVisitDate) {
+            if (!oVisitDate ) {
                 oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
                 oVisitDateInput.setValueStateText(this._getText("visitDateValidationError"));
                 bValid = false;
             } else {
-                oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
-                // setProperty - datepicker czasami się buguje
-                oModel.setProperty("/visitData/visitDate", oVisitDate);
-                console.log("Data wizyty ustawiona:", oVisitDate);
+                // Compare date-only (ignore time) to ensure visit date is not in the past
+                var oToday = new Date();
+                oToday.setHours(0,0,0,0);
+                var oVisitOnly = new Date(oVisitDate.getFullYear(), oVisitDate.getMonth(), oVisitDate.getDate());
+
+                if (oVisitOnly < oToday) {
+                    oVisitDateInput.setValueState(sap.ui.core.ValueState.Error);
+                    oVisitDateInput.setValueStateText(this._getText("dateInPastError"));
+                    bValid = false;
+                } else {
+                    oVisitDateInput.setValueState(sap.ui.core.ValueState.Success);
+                    // setProperty - datepicker sometimes misbehaves
+                    oModel.setProperty("/visitData/visitDate", oVisitDate);
+                    console.log("Data wizyty ustawiona:", oVisitDate);
+                }
             }
             return bValid;
         },
