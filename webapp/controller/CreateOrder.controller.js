@@ -549,6 +549,7 @@ sap.ui.define([
                             sap.m.MessageToast.show(that._getText("validationErrorMessage"));
                         } else {
                             console.log("Validation succeeded");
+                            sap.m.MessageToast.show(that._getText("orderSubmitSuccess"));
                             var oModel = that.getView().getModel("orderData");
                             var oData = oModel.getData();
 
