@@ -103,6 +103,7 @@
                     class="sapUiResponsiveContentPadding"
                     enableAutoColumnWidth="true"
                     beforeRebindTable="onBeforeRebindTable"
+                    
                 >
                     <!-- layout data used to make the table growing but the filter bar fixed -->
                     <smartTable:layoutData>
@@ -147,9 +148,9 @@
                         <!-- Order Creation Date Column with DD.MM.YYYY format -->
                         <table:Column
                             sortProperty="OrderCreationDate"
-                            sorted="true"
                             sortOrder="Descending"
                         >
+                            <!-- sorted="true" -->
                             <table:customData>
                                 <core:CustomData
                                     key="p13nData"
@@ -167,9 +168,9 @@
                         <!-- Visit Date Column with DD.MM.YYYY format -->
                         <table:Column
                             sortProperty="Visitdate"
-                            sorted="true"
                             sortOrder="Ascending"
                         >
+                            <!-- sorted="true" -->
                             <table:customData>
                                 <core:CustomData
                                     key="p13nData"
