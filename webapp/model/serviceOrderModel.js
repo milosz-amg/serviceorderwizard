@@ -54,29 +54,18 @@ sap.ui.define([
                 
                 console.log("Usuwanie zlecenia o ID:", sOrderId);
                 
-                // Construct the path for the order to delete - używamy tylko ścieżki relative do service root
+                // Construct the path for the order to delete
                 var sPath = "/orderSet(OrderId='" + sOrderId + "')";
-                
-                console.log("Ścieżka usuwania:", sPath);
                 
                 // Send DELETE request
                 oModel.remove(sPath, {
                     success: function(oData, oResponse) {
                         console.log("Usunięto pomyślnie zlecenie:", sOrderId);
-                        resolve({
-                            success: true,
-                            orderId: sOrderId,
-                            message: "Zlecenie " + sOrderId + " zostało pomyślnie usunięte"
-                        });
+                        resolve(oData);
                     },
                     error: function(oError) {
                         console.error("Błąd podczas usuwania zlecenia:", oError);
-                        reject({
-                            success: false,
-                            orderId: sOrderId,
-                            error: oError,
-                            message: "Nie udało się usunąć zlecenia " + sOrderId
-                        });
+                        reject(oError);
                     }
                 });
             });
