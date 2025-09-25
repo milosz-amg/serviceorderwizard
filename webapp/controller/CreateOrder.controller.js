@@ -15,7 +15,8 @@ sap.ui.define([
          * @public
          */
         onInit: function () {
-            this._initODataModel();
+            var oModel = serviceOrderModel.createServiceOrderModel();
+            this.getView().setModel(oModel, "orderModel");
 
             // Inicjalizacja pustego modelu dla danych zamówienia
             var oOrderModel = new sap.ui.model.json.JSONModel({
@@ -46,8 +47,6 @@ sap.ui.define([
 
             this.getView().setModel(oOrderModel, "orderData");
 
-            // Załaduj typy urządzeń z serwera
-
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
 
@@ -61,23 +60,8 @@ sap.ui.define([
                     // Reset wszystkich danych i stanu wizarda
                     this._resetWizard();
 
-                    // Zablokuj pierwszy krok
-                    var oStep = oView.byId("stepPersonalData");
-                    if (oWizard && oStep) {
-                        // oWizard.invalidateStep(oStep);
-                    }
                 }.bind(this)  // Ważne: bind(this) aby mieć dostęp do metod kontrolera
             });
-        },
-
-        /**
-         * Initializes the OData model for service orders
-         * @private
-         */
-        _initODataModel: function () {
-            // Create OData model
-            var oModel = serviceOrderModel.createServiceOrderModel();
-            this.getView().setModel(oModel, "orderModel");
         },
 
         /**
@@ -486,7 +470,6 @@ sap.ui.define([
                 bValid = false;
             } else {
                 oVisitHourSelect.setValueState(sap.ui.core.ValueState.Success);
-                // Aktualizuj nazwę czasu na podstawie wybranej opcji
                 var oSelectedItem = oVisitHourSelect.getSelectedItem();
                 if (oSelectedItem) {
                     oModel.setProperty("/visitData/visitTime", oSelectedItem.getText());

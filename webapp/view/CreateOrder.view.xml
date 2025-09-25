@@ -48,7 +48,6 @@
                                     change="validatePersonalDataName"
                                     valueState="None"
                                     value="{orderData>/personalData/firstName}"
-
                                 />
 
                                 <Label
@@ -63,7 +62,6 @@
                                     change="validatePersonalDataLastName"
                                     valueState="None"
                                     value="{orderData>/personalData/lastName}"
-
                                 />
 
                                 <Label
@@ -80,7 +78,6 @@
                                     value="{orderData>/personalData/phoneNumber}"
                                     mask="+99 999 999 999"
                                     placeholderSymbol="_"
-
                                 />
 
                                 <Label
@@ -93,7 +90,6 @@
                                     placeholder="{i18n>addressFirstLinePlaceholder}"
                                     valueState="None"
                                     value="{orderData>/personalData/addressFirstLine}"
-
                                 />
 
                                 <Label
@@ -106,7 +102,6 @@
                                     placeholder="{i18n>addressSecondLinePlaceholder}"
                                     valueState="None"
                                     value="{orderData>/personalData/addressSecondLine}"
-
                                 />
 
                                 <Label
@@ -119,12 +114,10 @@
                                     id="addressZipCodeInput"
                                     placeholder="{i18n>zipCodePlaceholder}"
                                     change="validatePersonalDataZipCode"
-                                    
                                     valueState="None"
                                     value="{orderData>/personalData/addressZipCode}"
                                     mask="99-999"
                                     placeholderSymbol="_"
-
                                 />
 
                                 <Label
@@ -142,14 +135,12 @@
                                     change="validatePersonalDataCity"
                                 />
                             </form:SimpleForm>
-
                         </WizardStep>
 
                         <WizardStep
                             id="stepFaultDesc"
                             title="{i18n>stepFaultDescTitle}"
                             complete="validateFaultDesc"
-
                         >
                             <MessageStrip
                                 class="sapUiSmallMarginBottom"
@@ -167,7 +158,7 @@
                                     required="true"
                                     labelFor="deviceTypeComboBox"
                                 />
-                                                                                            <ComboBox
+                                <ComboBox
                                     id="deviceTypeComboBox"
                                     required="true"
                                     valueState="None"
@@ -185,13 +176,12 @@
                                     />
                                 </ComboBox>
 
-                                                                <Label
+                                <Label
                                     text="{i18n>deviceModelLabel}"
                                     required="true"
                                 />
 
-
-                                                                <ComboBox
+                                <ComboBox
                                     id="deviceModelInput"
                                     required="true"
                                     placeholder="{i18n>deviceModelPlaceholder}"
@@ -207,10 +197,6 @@
                                         text="{ModelName}"
                                     />
                                 </ComboBox>
-
-
-
-
 
                                 <Label
                                     id="deviceSerialNumberLabel"
@@ -238,7 +224,6 @@
                                     value="{orderData>/deviceData/faultDescription}"
                                 />
                             </form:SimpleForm>
-
                         </WizardStep>
                         <WizardStep
                             id="stepVisitDate"
@@ -318,7 +303,6 @@
                                     />
                                 </Select>
                             </form:SimpleForm>
-
                         </WizardStep>
                         <WizardStep
                             id="stepSummary"
@@ -329,7 +313,6 @@
                                 text="{i18n>summaryHelpMessage}"
                                 showIcon="true"
                             />
-
                         </WizardStep>
                     </Wizard>
                 </content>
