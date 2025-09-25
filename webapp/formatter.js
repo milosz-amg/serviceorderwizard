@@ -240,6 +240,59 @@ sap.ui.define([], function () {
             var day = String(date.getDate()).padStart(2, "0");
             
             return year + month + day;
+        },
+
+        /**
+         * Grupuje dane zlecenia według kategorii dla dialogu szczegółów
+         * @public
+         * @param {Object} oOrder - Obiekt zawierający dane zlecenia
+         * @param {Function} _getText - Funkcja do pobierania tekstów z i18n
+         * @returns {Object} Pogrupowane dane
+         */
+        groupOrderData: function (oOrder, _getText) {
+            return {
+                orderInfo: {
+                    title: _getText("orderDataTitle"),
+                    fields: [
+                        { key: "OrderId", value: oOrder.OrderId, formatter: this.formatOrderId },
+                        { key: "OrderCreationDate", value: oOrder.OrderCreationDate, formatter: this.formatDate },
+                        { key: "Status", value: oOrder.Status }
+                    ]
+                },
+                customerInfo: {
+                    title: _getText("clientDataTitle"),
+                    fields: [
+                        { key: "Firstname", value: oOrder.Firstname },
+                        { key: "Lastname", value: oOrder.Lastname },
+                        { key: "Phonenumber", value: oOrder.Phonenumber }
+                    ]
+                },
+                addressInfo: {
+                    title: _getText("addressLabel"),
+                    fields: [
+                        { key: "Addressfirstline", value: oOrder.Addressfirstline },
+                        { key: "Addresssecondline", value: oOrder.Addresssecondline },
+                        { key: "Addresscity", value: oOrder.Addresscity },
+                        { key: "Addresszipcode", value: oOrder.Addresszipcode, formatter: this.formatZipCode }
+                    ]
+                },
+                deviceInfo: {
+                    title: _getText("deviceDataTitle"),
+                    fields: [
+                        { key: "Devicetype", value: oOrder.Devicetype },
+                        { key: "Devicemodel", value: oOrder.Devicemodel },
+                        { key: "Deviceserialnumber", value: oOrder.Deviceserialnumber },
+                        { key: "Faultdescription", value: oOrder.Faultdescription }
+                    ]
+                },
+                visitInfo: {
+                    title: _getText("visitDataTitle"),
+                    fields: [
+                        { key: "Visitdate", value: oOrder.Visitdate, formatter: this.formatDate },
+                        { key: "Visittime", value: oOrder.Visittime, formatter: this.formatTime }
+                    ]
+                }
+            };
         }
     };
 
