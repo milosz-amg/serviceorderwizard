@@ -46,8 +46,6 @@ sap.ui.define([
 
             this.getView().setModel(oOrderModel, "orderData");
 
-            // Załaduj typy urządzeń z serwera
-
             var oView = this.getView();
             var oWizard = oView.byId("createOrderWizard");
 

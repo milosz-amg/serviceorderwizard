@@ -20,15 +20,13 @@ sap.ui.define([
          * @public
          */
         onInit: function () {
-            // Create OData model and set it as default model (still needed for some operations)
+            // Create OData model and set it as default model (still needed for delete and fetchSingleOrder)
             var oODataModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oODataModel);
 
             // Podłącz się do zdarzenia routingu
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.getRoute("RouteOrders").attachPatternMatched(this._onRouteMatched, this);
-            
-            // Sortowanie zostanie zastosowane po załadowaniu danych w _onRouteMatched
         },
 
         _sortTable: function () {
@@ -44,10 +42,10 @@ sap.ui.define([
                 return;
             }
 
-            // Definicja wielu sortowań
+            // Definicja sortowań
             var aSorters = [
                 new sap.ui.model.Sorter("OrderCreationDate", true), // true = malejąco (najnowsze pierwsze)
-                new sap.ui.model.Sorter("Visitdate", false)         // true = malejąco (najbliższe pierwsze)
+                new sap.ui.model.Sorter("Visitdate", false)
             ];
 
             // Ustawienie sortowania
@@ -77,13 +75,7 @@ sap.ui.define([
             var oBindingParams = oEvent.getParameter("bindingParams");
 
             // === DOMYŚLNE SORTOWANIE ===
-            // Dodaj domyślne sortowanie jeśli nie ma żadnych sorterów
-            if (!oBindingParams.sorter || oBindingParams.sorter.length === 0) {
-                oBindingParams.sorter = [
-                    new sap.ui.model.Sorter("OrderCreationDate", true), // najnowsze pierwsze
-                    new sap.ui.model.Sorter("Visitdate", false)         // najbliższe pierwsze
-                ];
-            }
+            this._sortTable();
 
             // === STATUS FILTER ===
             var oStatusFilter = this.byId("statusFilter");
@@ -105,9 +97,9 @@ sap.ui.define([
                 var oOrderDateValue = oOrderDateRange.getDateValue();
                 var oOrderSecondDateValue = oOrderDateRange.getSecondDateValue();
 
-                // Zamień Date na string DD.MM.YYYY, potem na YYYYMMDD
-                var sOrderDateFrom = oOrderDateValue ? formatter.formatDateForBackend(oOrderDateValue instanceof Date ? oOrderDateValue.toLocaleDateString("pl-PL") : oOrderDateValue) : null;
-                var sOrderDateTo = oOrderSecondDateValue ? formatter.formatDateForBackend(oOrderSecondDateValue instanceof Date ? oOrderSecondDateValue.toLocaleDateString("pl-PL") : oOrderSecondDateValue) : null;
+                // Formatuj Date bezpośrednio do formatu YYYYMMDD
+                var sOrderDateFrom = oOrderDateValue ? formatter.formatJSDateForBackend(oOrderDateValue) : null;
+                var sOrderDateTo = oOrderSecondDateValue ? formatter.formatJSDateForBackend(oOrderSecondDateValue) : null;
 
                 if (sOrderDateFrom && sOrderDateTo) {
                     oBindingParams.filters.push(new sap.ui.model.Filter(
@@ -116,21 +108,7 @@ sap.ui.define([
                         sOrderDateFrom,
                         sOrderDateTo
                     ));
-                } else if (sOrderDateFrom) {
-                    // tylko data od
-                    oBindingParams.filters.push(new sap.ui.model.Filter(
-                        "OrderCreationDate",
-                        sap.ui.model.FilterOperator.GE,
-                        sOrderDateFrom
-                    ));
-                } else if (sOrderDateTo) {
-                    // tylko data do
-                    oBindingParams.filters.push(new sap.ui.model.Filter(
-                        "OrderCreationDate",
-                        sap.ui.model.FilterOperator.LE,
-                        sOrderDateTo
-                    ));
-                }
+                } 
             }
 
             // === VISIT DATE RANGE FILTER ===
@@ -139,9 +117,9 @@ sap.ui.define([
                 var oVisitDateValue = oVisitDateRange.getDateValue();
                 var oVisitSecondDateValue = oVisitDateRange.getSecondDateValue();
 
-                // Zamień Date na string DD.MM.YYYY, potem na YYYYMMDD
-                var sVisitDateFrom = oVisitDateValue ? formatter.formatDateForBackend(oVisitDateValue instanceof Date ? oVisitDateValue.toLocaleDateString("pl-PL") : oVisitDateValue) : null;
-                var sVisitDateTo = oVisitSecondDateValue ? formatter.formatDateForBackend(oVisitSecondDateValue instanceof Date ? oVisitSecondDateValue.toLocaleDateString("pl-PL") : oVisitSecondDateValue) : null;
+                // Formatuj Date bezpośrednio do formatu YYYYMMDD
+                var sVisitDateFrom = oVisitDateValue ? formatter.formatJSDateForBackend(oVisitDateValue) : null;
+                var sVisitDateTo = oVisitSecondDateValue ? formatter.formatJSDateForBackend(oVisitSecondDateValue) : null;
 
                 if (sVisitDateFrom && sVisitDateTo) {
                     oBindingParams.filters.push(new sap.ui.model.Filter(
@@ -150,25 +128,9 @@ sap.ui.define([
                         sVisitDateFrom,
                         sVisitDateTo
                     ));
-                } else if (sVisitDateFrom) {
-                    // tylko data od
-                    oBindingParams.filters.push(new sap.ui.model.Filter(
-                        "Visitdate",
-                        sap.ui.model.FilterOperator.GE,
-                        sVisitDateFrom
-                    ));
-                } else if (sVisitDateTo) {
-                    // tylko data do
-                    oBindingParams.filters.push(new sap.ui.model.Filter(
-                        "Visitdate",
-                        sap.ui.model.FilterOperator.LE,
-                        sVisitDateTo
-                    ));
                 }
             }
         },
-
-
 
         /**
          * Handles refresh table button click with temporary button disabling
@@ -177,14 +139,10 @@ sap.ui.define([
          */
         onRefreshTable: function (oEvent) {
             var oButton = oEvent.getSource();
-
-            // Wyłącz przycisk
             oButton.setEnabled(false);
 
-            // Twoja logika refresh
             this._doRefreshTable();
 
-            // Włącz z powrotem po 2 sekundach
             setTimeout(function () {
                 oButton.setEnabled(true);
             }, 500);
@@ -278,8 +236,8 @@ sap.ui.define([
             var oODataModel = this.getView().getModel();
             serviceOrderModel.fetchSingleOrder(sOrderId, oODataModel)
                 .then(function (oOrderData) {
-                    // Organizujemy dane w kategorie
-                    var oFormattedData = this._groupOrderData(oOrderData);
+                    // Organizujemy dane w kategorie za pomocą formattera
+                    var oFormattedData = formatter.groupOrderData(oOrderData, this._getText.bind(this));
 
                     // Tworzenie formatowanego dialogu o mniejszej szerokości
                     var oDialog = new sap.m.Dialog({
@@ -313,59 +271,6 @@ sap.ui.define([
                     }
                     MessageBox.error(sErrorMessage);
                 }.bind(this));
-        },
-
-        /**
-         * Groups order data by categories
-         * @param {Object} oOrder - Object containing order data
-         * @returns {Object} Grouped data
-         * @private
-         */
-        _groupOrderData: function (oOrder) {
-            // Zdefiniuj grupy i przypisz do nich pola
-            return {
-                orderInfo: {
-                    title: this._getText("orderDataTitle"),
-                    fields: [
-                        { key: "OrderId", value: oOrder.OrderId, formatter: formatter.formatOrderId },
-                        { key: "OrderCreationDate", value: oOrder.OrderCreationDate, formatter: formatter.formatDate },
-                        { key: "Status", value: oOrder.Status }
-                    ]
-                },
-                customerInfo: {
-                    title: this._getText("clientDataTitle"),
-                    fields: [
-                        { key: "Firstname", value: oOrder.Firstname },
-                        { key: "Lastname", value: oOrder.Lastname },
-                        { key: "Phonenumber", value: oOrder.Phonenumber }
-                    ]
-                },
-                addressInfo: {
-                    title: this._getText("addressLabel"),
-                    fields: [
-                        { key: "Addressfirstline", value: oOrder.Addressfirstline },
-                        { key: "Addresssecondline", value: oOrder.Addresssecondline },
-                        { key: "Addresscity", value: oOrder.Addresscity },
-                        { key: "Addresszipcode", value: oOrder.Addresszipcode, formatter: formatter.formatZipCode }
-                    ]
-                },
-                deviceInfo: {
-                    title: this._getText("deviceDataTitle"),
-                    fields: [
-                        { key: "Devicetype", value: oOrder.Devicetype },
-                        { key: "Devicemodel", value: oOrder.Devicemodel },
-                        { key: "Deviceserialnumber", value: oOrder.Deviceserialnumber },
-                        { key: "Faultdescription", value: oOrder.Faultdescription }
-                    ]
-                },
-                visitInfo: {
-                    title: this._getText("visitDataTitle"),
-                    fields: [
-                        { key: "Visitdate", value: oOrder.Visitdate, formatter: formatter.formatDate },
-                        { key: "Visittime", value: oOrder.Visittime, formatter: formatter.formatTime }
-                    ]
-                }
-            };
         },
 
         /**
