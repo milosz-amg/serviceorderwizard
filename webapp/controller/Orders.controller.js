@@ -404,6 +404,7 @@ sap.ui.define([
                                 var oSmartTable = this.byId("ordersSmartTable");
                                 if (oSmartTable) {
                                     oSmartTable.rebindTable();
+                                    this._sortTable();
                                 }
 
                             })
