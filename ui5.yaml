@@ -29,3 +29,5 @@ server:
       configuration:
         flp:
           theme: sap_horizon
+          startupParameters:
+            sap-language: pl

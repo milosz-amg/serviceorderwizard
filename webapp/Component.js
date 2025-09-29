@@ -16,6 +16,9 @@ sap.ui.define([
             // call the base component's init function
             UIComponent.prototype.init.apply(this, arguments);
 
+            // TODO: ustawić język aplikacji
+            // sap.ui.getCore().getConfiguration().setLanguage("pl");
+
             // set the device model
             this.setModel(models.createDeviceModel(), "device");
 
@@ -24,7 +27,9 @@ sap.ui.define([
 
             // globalny model dla widoków
             var oModel = new sap.ui.model.odata.v2.ODataModel("/sap/opu/odata/sap/ZMR_ORDER_SRV_SRV/");
-            this.setModel(oModel); 
+            this.setModel(oModel);
+
+
         }
     });
 });

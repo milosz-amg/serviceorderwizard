@@ -27,6 +27,9 @@
   },
   "sap.ui": {
     "technology": "UI5",
+    "config":{
+      "language": "pl"
+    },
     "icons": {
       "icon": "",
       "favIcon": "",
@@ -43,6 +46,9 @@
   },
   "sap.ui5": {
     "flexEnabled": false,
+    "config": {
+      "language": "pl"
+    },
     "dependencies": {
       "minUI5Version": "1.139.0",
       "libs": {
@@ -62,7 +68,7 @@
         "type": "sap.ui.model.resource.ResourceModel",
         "settings": {
           "bundleName": "com.mr.serviceorderwizard.i18n.i18n",
-          "supportedLocales": ["", "pl", "en"],
+          "supportedLocales": ["pl"],
          "fallbackLocale": "pl"
         }
       },

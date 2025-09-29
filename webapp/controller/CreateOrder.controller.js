@@ -17,6 +17,7 @@ sap.ui.define([
         onInit: function () {
             var oModel = serviceOrderModel.createServiceOrderModel();
             this.getView().setModel(oModel, "orderModel");
+            console.log(sap.ui.getCore().getConfiguration().getLanguage());
 
             // Inicjalizacja pustego modelu dla danych zamówienia
             var oOrderModel = new sap.ui.model.json.JSONModel({
